@@ -1,0 +1,395 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Freeman Curriculum Vitae
+% XeLaTeX Template
+% Version 2.0 (19/3/2018)
+%
+% This template originates from:
+% http://www.LaTeXTemplates.com
+%
+% Authors:
+% Vel (vel@LaTeXTemplates.com)
+% Alessandro Plasmati
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%!TEX program = xelatex
+% NOTICE: This template must be compiled with XeLaTeX, the line above should
+% ensure this happens automatically but if it doesn't you will need to specify 
+% XeLaTeX as the engine in your editor or script
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[10pt]{article} % Font size, can be: 10pt, 11pt or 12pt
+
+\input{structure.tex} % Include the file that specifies the document structure
+
+% Headers and footers can be added with the \lhead{} \rhead{} \lfoot{} \rfoot{} commands
+% Example right footer:
+%\rfoot{\color{headings}{\sffamily Last update: \today. Typeset with Xe\LaTeX}}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\begin{paracol}{2} % Begin the multi-column environment
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CURRICULUM VITAE TEXT
+%----------------------------------------------------------------------------------------
+
+  \parbox[top][0.12\textheight][c]{\linewidth}{ % Parbox to hold the author name and CV text; fixed height to match the coloured box to the right, centred vertically and full line width
+    \vspace{-0.04\textheight} % Reduce whitespace above the parbox to separate it from the main content
+    \centering % Centre text
+    {\sffamily\Huge Yi-Chen Zhang}\\%\medskip % Your name
+    {\Huge\color{headings}\cvtextfont Curriculum Vitae}
+  }
+
+%----------------------------------------------------------------------------------------
+%	EDUCATION
+%----------------------------------------------------------------------------------------
+
+  \section{Education} 
+
+% Blank \educationentry{} command to add another degree:
+
+%\educationentry{} % Duration
+%{} % Degree
+%{} % Honours, achievements or distinctions (e.g. first class honours)
+%{} % Department
+%{} % Institution
+
+% All 5 parameters must be supplied but any can be empty if you don't need them
+
+%------------------------------------------------
+
+  \begin{supertabular}{rl} % Start a table with two columns, the table will ensure everything is aligned
+
+  %------------------------------------------------
+
+    \educationentry{2013 -- 2018} % Duration
+    {Doctor of Philosophy} % Degree
+    {} % Honours, achievements or distinctions (e.g. first class honours)
+    {Statistics and Probability} % Department
+    {Michigan State University, USA} % Institution
+
+  %------------------------------------------------
+
+    \educationentry{2007 -- 2009} % Duration
+    {Master of Science} % Degree
+    {} % Honours, achievements or distinctions (e.g. first class honours)
+    {Graduate Institute of Statistics} % Department
+    {National Central University, Taiwan} % Institution
+
+  %------------------------------------------------
+
+    \educationentry{2003 -- 2007} % Duration
+    {Bachelor of Science} % Degree
+    {} % Honours, achievements or distinctions (e.g. first class honours)
+    {Department of Mathematics} % Department
+    {National Central University, Taiwan} % Institution
+
+  %------------------------------------------------
+
+  \end{supertabular}
+
+%----------------------------------------------------------------------------------------
+%	WORK EXPERIENCE
+%----------------------------------------------------------------------------------------
+
+  \section{Work Experience}
+% Blank \workposition command to add another job:
+
+%\workposition{} % Duration
+%{} % FT/PT (full time or part time)
+%{} % Employer
+%{} % Job title
+%{} % Description
+
+% All 5 parameters must be supplied but any can be empty if you don't need them
+
+%\workpositionentry{} % Job title
+%{} % Duration
+%{} % Employer
+%{} % Description
+
+% All 4 parameters must be supplied but any can be empty if you don't need them
+
+%------------------------------------------------
+  \workpositionentry{Algorithm Engineer} % Job title
+  {Current, from Jul 2018} % Duration
+  {APTIV --- Global Technology Company} % Employer
+  {My mainly work contains developing and implementing prototypes of the Object Trails \& Processing (OP\&T) library. The focus is on using the information of surrounding vehicles to construct the road geometry.} % Description
+
+%------------------------------------------------
+%\large\textit{\textbf{Teaching Assistant}} \hfill \textsc{Aug 2013 -- May 2018}\\
+%Department of Statistics and Probability, MSU\\
+%At MSU I have been TA for many undergraduate courses. I also have been instructor at a lower level undergraduate course in Summer 2015.\\
+
+  \workpositionentry{Teaching Assistant} % Job title
+  {Aug 2013 -- May 2018} % Duration
+  {Department of Statistics and Probability, MSU} % Employer
+  {At MSU I have been TA for many undergraduate courses. I also have been instructor at a lower level undergraduate course in Summer 2015.} % Description
+
+%------------------------------------------------
+%\large\textit{\textbf{Research Assistant}} \hfill \textsc{Jan 2016 -- Dec 2016}\\
+%Computational Mathematics, Science and Engineering, MSU\\
+%This position involved working in neuroimaging data, including movement correction, denosing, registration, and Fourier analysis.\\
+
+  \workpositionentry{Research Assistant}
+  {Jan 2016 -- Dec 2016} % Duration
+  {Computational Mathematics, Science and Engineering, MSU} % Employer
+  {This position involved working in neuroimaging data, including movement correction, denosing, registration, and Fourier analysis.} % Description
+%{This position involved transitioning from purely theoretical work to experimental applications utilising the immense resources of Black Mesa. The transition required an initial learning curve in hazard containment, health and safety procedures and operating experimental infrastructure. Manipulating valves, carts, buttons, levers, etc considerably increased my physical fitness.}  % Description
+
+%------------------------------------------------
+%\large\textit{\textbf{Research Assistant}} \hfill \textsc{Aug 2010 -- Jul 2013}\\
+%Institute of Statistical Science, Academia Sinica\\
+%I began conducting research in functional data, including functional clustering, functional linear model, %functional prediction, and missing value imputation and outlier detection.\\
+
+  \workpositionentry{Research Assistant} % Job title
+  {Aug 2010 -- Jul 2013} % Duration
+  {Institute of Statistical Science, Academia Sinica} % Employer
+  {I began conducting research in functional data, including functional clustering, functional linear model, functional prediction, and missing value imputation and outlier detection}
+%{In this summer job I was tasked with helping eradicate pests from industrial areas. Work involved setting traps, spraying and physical eradication. I received praise for reaching difficult areas and my innovative use of a crowbar to assist in my work.} % Description
+
+%------------------------------------------------
+
+  \workpositionentry{Network Administrator} % Job title
+  {Jul 2007 -- Jul 2009} % Duration
+  {Graduate Institute of Statistics, NCU} % Employer
+  {This position required to manage email server based on FreeBSD operating system as well as eliminate the common breakdown of the PCs in the computer laboratory. I also designed an alumni website for graduate alumnus.}
+
+%{In this summer job I was tasked with helping eradicate pests from industrial areas. Work involved setting traps, spraying and physical eradication. I received praise for reaching difficult areas and my innovative use of a crowbar to assist in my work.} % Description
+
+%------------------------------------------------
+
+  \workpositionentry{Network Administrator} % Job title
+  {Feb 2005 -- Jun 2007} % Duration
+  {Mathematics Computation Laboratory, NCU} % Employer
+  {As part of this promotion, I began to maintain the email server and design some rules to block spam email. I also designed a network sync upgrade system for more than 80 computes over 2 classrooms and wrote a web-based roll call and sign in system.} % Description
+
+%{In this summer job I was tasked with helping eradicate pests from industrial areas. Work involved setting traps, spraying and physical eradication. I received praise for reaching difficult areas and my innovative use of a crowbar to assist in my work.} % Description
+
+%------------------------------------------------
+
+  \workpositionentry{Newtork Assistant} % Job title
+  {Feb 2004 -- Jan 2005} % Duration
+  {Mathematics Computation Laboratory, NCU} % Employer
+  {In the job I was tasked with providing software support and computer consulting for undergraduates. Work involved supervise the network and do system analysis and trouble shooting.}
+%{In this summer job I was tasked with helping eradicate pests from industrial areas. Work involved setting traps, spraying and physical eradication. I received praise for reaching difficult areas and my innovative use of a crowbar to assist in my work.} % Description
+
+%----------------------------------------------------------------------------------------
+
+  \switchcolumn % Switch to the next paracol column
+
+%----------------------------------------------------------------------------------------
+%	COLOURED CONTACT DETAILS BOX
+%----------------------------------------------------------------------------------------
+
+  \parbox[top][0.12\textheight][c]{\linewidth}{ % Parbox to hold the colour box; fixed height to match the name/CV text to the left, centred vertically and full line width
+    \vspace{-0.04\textheight} % Reduce whitespace above the parbox to separate it from the main content
+    \colorbox{shade}{ % Create the coloured box
+      \begin{supertabular}{p{0.01\linewidth}|p{0.83\linewidth}} % Start a table with two columns, the table will ensure everything is aligned
+        \raisebox{-1pt}{\hspace{-2ex}\faHome} & 31350 Harlo Dr Apt H, Madison Heights, MI 48071\\ % Address
+        \raisebox{-1pt}{\hspace{-2ex}\faPhone} & +1 (517) 775-9919 \\ % Phone number
+        \raisebox{0pt}{\hspace{-2ex}\small\faEnvelope} & \href{mailto:chris7462@gmail.com}{chris7462@gmail.com} \\ % Email address
+        \raisebox{-1pt}{\hspace{-2ex}\small\faDesktop} & \href{https://www.stt.msu.edu/users/zhang318}{https://www.stt.msu.edu/users/zhang318} \\ % Website
+        \raisebox{-1pt}{\hspace{-2ex}\faGithub} & \href{https://github.com/chris7462}{https://github.com/chris7462} \\ % GitHub profile
+        \raisebox{-1pt}{\hspace{-2ex}\faLinkedinSquare} & \href{https://www.linkedin.com/in/yi-chen-zhang-b72907116}{https://www.linkedin.com/in/yi-chen-zhang-b72907116} \\ % LinkedIn profile
+      % See fontawesome.pdf in the fonts folder for all icons you can use
+      \end{supertabular}
+    }
+  }
+
+%----------------------------------------------------------------------------------------
+%	COMPUTER SKILLS
+%----------------------------------------------------------------------------------------
+
+  \section{Computer Skills} 
+
+% Example \tableentry{} command to add another line:
+
+%\tableentry{Heading}{Content}{spaceafter}
+
+% All 3 parameters must be supplied but any can be empty if you don't need them
+% A "spaceafter" value in the third parameter will add some vertical space -- this is to be used between headings
+
+%------------------------------------------------
+
+  \begin{supertabular}{rl} % Start a table with two columns, the table will ensure everything is aligned
+
+  %------------------------------------------------
+
+    \tableentry{Expert}{\textsf{R}, MATLAB, \textsf{C}\texttt{++}, Linux, \LaTeX}{spaceafter}	
+
+  %------------------------------------------------
+
+    \tableentry{Intermediate}{Python, Perl, ROS, Git, Gerrit, TikZ}{spaceafter}
+
+  %------------------------------------------------
+
+    \tableentry{Beginner}{MySQL, PHP, OpenMP, MPI}{spaceafter}
+
+  %------------------------------------------------
+
+  \end{supertabular}
+
+%----------------------------------------------------------------------------------------
+%	SKILLS DESCRIPTION
+%----------------------------------------------------------------------------------------
+
+  \section{Skills}
+
+% Example \longformdescription{} command to add another section:
+
+%\longformdescription{Heading}{Description}
+
+%------------------------------------------------
+
+  \longformdescription{Machine Learning}{I have been interested in machine learning such as clustering and classification. My education and research have cemented this interest into a passion. I greatly enjoy carrying out statistics research with potential practical applications.}
+
+  \longformdescription{Leadership Communication}{I believe in action over long-winded discussions. I listen to everyone's viewpoints and use my judgment to immediately act based on consensus to achieve goals quickly and efficiently.}
+
+%\longformdescription{Goal Oriented}{I believe in action over long-winded discussions. I listen to everyone's viewpoints and use my judgement to immediately act based on consensus to achieve goals quickly and efficiently.}
+
+%\longformdescription{Physical Dexterity}{Manual manipulation of experimental equipment and training within Black Mesa (e.g. the Hazard Course) have contributed to an enjoyment of working with my hands.}
+
+%\longformdescription{Passionate}{I have been interested in theoretical physics such as quantum mechanics and relativity from an early age. My education and research have cemented this interest into a passion. I greatly enjoy carrying out fundamental physics research with potential practical applications.}
+
+%----------------------------------------------------------------------------------------
+%	MAJOR RESEARCH PROJECT
+%----------------------------------------------------------------------------------------
+
+  \section{Doctoral Research}
+
+  {\raggedright\textbf{``Functional Data Analysis with Application to Traffic Flow Data''}\\}%\medskip}
+  My research examined the use of functional principal component analysis (FPCA) to analyze traffic flow data. We propose a non-parametric functional data approach to process traffic flow data, a functional naive Bayes classifier to classify traffic flow pattern, a mixture prediction approach to predict future traffic flow, and a two-step segmentation procedure to estimate both the number and locations of the mean change-points of a traffic flow sequence.
+
+  %for ELW pulses from a mode-locked source array inducted through transuranic crystals to observe entanglement on supraquantum structures. Theoretical advancements included prediction of quantum resonance phenomena including the possibility of resonance cascades. I was motivated to conduct this doctoral research due to my passion for teleportation of matter and I believe I have laid the foundation for further experimental validation and development of practical outcomes.
+
+%Functional data has become increasingly popular in the recent statistical literature. Con-
+% siderable attention has been paid to the development of functional data analysis. This
+% thesis consists of four main chapters to address some important questions that arise from
+% implementing FPCA in practice and to give answer to these questions. In Chapter 2, we
+% investigate the problem of data preprocessing for functional data. We propose and analyzes
+% a nonparametric functional data approach to missing value imputation and outlier detection
+% for functional data. In Chapter 3, a functional naive Bayes classifier has been proposed for
+% functional data which provides a surrogate density estimation for functional random variables
+% that makes a direct extension of density-based classical multivariate classification approaches
+% to functional data classification possible. In Chapter 4, we merge two ideas of functional
+% classification and functional prediction to develop a dynamical prediction for functional data.
+% The proposed functional mixture prediction approach combines functional linear model with
+% functional naive Bayes classifier. In Chapter 5, we suggest a two-step segmentation proce-
+% dure to estimate both the number and locations of the mean change-points of a functional
+% sequence. Finally, the thesis concludes with a brief discussion of future research directions.
+  %\medskip % Extra whitespace before the next section
+
+%----------------------------------------------------------------------------------------
+%	AWARDS
+%----------------------------------------------------------------------------------------
+
+  \section{Awards}
+
+% Example \tableentry{} command to add another line:
+
+%\tableentry{Heading}{Content}{spaceafter}
+
+% All 3 parameters must be supplied but any can be empty if you don't need them
+% A "spaceafter" value in the third parameter will add some vertical space -- this is to be used between headings
+
+%------------------------------------------------
+
+  \begin{supertabular}{rl} % Start a table with two columns, the table will ensure everything is aligned
+
+  %------------------------------------------------
+
+    \tableentry{2017}{\textbf{Dissertation Continuation Fellowship}}{}
+    \tableentry{}{\textit{College of Natural Science, MSU}}{spaceafter}
+
+  %------------------------------------------------
+
+    \tableentry{2018}{\textbf{Dissertation Completion Fellowship}}{}
+    \tableentry{}{\textit{College of Natural Science, MSU}}{spaceafter}
+
+  %------------------------------------------------
+
+  \end{supertabular}
+
+%----------------------------------------------------------------------------------------
+%	PUBLICATIONS
+%----------------------------------------------------------------------------------------
+
+  \section{Publications}
+
+% Example \longformdescription{} command to add another publication:
+
+%\longformpublication{Reference (format this manually as desired)}
+
+%------------------------------------------------
+
+  \longformpublication{\textbf{Zhang, Y.-C.} and Sakhanenko, L. (2019). \textit{The Naive Bayes Classifier for Functional Data}. Statistics \& Probability Letters 152, 137-146.}
+
+  \longformpublication{Chiou, J.-M., \textbf{Zhang, Y.-C.}, Chen, W.-H., and Chang, C.-W. (2014). \textit{A Functional Data Approach to Missing Value Imputation and Outlier Detection for Traffic Flow Rate Data}. Transportmetrica B: Transport Dynamics 2, 106-129.}
+
+  \longformpublication{Fan, T.-H., Wang, Y.-F., and \textbf{Zhang, Y.-C.} (2014). \textit{Bayesian Model Selection in Linear Mixed Effects Models with AR(1) Errors Using Mixture Priors.} Journal of Applied Statistics 41, 1814-1829.}
+
+%------------------------------------------------
+
+% As an alternative to a long-form publication list, you can create a shorter summary using only DOI values and years.
+
+% Example \doipublication{} command to add another publication:
+
+%\doipublication{Year}{DOI}{firstauthor}{spaceafter}
+
+% All four parameters are required (can be empty though)
+% A value of "firstauthor" in the third parameter will print the DOI in bold
+% A "spaceafter" value in the fourth parameter will add some vertical space -- this is to be used between years
+
+%------------------------------------------------
+
+  %\medskip % Extra whitespace before the next section
+
+%----------------------------------------------------------------------------------------
+%	COMMUNICATION SKILLS
+%----------------------------------------------------------------------------------------
+
+%\section{Communication Skills}
+%
+%% Example \tableentry{} command to add another line:
+%
+%%\tableentry{Heading}{Content}{spaceafter}
+%
+%% All 3 parameters must be supplied but any can be empty if you don't need them
+%% A "spaceafter" value in the third parameter will add some vertical space -- this is to be used between headings
+%
+%%------------------------------------------------
+%
+%\begin{supertabular}{rl} % Start a table with two columns, the table will ensure everything is aligned
+%	
+%	%------------------------------------------------
+%	
+%	\tableentry{Conferences}{Oral Presentation at the Annual MIT}{}
+%	\tableentry{}{Theoretical Physics Conference -- 1987}{spaceafter}
+%	
+%	%------------------------------------------------
+%	
+%	\tableentry{Posters}{Poster at the Meeting of the American}{}
+%	\tableentry{}{Physical Society -- 1985}{spaceafter}
+%	
+%	%------------------------------------------------
+%	
+%\end{supertabular}
+
+
+%----------------------------------------------------------------------------------------
+
+\end{paracol}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
