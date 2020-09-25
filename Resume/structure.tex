@@ -15,6 +15,8 @@
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\usepackage{enumitem}
+
 %----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
@@ -44,9 +46,9 @@
 
 \usepackage{paracol} % Required for creating multi-column layouts that can span pages automatically
 
-\columnratio{0.55,0.45} % The relative ratios of the two columns in the CV
+\columnratio{0.5,0.5} % The relative ratios of the two columns in the CV
 
-\setlength\columnsep{0.03\textwidth} % Specify the amount of space between the columns
+\setlength\columnsep{0.02\textwidth} % Specify the amount of space between the columns
 
 %----------------------------------------------------------------------------------------
 %	FONTS
@@ -131,9 +133,11 @@ SmallCapsFont=*-SC.ttf
 
 \newcommand{\workpositionentry}[4]{
   {\large\textit{\textbf{#1}}}\expandafter\ifstrequal\expandafter{#2}{}{}{\hfill\textsc{#2}}\par % Job title and Duration 
-	\expandafter\ifstrequal\expandafter{#3}{}{}{{\raggedright\large #3}\\} % Employer
+%	\expandafter\ifstrequal\expandafter{#3}{}{}{{\raggedright\large #3}\\} % Employer
+  \expandafter\ifstrequal\expandafter{#3}{}{}{{\raggedright\textit{#3}}\\} % Employer
 %	\expandafter\ifstrequal\expandafter{#4}{}{}{{\raggedright\large\textit{\textbf{#4}}}\\[4pt]} % Job title
-	\expandafter\ifstrequal\expandafter{#4}{}{}{#4\\} % Description
+%	\expandafter\ifstrequal\expandafter{#4}{}{}{#4\\} % Description
+ 	\expandafter\ifstrequal\expandafter{#4}{}{}{#4\smallskip} % Description
 }
 
 % Command for entering a separate qualification
