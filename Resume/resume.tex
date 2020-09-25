@@ -42,8 +42,8 @@
 %	NAME AND CURRICULUM VITAE TEXT
 %----------------------------------------------------------------------------------------
 
-  \parbox[top][0.12\textheight][c]{\linewidth}{ % Parbox to hold the author name and CV text; fixed height to match the coloured box to the right, centred vertically and full line width
-    \vspace{-0.04\textheight} % Reduce whitespace above the parbox to separate it from the main content
+  \parbox[top][0.08\textheight][c]{\linewidth}{ % Parbox to hold the author name and CV text; fixed height to match the coloured box to the right, centred vertically and full line width
+    \vspace{-0.02\textheight} % Reduce whitespace above the parbox to separate it from the main content
     \centering % Centre text
     {\sffamily\Huge Yi-Chen Zhang}\\%\medskip % Your name
     {\Huge\color{headings}\cvtextfont Curriculum Vitae}
@@ -121,9 +121,27 @@
 
 %------------------------------------------------
   \workpositionentry{Algorithm Engineer} % Job title
-  {Current, from Jul 2018} % Duration
+  {Current, from Jul.~2018} % Duration
   {APTIV --- Global Technology Company} % Employer
-  {My mainly work contains developing and implementing prototypes of the Object Trails \& Processing (OP\&T) library. The focus is on using the information of surrounding vehicles to construct the road geometry.} % Description
+  {Scene Perception Algorithm Team \hfill (Oct.~2020-Present)\smallskip\\
+    Fused Road Model (FRM) Team \hfill (Sep.~2018-Sep.~2020)
+    \begin{itemize}[noitemsep,nolistsep,leftmargin=5mm]
+      \item[-] Mainly develop fusion algorithms for object trail processing
+      \item[-] Fused track converter for ROS, Appsil, and AA variants
+      \item[-] Design FRM state machine and mode manager
+      \item[-] Error handling for vision, object fusion, and vehicle state inputs
+      \item[-] Coverity Static Analysis including AUTOSAR and MISRA C++
+      \item[-] Develop unit test and component test for FRM component
+      \item[-] Sporadically acted as the scrum master for FRM
+    \end{itemize}\smallskip
+    Autonomous Driving Behavior Team \hfill (Jul.~2018-Aug.~2018)
+    \begin{itemize}[noitemsep,nolistsep,leftmargin=5mm]
+      \item[-] Develop a prediction and cost function based algorithm to perform cooperative social behavior
+      \item[-] Work in Otto code migration from urban to highway
+      %\item[-] Give numerical methods of statistical lectures
+    \end{itemize}
+  }
+%   TEST2\\My mainly work contains developing and implementing prototypes of the Object Trails \& Processing (OP\&T) library. The focus is on using the information of surrounding vehicles to construct the road geometry.} % Description
 
 %------------------------------------------------
 %\large\textit{\textbf{Teaching Assistant}} \hfill \textsc{Aug 2013 -- May 2018}\\
@@ -131,9 +149,14 @@
 %At MSU I have been TA for many undergraduate courses. I also have been instructor at a lower level undergraduate course in Summer 2015.\\
 
   \workpositionentry{Teaching Assistant} % Job title
-  {Aug 2013 -- May 2018} % Duration
+  {Aug.~2013 -- May.~2018} % Duration
   {Department of Statistics and Probability, MSU} % Employer
-  {At MSU I have been TA for many undergraduate courses. I also have been instructor at a lower level undergraduate course in Summer 2015.} % Description
+  {\vspace{-3ex}
+    \begin{itemize}[noitemsep,nolistsep,leftmargin=5mm]
+      \item[-] TA for many undergraduate courses.
+      \item[-] Instructor at lower level undergraduate course in Summer 2015
+    \end{itemize}
+  }
 
 %------------------------------------------------
 %\large\textit{\textbf{Research Assistant}} \hfill \textsc{Jan 2016 -- Dec 2016}\\
@@ -141,9 +164,13 @@
 %This position involved working in neuroimaging data, including movement correction, denosing, registration, and Fourier analysis.\\
 
   \workpositionentry{Research Assistant}
-  {Jan 2016 -- Dec 2016} % Duration
+  {Jan.~2016 -- Dec.~2016} % Duration
   {Computational Mathematics, Science and Engineering, MSU} % Employer
-  {This position involved working in neuroimaging data, including movement correction, denosing, registration, and Fourier analysis.} % Description
+  {\vspace{-3ex}
+    \begin{itemize}[noitemsep,nolistsep,leftmargin=5mm]
+      \item[-] Work in neuroimaging data, including movement correction, denosing, registration, and Fourier analysis.
+    \end{itemize}
+  }
 %{This position involved transitioning from purely theoretical work to experimental applications utilising the immense resources of Black Mesa. The transition required an initial learning curve in hazard containment, health and safety procedures and operating experimental infrastructure. Manipulating valves, carts, buttons, levers, etc considerably increased my physical fitness.}  % Description
 
 %------------------------------------------------
@@ -152,35 +179,58 @@
 %I began conducting research in functional data, including functional clustering, functional linear model, %functional prediction, and missing value imputation and outlier detection.\\
 
   \workpositionentry{Research Assistant} % Job title
-  {Aug 2010 -- Jul 2013} % Duration
+  {Aug.~2010 -- Jul.~2013} % Duration
   {Institute of Statistical Science, Academia Sinica} % Employer
-  {I began conducting research in functional data, including functional clustering, functional linear model, functional prediction, and missing value imputation and outlier detection}
+  {\vspace{-3ex}
+    \begin{itemize}[noitemsep,nolistsep,leftmargin=5mm]
+      \item[-] Functional clustering and classification
+      \item[-] Functional linear model and its prediction
+      \item[-] Missing value imputation and outlier detection for functional data
+      \item[-] Assistant for \href{https://projecteuclid.org/euclid.aoas/1356629052/}{Chiou, J.-M., Annals of Applied Statistics, 2012}
+    \end{itemize}
+  }
+
+  %{I began conducting research in functional data, including functional clustering, functional linear model, functional prediction, and missing value imputation and outlier detection}
 %{In this summer job I was tasked with helping eradicate pests from industrial areas. Work involved setting traps, spraying and physical eradication. I received praise for reaching difficult areas and my innovative use of a crowbar to assist in my work.} % Description
 
 %------------------------------------------------
+  \workpositionentry{Corporal} % Job title
+  {Aug.~2009 -- Aug.~2010}
+  {Militrary Service, Taiwan}
+  {}
+%------------------------------------------------
 
   \workpositionentry{Network Administrator} % Job title
-  {Jul 2007 -- Jul 2009} % Duration
+  {Jul.~2007 -- Jul.~2009} % Duration
   {Graduate Institute of Statistics, NCU} % Employer
-  {This position required to manage email server based on FreeBSD operating system as well as eliminate the common breakdown of the PCs in the computer laboratory. I also designed an alumni website for graduate alumnus.}
+  {}
+  %{\vspace{-3ex}
+  %  \begin{itemize}[noitemsep,nolistsep,leftmargin=5mm]
+  %    \item[-] Manage and maintain e-mail server based on FreeBSD operating system
+  %    \item[-] Design an alumni website for graduate alumnus
+  %    \item[-] Maintenance and elimination of common breakdown of the PCs in computer laboratory
+  %  \end{itemize}
+  %}
 
 %{In this summer job I was tasked with helping eradicate pests from industrial areas. Work involved setting traps, spraying and physical eradication. I received praise for reaching difficult areas and my innovative use of a crowbar to assist in my work.} % Description
 
 %------------------------------------------------
 
   \workpositionentry{Network Administrator} % Job title
-  {Feb 2005 -- Jun 2007} % Duration
+  {Feb.~2005 -- Jun.~2007} % Duration
   {Mathematics Computation Laboratory, NCU} % Employer
-  {As part of this promotion, I began to maintain the email server and design some rules to block spam email. I also designed a network sync upgrade system for more than 80 computes over 2 classrooms and wrote a web-based roll call and sign in system.} % Description
+  {}
+  %{As part of this promotion, I began to maintain the email server and design some rules to block spam email. I also designed a network sync upgrade system for more than 80 computes over 2 classrooms and wrote a web-based roll call and sign in system.} % Description
 
 %{In this summer job I was tasked with helping eradicate pests from industrial areas. Work involved setting traps, spraying and physical eradication. I received praise for reaching difficult areas and my innovative use of a crowbar to assist in my work.} % Description
 
 %------------------------------------------------
 
   \workpositionentry{Newtork Assistant} % Job title
-  {Feb 2004 -- Jan 2005} % Duration
+  {Feb.~2004 -- Jan.~2005} % Duration
   {Mathematics Computation Laboratory, NCU} % Employer
-  {In the job I was tasked with providing software support and computer consulting for undergraduates. Work involved supervise the network and do system analysis and trouble shooting.}
+  {}
+  %{In the job I was tasked with providing software support and computer consulting for undergraduates. Work involved supervise the network and do system analysis and trouble shooting.}
 %{In this summer job I was tasked with helping eradicate pests from industrial areas. Work involved setting traps, spraying and physical eradication. I received praise for reaching difficult areas and my innovative use of a crowbar to assist in my work.} % Description
 
 %----------------------------------------------------------------------------------------
@@ -191,16 +241,16 @@
 %	COLOURED CONTACT DETAILS BOX
 %----------------------------------------------------------------------------------------
 
-  \parbox[top][0.12\textheight][c]{\linewidth}{ % Parbox to hold the colour box; fixed height to match the name/CV text to the left, centred vertically and full line width
-    \vspace{-0.04\textheight} % Reduce whitespace above the parbox to separate it from the main content
+  \parbox[top][0.08\textheight][c]{\linewidth}{ % Parbox to hold the colour box; fixed height to match the name/CV text to the left, centred vertically and full line width
+    \vspace{-0.02\textheight} % Reduce whitespace above the parbox to separate it from the main content
     \colorbox{shade}{ % Create the coloured box
       \begin{supertabular}{p{0.01\linewidth}|p{0.83\linewidth}} % Start a table with two columns, the table will ensure everything is aligned
         \raisebox{-1pt}{\hspace{-2ex}\faHome} & 31350 Harlo Dr Apt H, Madison Heights, MI 48071\\ % Address
         \raisebox{-1pt}{\hspace{-2ex}\faPhone} & +1 (517) 775-9919 \\ % Phone number
         \raisebox{0pt}{\hspace{-2ex}\small\faEnvelope} & \href{mailto:chris7462@gmail.com}{chris7462@gmail.com} \\ % Email address
-        \raisebox{-1pt}{\hspace{-2ex}\small\faDesktop} & \href{https://www.stt.msu.edu/users/zhang318}{https://www.stt.msu.edu/users/zhang318} \\ % Website
-        \raisebox{-1pt}{\hspace{-2ex}\faGithub} & \href{https://github.com/chris7462}{https://github.com/chris7462} \\ % GitHub profile
-        \raisebox{-1pt}{\hspace{-2ex}\faLinkedinSquare} & \href{https://www.linkedin.com/in/yi-chen-zhang-b72907116}{https://www.linkedin.com/in/yi-chen-zhang-b72907116} \\ % LinkedIn profile
+        \raisebox{-1pt}{\hspace{-2ex}\small\faDesktop} & \href{https://chris7462.github.io}{https://chris7462.github.io} \\ % Website
+        %\raisebox{-1pt}{\hspace{-2ex}\faGithub} & \href{https://github.com/chris7462}{https://github.com/chris7462} \\ % GitHub profile
+        %\raisebox{-1pt}{\hspace{-2ex}\faLinkedinSquare} & \href{https://www.linkedin.com/in/yi-chen-zhang-b72907116}{https://www.linkedin.com/in/yi-chen-zhang-b72907116} \\ % LinkedIn profile
       % See fontawesome.pdf in the fonts folder for all icons you can use
       \end{supertabular}
     }
@@ -225,11 +275,11 @@
 
   %------------------------------------------------
 
-    \tableentry{Expert}{\textsf{R}, MATLAB, \textsf{C}\texttt{++}, Linux, \LaTeX}{spaceafter}	
+    \tableentry{Expert}{\textsf{R}, MATLAB, \textsf{C}\texttt{++}, Linux, Git, \LaTeX}{spaceafter}	
 
   %------------------------------------------------
 
-    \tableentry{Intermediate}{Python, Perl, ROS, Git, Gerrit, TikZ}{spaceafter}
+    \tableentry{Intermediate}{Python, Perl, ROS, HPCC, Ti\textit{k}Z}{spaceafter}
 
   %------------------------------------------------
 
@@ -331,6 +381,10 @@
 %\longformpublication{Reference (format this manually as desired)}
 
 %------------------------------------------------
+
+  \longformpublication{\textbf{Zhang, Y.-C.} (2020+). \textit{Dynamical Highway Vehicle Lane Classification Using Vehicle Trails}. (In preparation)}
+
+  \longformpublication{\textbf{Zhang, Y.-C.} (2020). \textit{Road Geometry Estimation Using Vehicle Trails: A Linear Mixed Model Approach}. (submitted to IEEE Transactions on Intelligent Transportation Systems)}
 
   \longformpublication{\textbf{Zhang, Y.-C.} and Sakhanenko, L. (2019). \textit{The Naive Bayes Classifier for Functional Data}. Statistics \& Probability Letters 152, 137-146.}
 
