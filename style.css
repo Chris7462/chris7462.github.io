@@ -1,36 +1,26 @@
 body, h1, h2 {
+  background : #fffeee;
   margin : 10px;
   padding : 0px;
-  background : #fffeee;
 }
 
 .center {
-  width : 1080px;
   margin : 0 auto;
-}
-
-#topbar {
-  /*  background:#24A750; */
-  /*  background:#18453B; */
-  background : #0db14b; 
   width : 1080px;
-  height : 30px;
-  font-size : 14px;
-  line-height : 30px;
 }
 
 #head {
-  margin-top : 15px;
+  margin-top : 30px;
 }
 
 #head .face {
-  height : 350px;
-  width : 350px;
   background : #333;
-  overflow : hidden;
-  float : left;
-  margin-right : 15px;
   display : block;
+  float : left;
+  height : 350px;
+  margin-right : 15px;
+  overflow : hidden;
+  width : 350px;
 }
 
 #head .info {
@@ -45,19 +35,23 @@ body, h1, h2 {
 }
 
 h2 {
-  font-size : 25px;
   color : #333;
+  font-size : 25px;
   line-height : 25px;
 }
 
 h3 {
-  margin : 0px;
   border-bottom : 2px solid #3299cc;
-  width : 1080px;
-  font-size : 20px;
-  line-height : 30px;
-  font-weight : 900;
   color : #5c3317;
+  font-size : 20px;
+  font-weight : 900;
+  line-height : 30px;
+  margin : 0px;
+  width : 1080px;
+}
+
+p {
+  font-size : 14px;
 }
 
 img {
@@ -69,6 +63,7 @@ table {
   /* border : 1px solid black; */
   border-collapse : collapse;
   /* border-spacing : 0px; */
+  font-size : 14px;
   /* width : 1000px; */
 }
 
@@ -78,16 +73,17 @@ td {
 }
 
 th {
-  text-align : left;
+  font-size : 14px;
   padding-top : 15px;
+  text-align : left;
 }
 
 #footer {
-  line-height : 60px;
-  height : 60px;
-  text-align : center;
   color : #000000;
   font-family : 'Tangerine',serif;
+  height : 60px;
+  line-height : 60px;
+  text-align : center;
   text-shadow : 6px 6px 6px #aaa;
 }
 
@@ -96,9 +92,9 @@ th {
 }
 
 .tex sub, .latex sub {
-  vertical-align : -0.5ex;
   margin-left : -0.1667em;
   margin-right : -0.125em;
+  vertical-align : -0.5ex;
 }
 
 .tex, .latex, .tex sub, .latex sub {
@@ -107,9 +103,9 @@ th {
 
 .latex sup {
   font-size : 0.85em;
-  vertical-align : 0.15em;
   margin-left : -0.36em;
   margin-right : -0.15em;
+  vertical-align : 0.15em;
 }
 
 .left {
