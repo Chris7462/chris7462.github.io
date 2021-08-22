@@ -1,5 +1,5 @@
 \documentclass[a4paper,10pt,dvipdfmx]{article}
-\usepackage[left=2cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[left=2cm,right=2cm,top=2.2cm,bottom=2.2cm]{geometry}
 \usepackage{xcolor}
 \usepackage{indentfirst}
 \usepackage{titlesec}
@@ -41,13 +41,20 @@
 \section*{Work Experience}
 \textbf{Isuzu -- Technical Center of America, Inc.~(ITCA)} \hfill Jan.~2021 -- Present
 \begin{itemize}[noitemsep,nolistsep]
-	\item[] Autonomous Driving Engineer -- PVRD Team \hfill Jan.~2021 -- Present
+  \item[] Software Lead -- PVRD Team \hfill Jul.~2021 -- Present
+    \begin{itemize}[noitemsep,nolistsep]
+      \item Develop core sensor component for centralized sensor fusion for both cameras and LiDARs.
+      \item Lead the perception, localization, mapping, and planning team. 	
+      \item Define team's furture direction and lead the technology roadmap. 	
+      \item Provide technical support and career growth direction for team members.
+    \end{itemize}
+	\item[] Autonomous Driving Engineer -- PVRD Team \hfill Jan.~2021 -- Jun.~2021
     \begin{itemize}[noitemsep,nolistsep]
       \item Curb detection using 3D LiDAR point clouds: \href{https://chris7462.github.io/Demo/moriyama.mp4}{Moriyama dataset demo}.
       \item Object detection using 3D LiDAR point clouds: \href{https://chris7462.github.io/Demo/lidar_eculidean_cluster_detection.mp4}{Moriyama dataset demo}.
       \item Point clouds 3D map construction using Fast LOAM and OctoMap: \href{https://chris7462.github.io/Demo/3D_map_resolution_0.2.mp4}{Moriyama dataset demo}.
       \item Software stack management with release tags and version control by git submodules.
-      \item Integrating components and testing in both IPG simulation and on the truck.\\
+      \item Component integration and testing in both simulation and on the truck.\\
     \end{itemize}
 \end{itemize}
 
@@ -55,7 +62,7 @@
 \begin{itemize}[noitemsep,nolistsep]
 	\item[] Algorithm Engineer -- Scene Perception Algorithm Team \hfill Oct.~2020 -- Jan.~2021
     \begin{itemize}[noitemsep,nolistsep]
-      \item Develop unit test cases in vectorCAST for different components including forward target selection, forward road model estimation, lane change threat assistant, and steer path planning.
+      \item Mainly develop unit test cases in vectorCAST for different components.
     \end{itemize}
   \item[] Algorithm Engineer - Fused Road Model (FRM) Team \hfill Sep.~2018 -- Sep.~2020
     \begin{itemize}[noitemsep,nolistsep]
@@ -171,7 +178,7 @@
 \section*{Publications}
 \begin{itemize}[noitemsep,nolistsep]
   %\item[1.] \textbf{Zhang, Y.-C.} (2020+). \textit{Dynamical Highway Vehicle Lane Classification Using Vehicle Trails}. (In preparation)
-  \item[1.] \textbf{Zhang, Y.-C.} (2021+). \textit{Road Geometry Estimation Using Vehicle Trails: A Linear Mixed Model Approach}. (submitted to Journal of Intelligent Transportation Systems)
+  \item[1.] \textbf{Zhang, Y.-C.} (2021). \textit{Road Geometry Estimation Using Vehicle Trails: A Linear Mixed Model Approach}. Journal of Intelligent Transportation Systems (Accepted).
   \item[2.] \textbf{Zhang, Y.-C.} and Sakhanenko, L. (2019). \href{https://www.sciencedirect.com/science/article/pii/S0167715219301208}{\textit{The Naive Bayes Classifier for Functional Data}}. Statistics \& Probability Letter \textbf{152}, 137-146.
   \item[3.] Chiou, J.-M., \textbf{Zhang, Y.-C.}, Chen, W.-H., and Chang, C.-W. (2014). \href{http://www.tandfonline.com/doi/abs/10.1080/21680566.2014.892847}{\textit{A Functional Data Approach to Missing Value Imputation and Outlier Detection for Traffic Flow Rate Data}}. Transportmetrica B: Transport Dynamics \textbf{2}, 106-129.
   \item[4.] Fan, T.-H., Wang, Y.-F., and \textbf{Zhang, Y.-C.} (2014). \href{http://www.tandfonline.com/doi/abs/10.1080/02664763.2014.894001?journalCode=cjas20}{\textit{Bayesian Model Selection in Linear Mixed Effects Models with AR(1) Errors Using Mixture Priors}}. Journal of Applied Statistics \textbf{41}, 1814-1829.
@@ -190,20 +197,23 @@
 
 \section*{Computer Skills}
 \begin{itemize}[noitemsep,nolistsep]
-  \item Advanced knowledge in C/\CC.
+  \item Advanced knowledge in \CC.
   \item Experienced in using mathematics and statistics software including \textsf{MATLAB} and \textsf{R}.
   % \item Experienced in using \textsf{C}\texttt{++} and Python
   \item Ability to use C/\CC~under \textsf{R} and \textsf{MATLAB} to carry out secondary development.
   % \item Ability to use \textsf{C}\texttt{++} under \textsf{R} and \textsf{MATLAB} to carry out secondary development
   \item Extensive experience of using Linux system with a focus on Ubuntu.
   \item Strong knowledge of Linux/Unix environment and commends.
-  \item Knowledgeable to write shell scripts such as Perl to automate tasks.
+  %\item Knowledgeable to write shell scripts such as Perl to automate tasks.
   \item Understanding and experience to work with parallel computing API such as openMP and MPI.
   \item Experience with high performance cluster computer (HPCC) such as Torque and SLURM.
   \item Proficient in \LaTeX~for document preparation and Ti\textit{k}Z for producing vector graphics.
   \item Fluent with version control tools such as git (gitlab and gerrit), Subversion (SVN), and Plastic SCM.
-  \item Working knowledge of structure query language such as MySQL.
+  %\item Working knowledge of structure query language such as MySQL.
   \item Working knowledge of Robot Operating System (ROS).
+  \item Having experience on static analysis including AUTOSAR, MISRA, and CERT \CC~coding standard.
+  \item Experienced in unit test including google test and vectorCAST.
+  \item Working knowledge of OpenCV and PCL.
 \end{itemize}
 
 \section*{Software Packages}
