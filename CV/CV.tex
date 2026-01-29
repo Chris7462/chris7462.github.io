@@ -30,11 +30,14 @@
 \begin{itemize}[noitemsep,nolistsep]
   \item[] Lead Engineer, Autonomous \& Artificial Intelligence -- Advanced Engineering \hfill Jun 2024 -- Present
     \begin{itemize}[noitemsep,nolistsep]
-      \item Deployment of perception components on TensorRT:\\
-        \href{https://youtu.be/hCQMdW7kJeU}{FCOS object detection}, \href{https://youtu.be/VIA2CVCuDEc}{FCOS segmentation}, \href{https://youtu.be/QRWK-9q1iZU}{SORT tracker},
-        and \href{https://youtu.be/tFX7SLOLkI4}{SCNN lane detection}.
-      \item Research on Transformer-based perception architectures.
-      \item Research on manifold (matrix Lie group) methods for autonomous vehicle localization.
+      \item Deployed perception components on NVIDIA TensorRT, including
+        \href{https://youtu.be/hCQMdW7kJeU}{FCOS object detection} and \href{https://youtu.be/VIA2CVCuDEc}{segmentation}, \href{https://youtu.be/QRWK-9q1iZU}{SORT multi-object tracking},
+        and \href{https://youtu.be/tFX7SLOLkI4}{SCNN lane detection} for autonomous driving applications.
+      \item Conducted research on Transformer-based perception architectures and manifold (matrix Lie group) methods for vehicle localization.
+      \item Designed and deployed a multi-user SLURM-based GPU compute environment on Linux workstations, supporting large-scale perception and localization experiments with CPU/GPU/memory isolation.
+      \item Implemented system-level enforcement to prevent non-SLURM compute workloads using custom systemd services, including user warnings, automatic process termination, and centralized logging.
+      \item Built HPC user and group management infrastructure with disk quotas, Docker access control, shared project workspaces, and automated onboarding scripts.
+      \item Authored internal SLURM and HPC documentation to standardize GPU job submission, debugging workflows, and best practices across engineering teams.
     \end{itemize}
   \item[] Sr.~Engineer, Autonomous \& Artificial Intelligence -- Advanced Engineering \hfill Jan 2022 -- May 2024
     \begin{itemize}[noitemsep,nolistsep]
@@ -91,9 +94,9 @@
   \item \textbf{Operating Systems:} Linux/Unix (extensive experience with Ubuntu, shell and system commands)
   \item \textbf{Software Quality \& Standards:} AUTOSAR \CC, MISRA \CC, CERT \CC~static analysis and compliance
   \item \textbf{Testing \& Benchmarking:} Google Test, pytest, Google Benchmark
-  \item \textbf{High-Performance Computing:} HPC clusters using SLURM
+  \item \textbf{High-Performance Computing:} SLURM cluster administration, GPU scheduling, resource isolation (cgroups), multi-user HPC environments
   \item \textbf{Documentation:} \LaTeX, Ti\textit{k}Z
-  \item \textbf{Build \& Tooling:} CMake, colcon, git
+  \item \textbf{Build \& Tooling:} CMake, colcon, git, docker
 \end{itemize}
 
 \section*{Publications}
