@@ -4,3 +4,7 @@
 *.log
 *.out
 *.swp
+# Docusaurus
+.docusaurus/
+build/
+node_modules/

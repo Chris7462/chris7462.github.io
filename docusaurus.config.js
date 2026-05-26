@@ -5,7 +5,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'Yi-Chen Zhang',
   tagline: 'Perception & Robotics Engineer — Autonomous Systems',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/yc.ico',
 
   future: {
     v4: true,
@@ -52,7 +52,11 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'Yi-Chen Zhang',
+        title: '',
+        logo: {
+          alt: 'Yi-Chen Zhang Logo',
+          src: 'img/yc.png',
+        },
         items: [
           {
             href: 'https://github.com/Chris7462',
