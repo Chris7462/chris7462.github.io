@@ -6,7 +6,7 @@
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chris7462.github.io/blog"/>
     <subtitle>Yi-Chen Zhang Blog</subtitle>
-    <icon>https://chris7462.github.io/img/favicon.ico</icon>
+    <icon>https://chris7462.github.io/img/yc.ico</icon>
     <entry>
         <title type="html"><![CDATA[Welcome]]></title>
         <id>https://chris7462.github.io/blog/welcome</id>
