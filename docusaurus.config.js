@@ -65,7 +65,7 @@ const config = {
             position: 'right',
           },
           {
-            href: '/cv/cv.pdf',
+            href: 'pathname:///cv/cv.pdf',
             label: 'CV',
             position: 'right',
           },
