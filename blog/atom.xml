@@ -2,111 +2,72 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chris7462.github.io/blog</id>
     <title>Yi-Chen Zhang Blog</title>
-    <updated>2021-08-26T00:00:00.000Z</updated>
+    <updated>2026-05-23T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chris7462.github.io/blog"/>
     <subtitle>Yi-Chen Zhang Blog</subtitle>
     <icon>https://chris7462.github.io/img/yc.ico</icon>
     <entry>
-        <title type="html"><![CDATA[Welcome]]></title>
-        <id>https://chris7462.github.io/blog/welcome</id>
-        <link href="https://chris7462.github.io/blog/welcome"/>
-        <updated>2021-08-26T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Docusaurus blogging features are powered by the blog plugin.]]></summary>
-        <content type="html"><![CDATA[<p><a href="https://docusaurus.io/docs/blog" target="_blank" rel="noopener noreferrer" class="">Docusaurus blogging features</a> are powered by the <a href="https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog" target="_blank" rel="noopener noreferrer" class="">blog plugin</a>.</p>
-<p>Here are a few tips you might find useful.</p>
+        <title type="html"><![CDATA[Fix Pixel 8 Fingerprint Scanner After Screen Replacement (Linux)]]></title>
+        <id>https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint</id>
+        <link href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint"/>
+        <updated>2026-05-23T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[After replacing the screen on a Google Pixel 8, the under-display fingerprint sensor needs to be recalibrated. Google provides an official tool at pixelrepair.withgoogle.com/udfps, but it only works on Windows and macOS — and on newer firmware versions it may report "firmware too new" and refuse to run.]]></summary>
+        <content type="html"><![CDATA[<p>After replacing the screen on a Google Pixel 8, the under-display fingerprint sensor needs to be recalibrated. Google provides an official tool at <a href="https://pixelrepair.withgoogle.com/udfps" target="_blank" rel="noopener noreferrer" class="">pixelrepair.withgoogle.com/udfps</a>, but it only works on Windows and macOS — and on newer firmware versions it may report "firmware too new" and refuse to run.</p>
+<p>This guide documents a working method using the command line on Linux, bypassing the browser tool entirely.</p>
 <!-- -->
-<p>Simply add Markdown files (or folders) to the <code>blog</code> directory.</p>
-<p>Regular blog authors can be added to <code>authors.yml</code>.</p>
-<p>The blog post date can be extracted from filenames, such as:</p>
+<p>Here's what the repair looked like — the screen assembly separated from the frame, and the new screen ready to boot:</p>
+<p><img decoding="async" loading="lazy" alt="Opening the Pixel 8" src="https://chris7462.github.io/assets/images/pixel8-open-b77eccf823f200b38853aa95b2c42347.jpeg" width="4032" height="3024" class="img_ev3q"></p>
+<p><img decoding="async" loading="lazy" alt="Screen separated from frame" src="https://chris7462.github.io/assets/images/pixel8-separated-8d68540148fc76d02785f75c631e2069.jpeg" width="4032" height="3024" class="img_ev3q"></p>
+<p>After reassembly, the new screen boots up but the fingerprint sensor needs recalibration:</p>
+<p><img decoding="async" loading="lazy" alt="New screen booting up with calibration notice" src="https://chris7462.github.io/assets/images/pixel8-newscreen-5692aad4206b90b7a24280e1134ce090.jpeg" width="4032" height="3024" class="img_ev3q"></p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="requirements">Requirements<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#requirements" class="hash-link" aria-label="Direct link to Requirements" title="Direct link to Requirements" translate="no">​</a></h2>
 <ul>
-<li class=""><code>2019-05-30-welcome.md</code></li>
-<li class=""><code>2019-05-30-welcome/index.md</code></li>
+<li class="">Linux computer (tested on Ubuntu 24.04)</li>
+<li class="">USB-C cable — use the best quality cable you have (this matters)</li>
+<li class=""><code>fastboot</code> installed on your computer</li>
+<li class="">Google Pixel 8 with a newly replaced screen</li>
 </ul>
-<p>A blog post folder can be convenient to co-locate blog post images:</p>
-<p><img decoding="async" loading="lazy" alt="Docusaurus Plushie" src="https://chris7462.github.io/assets/images/docusaurus-plushie-banner-a60f7593abca1e3eef26a9afa244e4fb.jpeg" width="1500" height="500" class="img_ev3q"></p>
-<p>The blog supports tags as well!</p>
-<p><strong>And if you don't want a blog</strong>: just delete this directory, and use <code>blog: false</code> in your Docusaurus config.</p>]]></content>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="steps">Steps<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#steps" class="hash-link" aria-label="Direct link to Steps" title="Direct link to Steps" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-enable-usb-debugging-on-the-phone">1. Enable USB Debugging on the phone<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#1-enable-usb-debugging-on-the-phone" class="hash-link" aria-label="Direct link to 1. Enable USB Debugging on the phone" title="Direct link to 1. Enable USB Debugging on the phone" translate="no">​</a></h3>
+<p>Go to <strong>Settings → About phone</strong> and tap <strong>Build number</strong> 7 times to enable Developer Options. Then go to <strong>Settings → System → Developer Options</strong> and enable <strong>USB Debugging</strong>.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="2-install-fastboot">2. Install fastboot<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#2-install-fastboot" class="hash-link" aria-label="Direct link to 2. Install fastboot" title="Direct link to 2. Install fastboot" translate="no">​</a></h3>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">sudo apt install fastboot -y</span><br></div></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="3-boot-into-fastboot-mode">3. Boot into Fastboot Mode<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#3-boot-into-fastboot-mode" class="hash-link" aria-label="Direct link to 3. Boot into Fastboot Mode" title="Direct link to 3. Boot into Fastboot Mode" translate="no">​</a></h3>
+<p>Power off the phone, then hold <strong>Power + Volume Down</strong> until you see the Fastboot screen. Do not select Rescue Mode or any other option — stay on the main Fastboot screen.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="4-connect-and-verify">4. Connect and verify<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#4-connect-and-verify" class="hash-link" aria-label="Direct link to 4. Connect and verify" title="Direct link to 4. Connect and verify" translate="no">​</a></h3>
+<p>Plug the phone into your computer and run:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">fastboot devices</span><br></div></code></pre></div></div>
+<p>You should see your device serial number listed. If nothing appears, try a different USB port or cable.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="5-get-the-calibration-file-url">5. Get the calibration file URL<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#5-get-the-calibration-file-url" class="hash-link" aria-label="Direct link to 5. Get the calibration file URL" title="Direct link to 5. Get the calibration file URL" translate="no">​</a></h3>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">fastboot oem udfps get-cal-url</span><br></div></code></pre></div></div>
+<p>This returns a URL unique to your device, for example:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">(bootloader) https://storage.googleapis.com/hardware-mfg-data-ext-sacal/xxxxxx.signed.cal</span><br></div></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="6-download-the-calibration-file">6. Download the calibration file<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#6-download-the-calibration-file" class="hash-link" aria-label="Direct link to 6. Download the calibration file" title="Direct link to 6. Download the calibration file" translate="no">​</a></h3>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">wget &lt;URL from previous step&gt;</span><br></div></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="7-upload-and-apply-the-calibration">7. Upload and apply the calibration<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#7-upload-and-apply-the-calibration" class="hash-link" aria-label="Direct link to 7. Upload and apply the calibration" title="Direct link to 7. Upload and apply the calibration" translate="no">​</a></h3>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">fastboot stage &lt;filename&gt;.signed.cal</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">fastboot oem udfps update-cal</span><br></div></code></pre></div></div>
+<p>You should see:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">(bootloader) signature validation:passed</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">OKAY</span><br></div></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="8-reboot">8. Reboot<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#8-reboot" class="hash-link" aria-label="Direct link to 8. Reboot" title="Direct link to 8. Reboot" translate="no">​</a></h3>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">fastboot reboot</span><br></div></code></pre></div></div>
+<p>After the phone boots, go to <strong>Settings → Security → Fingerprint Unlock</strong> and re-register your fingerprints.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-this-works">Why this works<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#why-this-works" class="hash-link" aria-label="Direct link to Why this works" title="Direct link to Why this works" translate="no">​</a></h2>
+<p>Google's browser-based repair tool uses WebUSB, which has permission restrictions on Linux for Fastboot devices. The <code>fastboot oem udfps</code> commands communicate directly with the bootloader, bypassing the browser entirely. The calibration file is device-specific and cryptographically signed by Google, which is why <code>get-cal-url</code> is needed to fetch the correct one for your unit.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="troubleshooting">Troubleshooting<a href="https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint#troubleshooting" class="hash-link" aria-label="Direct link to Troubleshooting" title="Direct link to Troubleshooting" translate="no">​</a></h2>
+<p><strong><code>fastboot devices</code> returns nothing</strong>
+Use a USB 2.0 port — this guide was tested on USB 2.0 and confirmed working. USB 3.0 was not tested. Also try a higher quality cable if the device isn't detected.</p>
+<p><strong><code>signature validation: failed</code></strong>
+The calibration file doesn't match your device. Make sure you used the URL returned by <code>get-cal-url</code> for your specific phone — don't reuse a file from another device.</p>
+<p><strong>Fingerprint still not working after reboot</strong>
+Reboot one more time manually after setting up your fingerprint.</p>]]></content>
         <author>
-            <name>Sébastien Lorber</name>
-            <uri>https://sebastienlorber.com</uri>
+            <name>Yi-Chen Zhang</name>
+            <uri>https://chris7462.github.io</uri>
         </author>
-        <author>
-            <name>Yangshun Tay</name>
-            <uri>https://linkedin.com/in/yangshun</uri>
-        </author>
-        <category label="Facebook" term="Facebook"/>
-        <category label="Hello" term="Hello"/>
-        <category label="Docusaurus" term="Docusaurus"/>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[MDX Blog Post]]></title>
-        <id>https://chris7462.github.io/blog/mdx-blog-post</id>
-        <link href="https://chris7462.github.io/blog/mdx-blog-post"/>
-        <updated>2021-08-01T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Blog posts support Docusaurus Markdown features, such as MDX.]]></summary>
-        <content type="html"><![CDATA[<p>Blog posts support <a href="https://docusaurus.io/docs/markdown-features" target="_blank" rel="noopener noreferrer" class="">Docusaurus Markdown features</a>, such as <a href="https://mdxjs.com/" target="_blank" rel="noopener noreferrer" class="">MDX</a>.</p>
-<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>tip</div><div class="admonitionContent_BuS1"><p>Use the power of React to create interactive blog posts.</p></div></div>
-<!-- -->
-<p>For example, use JSX to create an interactive button:</p>
-<div class="language-js codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-js codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token operator" style="color:#393A34">&lt;</span><span class="token plain">button onClick</span><span class="token operator" style="color:#393A34">=</span><span class="token punctuation" style="color:#393A34">{</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"> </span><span class="token arrow operator" style="color:#393A34">=&gt;</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">alert</span><span class="token punctuation" style="color:#393A34">(</span><span class="token string" style="color:#e3116c">'button clicked!'</span><span class="token punctuation" style="color:#393A34">)</span><span class="token punctuation" style="color:#393A34">}</span><span class="token operator" style="color:#393A34">&gt;</span><span class="token maybe-class-name">Click</span><span class="token plain"> me</span><span class="token operator" style="color:#393A34">!</span><span class="token operator" style="color:#393A34">&lt;</span><span class="token operator" style="color:#393A34">/</span><span class="token plain">button</span><span class="token operator" style="color:#393A34">&gt;</span><br></div></code></pre></div></div>
-<button>Click me!</button>]]></content>
-        <author>
-            <name>Sébastien Lorber</name>
-            <uri>https://sebastienlorber.com</uri>
-        </author>
-        <category label="Docusaurus" term="Docusaurus"/>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Long Blog Post]]></title>
-        <id>https://chris7462.github.io/blog/long-blog-post</id>
-        <link href="https://chris7462.github.io/blog/long-blog-post"/>
-        <updated>2019-05-29T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[This is the summary of a very long blog post,]]></summary>
-        <content type="html"><![CDATA[<p>This is the summary of a very long blog post,</p>
-<p>Use a <code>{/*</code> <code>truncate</code> <code>*/}</code> comment to limit blog post size in the list view.</p>
-<!-- -->
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>]]></content>
-        <author>
-            <name>Yangshun Tay</name>
-            <uri>https://linkedin.com/in/yangshun</uri>
-        </author>
-        <category label="Hello" term="Hello"/>
-        <category label="Docusaurus" term="Docusaurus"/>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[First Blog Post]]></title>
-        <id>https://chris7462.github.io/blog/first-blog-post</id>
-        <link href="https://chris7462.github.io/blog/first-blog-post"/>
-        <updated>2019-05-28T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Lorem ipsum dolor sit amet...]]></summary>
-        <content type="html"><![CDATA[<p>Lorem ipsum dolor sit amet...</p>
-<!-- -->
-<p>...consectetur adipiscing elit. Pellentesque elementum dignissim ultricies. Fusce rhoncus ipsum tempor eros aliquam consequat. Lorem ipsum dolor sit amet</p>]]></content>
-        <author>
-            <name>Sébastien Lorber</name>
-            <uri>https://sebastienlorber.com</uri>
-        </author>
-        <author>
-            <name>Yangshun Tay</name>
-            <uri>https://linkedin.com/in/yangshun</uri>
-        </author>
-        <category label="Hola" term="Hola"/>
-        <category label="Docusaurus" term="Docusaurus"/>
+        <category label="Pixel" term="Pixel"/>
+        <category label="Android" term="Android"/>
+        <category label="Linux" term="Linux"/>
+        <category label="Repair" term="Repair"/>
     </entry>
 </feed>

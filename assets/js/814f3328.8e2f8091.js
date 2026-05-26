@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkchris7462_github_io=self.webpackChunkchris7462_github_io||[]).push([["1833"],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Fix Pixel 8 Fingerprint Scanner After Screen Replacement (Linux)","permalink":"/blog/2026/05/23/pixel8-fingerprint","unlisted":false,"date":"2026-05-23T00:00:00.000Z"}]}')}}]);
