@@ -1,19 +1,29 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+linux:
+  label: Linux
+  permalink: /linux
+  description: Linux tips and guides
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+android:
+  label: Android
+  permalink: /android
+  description: Android related posts
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+pixel:
+  label: Pixel
+  permalink: /pixel
+  description: Google Pixel posts
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+repair:
+  label: Repair
+  permalink: /repair
+  description: Hardware repair guides
+
+tensorrt:
+  label: TensorRT
+  permalink: /tensorrt
+  description: NVIDIA TensorRT deployment
+
+cuda:
+  label: CUDA
+  permalink: /cuda
+  description: CUDA programming and setup

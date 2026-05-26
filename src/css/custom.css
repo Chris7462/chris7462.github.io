@@ -29,3 +29,11 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+article h1 {
+  font-size: 2rem;
+}
+
+article h2 {
+  font-size: 2rem;
+}
