@@ -1,0 +1,148 @@
+\documentclass[a4paper,10pt,dvipdfmx]{article}
+\usepackage[left=2cm,right=2cm,top=2.2cm,bottom=2.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{enumitem}
+
+\def\CC{{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}}}
+
+\titleformat{\section}
+{\normalfont\Large\bfseries}{\thesection}{0.5em}{}[\color{gray}\titlerule]
+
+\begin{document}
+
+\begin{center}
+  {\huge \textbf{Yi-Chen Zhang}}
+\end{center}
+
+\section*{Contact Information}
+\indent Phone: 517-775-9919\\
+\indent E-mail: chris7462@gmail.com\\
+\indent Website: \href{https://chris7462.github.io}{https://chris7462.github.io}\\
+\indent GitHub: \href{https://github.com/Chris7462}{https://github.com/Chris7462}\\
+\indent LinkedIn: \href{https://www.linkedin.com/in/yi-chen-zhang-b72907116/}{https://www.linkedin.com/in/yi-chen-zhang-b72907116/}
+
+\section*{Work Experience}
+\textbf{Isuzu Technical Center of America, Inc.~(ITCA)} \hfill Jan 2021 -- Present
+\begin{itemize}[noitemsep,nolistsep]
+  \item[] Lead Engineer, Autonomous \& Artificial Intelligence -- Advanced Engineering \hfill Jun 2024 -- Present
+    \begin{itemize}[noitemsep,nolistsep]
+      \item Deployed perception components on NVIDIA TensorRT, including
+        \href{https://youtu.be/hCQMdW7kJeU}{FCOS object detection} and \href{https://youtu.be/VIA2CVCuDEc}{segmentation}, \href{https://youtu.be/QRWK-9q1iZU}{SORT multi-object tracking},
+        and \href{https://youtu.be/tFX7SLOLkI4}{SCNN lane detection} for autonomous driving applications.
+      \item Conducted research on Transformer-based perception architectures and manifold (matrix Lie group) methods for vehicle localization.
+      \item Designed and deployed a multi-user SLURM-based GPU compute environment on Linux workstations, supporting large-scale perception and localization experiments with CPU/GPU/memory isolation.
+      \item Implemented system-level enforcement to prevent non-SLURM compute workloads using custom systemd services, including user warnings, automatic process termination, and centralized logging.
+      \item Built HPC user and group management infrastructure with disk quotas, Docker access control, shared project workspaces, and automated onboarding scripts.
+      \item Authored internal SLURM and HPC documentation to standardize GPU job submission, debugging workflows, and best practices across engineering teams.
+    \end{itemize}
+  \item[] Sr.~Engineer, Autonomous \& Artificial Intelligence -- Advanced Engineering \hfill Jan 2022 -- May 2024
+    \begin{itemize}[noitemsep,nolistsep]
+      \item Led development of perception components: object detection, tracking, and visualization.
+      \item[] Implemented ROS visualization for MVXNet: \href{https://youtu.be/LQHUm6AnVdg}{MVXNet demo}.
+      \item[] Developed structure-aware single-stage 3D object detection.
+      \item[] Developed LiDAR object detection and tracking: \href{https://youtu.be/hfo4PdJBrFU}{3D-LiDAR multi-object tracking}.
+      \item[] Developed multi-object tracking: \href{https://youtu.be/WCiK4gFPqtM}{Multi-object tracking demo}.
+      \item Developed localization components: wheel odometry, GNSS/IMU processing, and Fast-LOAM.
+      \item[] Developed Visual SLAM: \href{https://youtu.be/Z5XTmDap_Pk}{Visual SLAM demo}.
+      \item Acting scrum master; contributed to software architecture design and stack integration.
+      \item Provided technical mentorship and supervised interns.
+    \end{itemize}
+  \item[] Autonomous Driving Engineer -- Powertrain and Vehicle R\&D \hfill Jan 2021 -- Dec 2021
+    \begin{itemize}[noitemsep,nolistsep]
+      \item Developed core sensor components for centralized sensor fusion (cameras and LiDARs).
+      \item Curb detection using 3D LiDAR point clouds: \href{https://youtu.be/ifXtkfOTIvU}{Moriyama dataset demo}.
+      \item Object detection using 3D LiDAR point clouds: \href{https://youtu.be/fAb4NLzuoVs}{Moriyama dataset demo}.
+      \item Point cloud 3D map construction using Fast LOAM and OctoMap: \href{https://youtu.be/j3xpDWPfBtw}{Moriyama dataset demo}.
+      \item Software stack management with release tags and version control via git submodules.
+      \item Component integration and testing in simulation and on the real truck.\\
+    \end{itemize}
+\end{itemize}
+
+\textbf{APTIV} \hfill Jul 2018 -- Jan 2021
+\begin{itemize}[noitemsep,nolistsep]
+	\item[] Algorithm Engineer -- Scene Perception Algorithm Team \hfill Oct 2020 -- Jan 2021
+    \begin{itemize}[noitemsep,nolistsep]
+      \item Developed unit test cases in vectorCAST for perception components.
+    \end{itemize}
+  \item[] Algorithm Engineer -- Fused Road Model (FRM) Team \hfill Sep 2018 -- Sep 2020
+    \begin{itemize}[noitemsep,nolistsep]
+      \item Developed fusion algorithms for object trail processing:\\
+        \href{https://youtu.be/nBhEnkIcLKs}{Road shape estimation} and \href{https://youtu.be/2v-jDRaczJs}{lane centerline prediction}.
+      \item Designed FRM state machine and mode manager.
+      \item Implemented error handling for vision, object fusion, and vehicle state inputs.
+      \item Developed FRM analysis pipeline and dashboard.
+      \item Coverity static analysis (AUTOSAR and MISRA \CC); developed unit tests in Google Test.
+    \end{itemize}
+  \item[] Algorithm Engineer -- Autonomous Driving Behavior Team \hfill Jul 2018 -- Aug 2018
+    \begin{itemize}[noitemsep,nolistsep]
+      \item Developed prediction and cost function algorithm for cooperative social behavior.
+      \item Contributed to Ottomatika code migration from urban pilot to highway pilot.\\
+    \end{itemize}
+\end{itemize}
+
+\section*{Technical Skills}
+\begin{itemize}[noitemsep,nolistsep]
+  \item \textbf{Programming Languages:} \CC~(advanced), Python (advanced)
+  \item \textbf{Robotics \& Middleware:} ROS~2 (custom packages, ament/CMake, rviz, rosbag workflows)
+  \item \textbf{Model Deployment \& Acceleration:} TensorRT (engine build, ONNX import, \CC/Python inference), CUDA
+  \item \textbf{Computer Vision \& 3D Perception:} OpenCV, Point Cloud Library (PCL), Ceres Solver, g2o
+  \item \textbf{Machine Learning Frameworks:} PyTorch, ONNX ecosystem
+  \item \textbf{Operating Systems:} Linux/Unix (extensive experience with Ubuntu, shell and system commands)
+  \item \textbf{Software Quality \& Standards:} AUTOSAR \CC, MISRA \CC, CERT \CC~static analysis and compliance
+  \item \textbf{Testing \& Benchmarking:} Google Test, pytest, Google Benchmark
+  \item \textbf{High-Performance Computing:} SLURM cluster administration, GPU scheduling, resource isolation (cgroups), multi-user HPC environments
+  \item \textbf{Documentation:} \LaTeX, Ti\textit{k}Z
+  \item \textbf{Build \& Tooling:} CMake, colcon, git, docker
+\end{itemize}
+
+\section*{Publications}
+\begin{itemize}[noitemsep,nolistsep]
+  \item[1.] \textbf{Zhang, Y.-C.} (2025+) \textit{Error State Kalman Filter on Matrix Lie Group}. preprint.
+  \item[2.] Zhang, W., Yu, W., Jia, Q., and \textbf{Zhang, Y.-C.} (2022) \href{https://chris7462.github.io/Sweeping.pdf}{\textit{Exploration and Sweeping for Autonomous Sweeper Truck}}. Isuzu Technical Journal \textbf{134}, 42-51.
+  \item[3.] \textbf{Zhang, Y.-C.} (2021) \href{https://www.tandfonline.com/doi/full/10.1080/15472450.2021.1974858}{\textit{Road Geometry Estimation Using Vehicle Trails: A Linear Mixed Model Approach}}. Journal of Intelligent Transportation Systems \textbf{27}, 127-144.
+  \item[4.] \textbf{Zhang, Y.-C.} and Sakhanenko, L. (2019) \href{https://www.sciencedirect.com/science/article/pii/S0167715219301208}{\textit{The Naive Bayes Classifier for Functional Data}}. Statistics \& Probability Letters \textbf{152}, 137-146.
+  \item[5.] Chiou, J.-M., \textbf{Zhang, Y.-C.}, Chen, W.-H., and Chang, C.-W. (2014) \href{http://www.tandfonline.com/doi/abs/10.1080/21680566.2014.892847}{\textit{A Functional Data Approach to Missing Value Imputation and Outlier Detection for Traffic Flow Data}}. Transportmetrica B: Transport Dynamics \textbf{2}, 106-129.
+  \item[6.] Fan, T.-H., Wang, Y.-F., and \textbf{Zhang, Y.-C.} (2014) \href{http://www.tandfonline.com/doi/abs/10.1080/02664763.2014.894001}{\textit{Bayesian Model Selection in Linear Mixed Effects Models with Autoregressive(p) Errors Using Mixture Priors}}. Journal of Applied Statistics \textbf{41}, 1814-1829.
+\end{itemize}
+
+\section*{Research Talks}
+\begin{itemize}[noitemsep,nolistsep]
+  \item Matrix Lie Theory for the Roboticist (\href{https://chris7462.github.io/Talks/MatrixLieRoboticist.pdf}{slides})
+    \begin{itemize}[noitemsep,nolistsep]
+      \item[] \href{https://w2.math.ncu.edu.tw/academic/speeches/1223}{National Central University}, Taiwan, February 2025
+      \item[] \href{https://stat-ds.ntu.edu.tw/News_Content_n_75466_s_250488.html}{National Taiwan University}, Taiwan, February 2025
+    \end{itemize}
+  \item Road Geometry Estimation Using Vehicle Trails: A Linear Mixed Model Approach (\href{https://chris7462.github.io/Talks/RoadShapeEstimation.pdf}{slides})
+    \begin{itemize}[noitemsep,nolistsep]
+      \item[] \href{https://w2.math.ncu.edu.tw/academic/speeches/1158}{National Central University}, Taiwan, April 2022
+    \end{itemize}
+\end{itemize}
+
+\section*{Education}
+\indent \textbf{Ph.D., Department of Statistics and Probability} \hfill Aug 2013 -- Jun 2018\\
+\indent Michigan State University, East Lansing, MI\\
+\indent Advisor: \href{https://www.stt.msu.edu/users/luda/}{Dr. Lyudmila Sakhanenko}\\
+\indent Dissertation: Functional Data Analysis with Application to Traffic Flow Data\\
+
+\indent \textbf{M.S., Graduate Institute of Statistics} \hfill Sep 2007 -- Jun 2009\\
+\indent National Central University, Taiwan\\
+\indent Advisor: \href{http://www.stat.ncu.edu.tw/teacher/THFan/index.htm}{Dr. Tsai-Hung Fan}\\
+\indent Thesis: Bayesian Model Selection in Linear Mixed Effects Models with AR$(1)$ Errors\\
+
+\indent \textbf{B.S., Department of Mathematics} \hfill Sep 2003 -- Jun 2007\\
+\indent National Central University, Taiwan
+
+\section*{Teaching}
+\indent Teaching Assistant \& Instructor, Michigan State University, USA (2013--2018)
+
+\section*{Honors}
+\begin{itemize}[noitemsep,nolistsep]
+  \item College of Natural Science Dissertation Completion Fellowship, Summer 2018, Michigan State University.
+  \item College of Natural Science Dissertation Continuation Fellowship, Summer 2017, Michigan State University.
+\end{itemize}
+
+\end{document}

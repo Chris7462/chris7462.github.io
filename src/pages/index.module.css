@@ -1,0 +1,167 @@
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.profile {
+  text-align: center;
+  padding: 3rem 0 2rem;
+}
+
+.avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--ifm-color-emphasis-600);
+  margin-bottom: 1rem;
+}
+
+.summary {
+  max-width: 700px;
+  margin: 0 auto 1rem;
+  line-height: 1.7;
+  color: var(--ifm-color-emphasis-700);
+  text-align: left;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.links a {
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.section h2 {
+  border-bottom: 2px solid var(--ifm-color-primary);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+
+.job {
+  margin-bottom: 1.5rem;
+}
+
+.jobHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.jobHeader span {
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+.role {
+  margin-left: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.roleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.3rem;
+}
+
+.roleHeader span {
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table td {
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
+}
+
+.table td:first-child {
+  white-space: nowrap;
+  padding-right: 1rem;
+  width: 1%;
+}
+
+.talk {
+  margin-bottom: 1rem;
+}
+
+.talk p {
+  margin-bottom: 0.3rem;
+}
+
+.edu {
+  margin-bottom: 1rem;
+}
+
+.eduHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.eduHeader span {
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+.edu p {
+  margin: 0.2rem 0 0 0;
+  color: var(--ifm-color-emphasis-700);
+}
+
+@media screen and (max-width: 600px) {
+  .jobHeader,
+  .roleHeader,
+  .eduHeader {
+    flex-direction: column;
+  }
+
+  .jobHeader span,
+  .roleHeader span,
+  .eduHeader span {
+    margin-left: 0;
+  }
+}
+
+.demo {
+  font-size: 0.88rem;
+  color: var(--ifm-color-emphasis-600);
+  margin-top: 0.2rem;
+}
+
+.demoLabel {
+  font-weight: 600;
+}
