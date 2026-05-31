@@ -21,6 +21,27 @@ const workExperience = [
           },
           { text: 'Conducted research on Transformer-based perception architectures.' },
           { text: 'Conducted research on manifold (matrix Lie group) methods for vehicle localization.' },
+          {
+            text: <>Designed and deployed an internal <a href="https://chris7462.github.io/docs/hpc/admin/overview" target="_blank">HPC cluster</a> (two GPU workstations + QNAP NAS over 10GbE).</>,
+          },
+          {
+            text: <>Configured <a href="https://chris7462.github.io/docs/category/slurm" target="_blank">SLURM workload manager</a> for shared GPU resource scheduling across the cluster.</>,
+          },
+          {
+            text: <>Deployed a <a href="https://chris7462.github.io/docs/hpc/admin/monitoring" target="_blank">Grafana + Prometheus monitoring stack</a> with node, GPU, and SLURM exporters.</>,
+          },
+          {
+            text: <>Set up <a href="https://chris7462.github.io/docs/hpc/admin/storage" target="_blank">centralized NAS storage</a> with RAID5/ZFS and NFS-mounted shared home directories.</>,
+          },
+          {
+            text: <>Managed <a href="https://chris7462.github.io/docs/hpc/admin/user-management" target="_blank">user accounts, groups, disk quotas, and Docker access</a> for cluster users.</>,
+          },
+          {
+            text: <>Configured <a href="https://chris7462.github.io/docs/hpc/admin/virtualgl" target="_blank">VirtualGL</a> for GPU-accelerated remote GUI rendering (rviz2, Gazebo) over SSH.</>,
+          },
+          {
+            text: <>Authored <a href="https://chris7462.github.io/docs/category/user" target="_blank">end-user documentation</a> covering cluster onboarding, SLURM job submission, file transfer, and Docker workflows.</>,
+          },
         ],
       },
       {
