@@ -67,5 +67,556 @@ Reboot one more time manually after setting up your fingerprint.</p>]]></content
             <category>Linux</category>
             <category>Repair</category>
         </item>
+        <item>
+            <title><![CDATA[Testing MAD-ICP Robustness in CARLA: Odometry in Dynamic, Unfiltered Scenes]]></title>
+            <link>https://chris7462.github.io/blog/2026/03/24/carla-mad-icp</link>
+            <guid>https://chris7462.github.io/blog/2026/03/24/carla-mad-icp</guid>
+            <pubDate>Tue, 24 Mar 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[After my previous experiments with camera-based detection and FLOAM-based LiDAR odometry in CARLA, I wanted to push things further — this time focusing on robustness under adversarial conditions.]]></description>
+            <content:encoded><![CDATA[<p>After my previous experiments with <a class="" href="https://chris7462.github.io/blog/2026/02/14/carla-fcos">camera-based detection</a> and <a class="" href="https://chris7462.github.io/blog/2026/02/25/carla-floam">FLOAM-based LiDAR odometry</a> in CARLA, I wanted to push things further — this time focusing on <strong>robustness under adversarial conditions</strong>.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/5yWIGytg16c" title="MAD-ICP LiDAR Odometry in CARLA with Dynamic Objects" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-is-mad-icp">What is MAD-ICP?<a href="https://chris7462.github.io/blog/2026/03/24/carla-mad-icp#what-is-mad-icp" class="hash-link" aria-label="Direct link to What is MAD-ICP?" title="Direct link to What is MAD-ICP?" translate="no">​</a></h2>
+<p><strong>MAD-ICP</strong> (<em>It's All About Matching Data</em>) is a LiDAR odometry method built around three core ideas:</p>
+<ul>
+<li class=""><strong>Minimal assumptions</strong> about the environment</li>
+<li class=""><strong>Strong robustness</strong> across different motion profiles</li>
+<li class=""><strong>Clean ICP-based formulation</strong> with smart data representation</li>
+</ul>
+<p>What stood out to me is its philosophy: instead of relying on handcrafted features or heuristics, it focuses on better data association and uncertainty-aware mapping. The PCA-based point structure and keyframe selection based on pose quality are central to why it handles noise well.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="restructuring-for-ros-2">Restructuring for ROS 2<a href="https://chris7462.github.io/blog/2026/03/24/carla-mad-icp#restructuring-for-ros-2" class="hash-link" aria-label="Direct link to Restructuring for ROS 2" title="Direct link to Restructuring for ROS 2" translate="no">​</a></h2>
+<p>As with FLOAM, I simplified the original implementation to fit my pipeline:</p>
+<ul>
+<li class="">Extracted the core algorithm into a pure C++ library (<code>mad_icp_core</code>)</li>
+<li class="">Removed unnecessary components like Python bindings</li>
+<li class="">Wrapped it with a ROS 2 node and connected it to CARLA</li>
+</ul>
+<p>This keeps the system modular, clean, and easy to integrate or swap out for future experiments.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="deliberately-making-the-problem-harder">Deliberately Making the Problem Harder<a href="https://chris7462.github.io/blog/2026/03/24/carla-mad-icp#deliberately-making-the-problem-harder" class="hash-link" aria-label="Direct link to Deliberately Making the Problem Harder" title="Direct link to Deliberately Making the Problem Harder" translate="no">​</a></h2>
+<p>ICP-based methods are notoriously sensitive to dynamic objects. Rather than making things easy, I set up a stress test:</p>
+<ul>
+<li class="">Spawned <strong>multiple moving vehicles</strong> in CARLA</li>
+<li class="">Kept <strong>all LiDAR points from dynamic objects</strong> — no filtering</li>
+<li class="">No object detection</li>
+<li class="">No semantic understanding</li>
+</ul>
+<p>The odometry had to deal with <strong>raw, contaminated point clouds</strong> by design. This was specifically intended to probe whether MAD-ICP is as robust as the paper claims.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="results">Results<a href="https://chris7462.github.io/blog/2026/03/24/carla-mad-icp#results" class="hash-link" aria-label="Direct link to Results" title="Direct link to Results" translate="no">​</a></h2>
+<p>The results were surprisingly good:</p>
+<ul>
+<li class="">✅ No visible map skew or distortion</li>
+<li class="">✅ No obvious gaps or misalignment</li>
+<li class="">✅ Without loop closure, the trajectory stayed consistent and returned close to the starting point</li>
+</ul>
+<p>This is particularly striking because traditional ICP pipelines tend to degrade quickly in dynamic scenes — yet MAD-ICP maintained stable localization without any explicit dynamic object handling.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-this-experiment-reinforced">What This Experiment Reinforced<a href="https://chris7462.github.io/blog/2026/03/24/carla-mad-icp#what-this-experiment-reinforced" class="hash-link" aria-label="Direct link to What This Experiment Reinforced" title="Direct link to What This Experiment Reinforced" translate="no">​</a></h2>
+<p>Three observations stood out:</p>
+<p><strong>1. Data representation matters more than complexity.</strong>
+MAD-ICP's PCA-based structure and matching strategy handle noise well without requiring additional preprocessing or segmentation modules.</p>
+<p><strong>2. Uncertainty-aware mapping is powerful.</strong>
+Keyframe selection based on pose quality likely plays a significant role in filtering out the influence of dynamic points on the map.</p>
+<p><strong>3. Robustness doesn't always require more modules.</strong>
+Even without loop closure, object filtering, or semantic understanding, the system performed reliably. Sometimes doing the fundamentals — data association and uncertainty — exceptionally well is enough.</p>
+<hr>
+<p>A well-designed classical method can still be extremely competitive. This experiment is a good reminder that algorithmic elegance and principled design often outperform complexity for its own sake.</p>]]></content:encoded>
+            <category>carla</category>
+            <category>simulation</category>
+            <category>lidar</category>
+            <category>localization</category>
+            <category>odometry</category>
+            <category>ros2</category>
+            <category>icp</category>
+            <category>autonomous-driving</category>
+        </item>
+        <item>
+            <title><![CDATA[LiDAR Odometry in CARLA: Restructuring FLOAM for ROS 2]]></title>
+            <link>https://chris7462.github.io/blog/2026/02/25/carla-floam</link>
+            <guid>https://chris7462.github.io/blog/2026/02/25/carla-floam</guid>
+            <pubDate>Wed, 25 Feb 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[After my previous CARLA experiment with camera-based object detection, I wanted to push further — this time focusing on LiDAR and localization.]]></description>
+            <content:encoded><![CDATA[<p>After my <a class="" href="https://chris7462.github.io/blog/2026/02/14/carla-fcos">previous CARLA experiment with camera-based object detection</a>, I wanted to push further — this time focusing on <strong>LiDAR and localization</strong>.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/oaH_MDZoiKg" title="LiDAR Odometry in CARLA with FLOAM and ROS 2" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>In the video you can observe:</p>
+<ul>
+<li class="">The system performing LiDAR odometry in CARLA</li>
+<li class="">Map misalignment during sharp turns — expected without loop closure, and likely addressable by integrating a loop closure module</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="restructuring-floam-for-ros-2">Restructuring FLOAM for ROS 2<a href="https://chris7462.github.io/blog/2026/02/25/carla-floam#restructuring-floam-for-ros-2" class="hash-link" aria-label="Direct link to Restructuring FLOAM for ROS 2" title="Direct link to Restructuring FLOAM for ROS 2" translate="no">​</a></h2>
+<p>The original FLOAM implementation does not support ROS 2. I restructured it into a cleaner, more modular architecture:</p>
+<ul>
+<li class=""><strong><code>floam_core</code></strong>: a pure C++ library containing the core algorithm — no ROS dependency</li>
+<li class=""><strong><code>floam</code></strong>: a ROS 2 node wrapping around <code>floam_core</code></li>
+</ul>
+<p>This separation makes the system modular and reusable — the core algorithm can be tested and developed independently of the middleware layer. On top of that:</p>
+<ul>
+<li class=""><strong>Message synchronization</strong> is handled using ROS 2 <code>message_filters</code></li>
+<li class=""><strong>Subscribers and publishers</strong> are implemented in a multi-threaded design to maximize throughput</li>
+</ul>
+<p>The performance improvement was noticeable:</p>
+<table><thead><tr><th>Implementation</th><th>Odometry Update Time</th></tr></thead><tbody><tr><td>Original FLOAM</td><td>~70–80 ms</td></tr><tr><td>My ROS 2 implementation</td><td>~30–40 ms</td></tr></tbody></table>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="simulating-a-realistic-lidar">Simulating a Realistic LiDAR<a href="https://chris7462.github.io/blog/2026/02/25/carla-floam#simulating-a-realistic-lidar" class="hash-link" aria-label="Direct link to Simulating a Realistic LiDAR" title="Direct link to Simulating a Realistic LiDAR" translate="no">​</a></h2>
+<p>To make the simulation more realistic, I reconfigured CARLA's LiDAR model based on the <strong>Velodyne HDL-64E</strong> user manual. The resulting point clouds look surprisingly close to real sensor data — though visible discrepancies between simulated and real-world LiDAR remain.</p>
+<p>I'm currently unsure about the best approach for a proper <strong>sim-to-real analysis for LiDAR</strong>. If anyone has experience or suggestions, I'd really appreciate the insights — feel free to reach out or leave a comment.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="takeaway">Takeaway<a href="https://chris7462.github.io/blog/2026/02/25/carla-floam#takeaway" class="hash-link" aria-label="Direct link to Takeaway" title="Direct link to Takeaway" translate="no">​</a></h2>
+<p>This is another small but meaningful experiment showing that CARLA can be a practical tool for validating perception and localization pipelines before moving to real-world data. Between this and the camera-based detection experiment, CARLA is proving to be a genuinely useful sandbox for early-stage development.</p>
+<p>The sim-to-real gap for LiDAR remains an open question for me — curious to hear how others are approaching it.</p>]]></content:encoded>
+            <category>carla</category>
+            <category>simulation</category>
+            <category>lidar</category>
+            <category>localization</category>
+            <category>odometry</category>
+            <category>ros2</category>
+            <category>floam</category>
+            <category>autonomous-driving</category>
+        </item>
+        <item>
+            <title><![CDATA[Testing Pre-Trained FCOS on CARLA Simulated Imagery: Surprisingly Good Results]]></title>
+            <link>https://chris7462.github.io/blog/2026/02/14/carla-fcos</link>
+            <guid>https://chris7462.github.io/blog/2026/02/14/carla-fcos</guid>
+            <pubDate>Sat, 14 Feb 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[I recently started experimenting with the CARLA simulator and decided to test whether a pre-trained perception model — with zero exposure to simulated data — could hold up against synthetic imagery.]]></description>
+            <content:encoded><![CDATA[<p>I recently started experimenting with the <strong>CARLA simulator</strong> and decided to test whether a pre-trained perception model — with zero exposure to simulated data — could hold up against synthetic imagery.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/XEfIlB_XYXE" title="FCOS Object Detection on CARLA Simulated Camera Stream" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="setup">Setup<a href="https://chris7462.github.io/blog/2026/02/14/carla-fcos#setup" class="hash-link" aria-label="Direct link to Setup" title="Direct link to Setup" translate="no">​</a></h2>
+<p>In CARLA version 0.9.16, the simulator provides <strong>native ROS 2 support</strong>, publishing ROS 2 topics directly without requiring the <code>carla-ros-bridge</code>. After spending a few days exploring the simulator, I put together a quick experiment:</p>
+<ol>
+<li class="">Launched CARLA with ROS 2 support enabled</li>
+<li class="">Generated a simple driving scenario: a straight road with five lanes and multiple vehicles spawned in traffic</li>
+<li class="">Ran my <a class="" href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt">TensorRT-deployed FCOS object detection model</a> against the simulated camera stream</li>
+</ol>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-i-expected-poor-results">Why I Expected Poor Results<a href="https://chris7462.github.io/blog/2026/02/14/carla-fcos#why-i-expected-poor-results" class="hash-link" aria-label="Direct link to Why I Expected Poor Results" title="Direct link to Why I Expected Poor Results" translate="no">​</a></h2>
+<p>I went in with low expectations, for two reasons:</p>
+<ul>
+<li class=""><strong>Synthetic imagery</strong>: CARLA's camera model produces images that are visually distinguishable from real-world footage — even to the human eye. A neural network trained on real data should notice the domain gap even more readily.</li>
+<li class=""><strong>Zero domain adaptation</strong>: The FCOS model is pre-trained on real-world data and has never been fine-tuned on CARLA or any simulated dataset.</li>
+</ul>
+<p>Given both factors, poor detection performance would have been entirely expected.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="results">Results<a href="https://chris7462.github.io/blog/2026/02/14/carla-fcos#results" class="hash-link" aria-label="Direct link to Results" title="Direct link to Results" translate="no">​</a></h2>
+<p>The results were surprisingly good. The model <strong>correctly detected all vehicles</strong> in the scene. There were a few phantom detections, but considering that the model had never seen simulated data, the performance was genuinely impressive.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-this-suggests">What This Suggests<a href="https://chris7462.github.io/blog/2026/02/14/carla-fcos#what-this-suggests" class="hash-link" aria-label="Direct link to What This Suggests" title="Direct link to What This Suggests" translate="no">​</a></h2>
+<p>Despite the clear visual differences between simulated and real-world images, the pre-trained model generalized well enough to reliably detect vehicles in the CARLA environment. This raises an interesting question: how far can we push simulation as a <strong>quick validation tool</strong> for perception pipelines, even without domain-specific training?</p>
+<p>If a model trained purely on real data can perform this well on synthetic imagery with no adaptation, simulation starts to look like a low-cost, high-speed option for early-stage pipeline validation — before investing in real-world data collection or domain adaptation techniques.</p>
+<p>I'm looking forward to exploring this further.</p>]]></content:encoded>
+            <category>carla</category>
+            <category>simulation</category>
+            <category>object-detection</category>
+            <category>fcos</category>
+            <category>TensorRT</category>
+            <category>ros2</category>
+            <category>autonomous-driving</category>
+        </item>
+        <item>
+            <title><![CDATA[Reimplementing RESA: When Paper Results Don't Reproduce]]></title>
+            <link>https://chris7462.github.io/blog/2026/01/10/resa-lane-detection</link>
+            <guid>https://chris7462.github.io/blog/2026/01/10/resa-lane-detection</guid>
+            <pubDate>Sat, 10 Jan 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[After completing my SCNN lane detection project, I reviewed the RESA paper (2020), which extends SCNN's message-passing mechanism with a Recurrent Feature Shift Aggregator (RESA) and a Bilateral Up-Sampling Decoder (BUSD). The paper claimed a 9% F1-score improvement over SCNN. My experiments told a different story.]]></description>
+            <content:encoded><![CDATA[<p>After completing my <a class="" href="https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection">SCNN lane detection project</a>, I reviewed the <strong>RESA</strong> paper (2020), which extends SCNN's message-passing mechanism with a Recurrent Feature Shift Aggregator (RESA) and a Bilateral Up-Sampling Decoder (BUSD). The paper claimed a <strong>9% F1-score improvement</strong> over SCNN. My experiments told a different story.</p>
+<!-- -->
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-resa-proposes">What RESA Proposes<a href="https://chris7462.github.io/blog/2026/01/10/resa-lane-detection#what-resa-proposes" class="hash-link" aria-label="Direct link to What RESA Proposes" title="Direct link to What RESA Proposes" translate="no">​</a></h2>
+<p>RESA introduces two architectural components on top of SCNN:</p>
+<ul>
+<li class=""><strong>Recurrent Feature Shift Aggregator (RESA)</strong>: Extends SCNN's slice-by-slice message passing into a recurrent, multi-directional aggregation mechanism</li>
+<li class=""><strong>Bilateral Up-Sampling Decoder (BUSD)</strong>: Replaces simple interpolation-based upsampling by combining a coarse-grained branch and a fine-detail branch to improve lane segmentation accuracy</li>
+</ul>
+<p>Based on the paper, I expected RESA to outperform SCNN and potentially strengthen my perception stack. Before reimplementing, I reviewed the authors' official code — and found two concerning issues.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="methodology-concerns-in-the-official-implementation">Methodology Concerns in the Official Implementation<a href="https://chris7462.github.io/blog/2026/01/10/resa-lane-detection#methodology-concerns-in-the-official-implementation" class="hash-link" aria-label="Direct link to Methodology Concerns in the Official Implementation" title="Direct link to Methodology Concerns in the Official Implementation" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-dataset-specific-sky-cropping">1. Dataset-Specific Sky Cropping<a href="https://chris7462.github.io/blog/2026/01/10/resa-lane-detection#1-dataset-specific-sky-cropping" class="hash-link" aria-label="Direct link to 1. Dataset-Specific Sky Cropping" title="Direct link to 1. Dataset-Specific Sky Cropping" translate="no">​</a></h3>
+<p>The preprocessing pipeline removes the sky region (<code>cut_height</code>) before training, meaning the model <strong>never sees the full image</strong>. While this reduces computation and focuses the network on lane features, it encodes strong dataset-specific prior knowledge that simplifies the task and limits generalization to other datasets or deployment scenarios.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="2-test-set-validation--data-leakage">2. Test Set Validation — Data Leakage<a href="https://chris7462.github.io/blog/2026/01/10/resa-lane-detection#2-test-set-validation--data-leakage" class="hash-link" aria-label="Direct link to 2. Test Set Validation — Data Leakage" title="Direct link to 2. Test Set Validation — Data Leakage" translate="no">​</a></h3>
+<p>More critically, the authors select the "best" model checkpoint based on <strong>test set performance</strong>. Benchmark evaluations are repeatedly run on the test set during training, leaking test information into model selection and inflating reported metrics. This is a fundamental evaluation methodology issue.</p>
+<blockquote>
+<p>I filed a detailed issue on the official repository: <a href="https://github.com/ZJULearning/resa/issues/55" target="_blank" rel="noopener noreferrer" class="">github.com/ZJULearning/resa/issues/55</a></p>
+</blockquote>
+<p>Given these concerns, I reimplemented the model from scratch using clean preprocessing and a proper train/validation/test split.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="reimplementation">Reimplementation<a href="https://chris7462.github.io/blog/2026/01/10/resa-lane-detection#reimplementation" class="hash-link" aria-label="Direct link to Reimplementation" title="Direct link to Reimplementation" translate="no">​</a></h2>
+<p>Since RESA is architecturally similar to SCNN, only the RESA layers and BUSD decoder needed to be added — the remaining components were reused from my SCNN implementation. All hyperparameters were kept consistent with those reported in the paper.</p>
+<p>👉 <strong>My implementation</strong>: <a href="https://github.com/Chris7462/resa_torch" target="_blank" rel="noopener noreferrer" class="">github.com/Chris7462/resa_torch</a><br>
+<!-- -->👉 <strong>Official implementation</strong>: <a href="https://github.com/ZJULearning/resa" target="_blank" rel="noopener noreferrer" class="">github.com/ZJULearning/resa</a></p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="experimental-results">Experimental Results<a href="https://chris7462.github.io/blog/2026/01/10/resa-lane-detection#experimental-results" class="hash-link" aria-label="Direct link to Experimental Results" title="Direct link to Experimental Results" translate="no">​</a></h2>
+<p>To ensure a fair comparison, both SCNN and RESA were trained under <strong>identical conditions</strong>: same datasets, same data splits, same evaluation metrics, same hyperparameters, training schedules, and optimization settings. The only differences were the RESA-specific architectural components.</p>
+<p>The results were the opposite of what the paper claimed:</p>
+<table><thead><tr><th>Model</th><th>Backbone</th><th>F1 Score</th></tr></thead><tbody><tr><td>SCNN (my impl.)</td><td>VGG-16</td><td>Baseline</td></tr><tr><td>RESA (my impl.)</td><td>ResNet-50</td><td>~2% <strong>lower</strong> than SCNN</td></tr></tbody></table>
+<p>Despite RESA using a more powerful ResNet-50 backbone versus SCNN's VGG-16, it consistently <strong>underperformed</strong> — a ~2% F1 drop rather than the claimed 9% improvement.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="additional-observations">Additional Observations<a href="https://chris7462.github.io/blog/2026/01/10/resa-lane-detection#additional-observations" class="hash-link" aria-label="Direct link to Additional Observations" title="Direct link to Additional Observations" translate="no">​</a></h2>
+<p>Beyond the accuracy gap, RESA exhibited further signs of instability:</p>
+<ul>
+<li class=""><strong>Rapid overfitting</strong> — quick divergence between training and validation performance</li>
+<li class=""><strong>High variance</strong> across training runs</li>
+</ul>
+<p>This suggests the reported gains in the paper may be highly sensitive to dataset-specific preprocessing and evaluation choices, rather than reflecting a robust architectural improvement.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="takeaway">Takeaway<a href="https://chris7462.github.io/blog/2026/01/10/resa-lane-detection#takeaway" class="hash-link" aria-label="Direct link to Takeaway" title="Direct link to Takeaway" translate="no">​</a></h2>
+<p>Reproducing published results is hard — and sometimes, the results don't hold up under clean experimental conditions. The RESA case is a good reminder that preprocessing choices and evaluation methodology can significantly inflate benchmark numbers, and that independent reimplementation remains one of the most valuable ways to validate a paper's claims.</p>]]></content:encoded>
+            <category>lane-detection</category>
+            <category>resa</category>
+            <category>scnn</category>
+            <category>reproducibility</category>
+            <category>deep-learning</category>
+            <category>computer-vision</category>
+            <category>autonomous-driving</category>
+        </item>
+        <item>
+            <title><![CDATA[Reimplementing SCNN for Lane Detection: Architectural Improvements and TensorRT Deployment]]></title>
+            <link>https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection</link>
+            <guid>https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection</guid>
+            <pubDate>Mon, 05 Jan 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[I recently worked on a lane marking detection project. After reviewing the literature, I decided to use the SCNN (Spatial CNN) model — not because it's state of the art, but because it falls squarely into my "if you can't implement it, you don't really understand it" category.]]></description>
+            <content:encoded><![CDATA[<p>I recently worked on a lane marking detection project. After reviewing the literature, I decided to use the <strong>SCNN</strong> (Spatial CNN) model — not because it's state of the art, but because it falls squarely into my <em>"if you can't implement it, you don't really understand it"</em> category.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/tFX7SLOLkI4" title="SCNN Lane Detection with TensorRT on KITTI Dataset" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>SCNN is simple, manageable with limited GPU resources, and well-suited for understanding the fundamentals of lane detection. The video above demonstrates TensorRT GPU inference on the KITTI dataset.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="architectural-changes">Architectural Changes<a href="https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection#architectural-changes" class="hash-link" aria-label="Direct link to Architectural Changes" title="Direct link to Architectural Changes" translate="no">​</a></h2>
+<p>Compared to the original implementation, I made three significant changes:</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-framework-and-modularization">1. Framework and Modularization<a href="https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection#1-framework-and-modularization" class="hash-link" aria-label="Direct link to 1. Framework and Modularization" title="Direct link to 1. Framework and Modularization" translate="no">​</a></h3>
+<p>The original implementation is written in Lua, which is difficult to follow without prior experience. I reimplemented the model in <strong>PyTorch</strong> and modularized all components, making the codebase cleaner and easier to reason about.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="2-segmentation-decode-head-redesign">2. Segmentation (Decode) Head Redesign<a href="https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection#2-segmentation-decode-head-redesign" class="hash-link" aria-label="Direct link to 2. Segmentation (Decode) Head Redesign" title="Direct link to 2. Segmentation (Decode) Head Redesign" translate="no">​</a></h3>
+<p>The original segmentation head uses simple interpolation for upsampling. I replaced it with an <strong>FCN-style decoder using transposed convolutions</strong>, which provides:</p>
+<ul>
+<li class="">Smoother outputs</li>
+<li class="">Better numerical stability</li>
+<li class="">Improved gradient flow during training</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="3-existence-head-redesign">3. Existence Head Redesign<a href="https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection#3-existence-head-redesign" class="hash-link" aria-label="Direct link to 3. Existence Head Redesign" title="Direct link to 3. Existence Head Redesign" translate="no">​</a></h3>
+<p>This is the most impactful change. The original existence head uses two fixed-size fully connected layers, which are unfriendly for ONNX and TensorRT export. I replaced it with a <strong>fully convolutional, FCOS-style classification head</strong>.</p>
+<p>Lane existence is analogous to object vs. background classification, making the FCOS-style head a natural fit. This change:</p>
+<ul>
+<li class="">Removes the fixed-size input constraint</li>
+<li class="">Reduces parameter count significantly</li>
+<li class="">Stabilizes existence probability predictions</li>
+<li class="">Enables ONNX and TensorRT export for <strong>arbitrary image sizes</strong></li>
+</ul>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-this-matters-for-kitti">Why This Matters for KITTI<a href="https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection#why-this-matters-for-kitti" class="hash-link" aria-label="Direct link to Why This Matters for KITTI" title="Direct link to Why This Matters for KITTI" translate="no">​</a></h4>
+<p>CULane images are 590×1640 (resized to 288×800, aspect ratio ≈ 2.78), while KITTI images are 370×1226 (aspect ratio ≈ 3.31). The original fixed fully connected layers implicitly assume a fixed aspect ratio, causing geometric distortion when applied to KITTI images. The fully convolutional design avoids this issue entirely.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="results">Results<a href="https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection#results" class="hash-link" aria-label="Direct link to Results" title="Direct link to Results" translate="no">​</a></h2>
+<p>Despite being trained <strong>only on CULane</strong> — with no KITTI-specific training or fine-tuning — the model demonstrates strong generalization:</p>
+<table><thead><tr><th>Metric</th><th>Improvement</th></tr></thead><tbody><tr><td>F1 score</td><td>~1% improvement</td></tr><tr><td>Existence head parameters</td><td>~1000× fewer</td></tr><tr><td>ONNX / TensorRT export</td><td>✅ Resolution-agnostic</td></tr><tr><td>Validation categories</td><td>Better in 7 out of 8</td></tr></tbody></table>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="failure-cases">Failure Cases<a href="https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection#failure-cases" class="hash-link" aria-label="Direct link to Failure Cases" title="Direct link to Failure Cases" translate="no">​</a></h2>
+<p>Most failures occur in challenging scenarios that are largely data-driven:</p>
+<ul>
+<li class=""><strong>Tunnel shadows</strong> — heavily shadowed lane markings</li>
+<li class=""><strong>Missing or degraded lane lines</strong> — worn or absent road markings</li>
+<li class=""><strong>Intersections</strong> — cross-traffic scenarios</li>
+<li class=""><strong>Sharp curves</strong> — tight geometry at the edge of the training distribution</li>
+<li class=""><strong>Strong sunlight</strong> — overexposure washing out lane markings</li>
+</ul>
+<p>More aggressive or targeted data augmentation would likely mitigate these. Given the simplicity of the model and the complete absence of KITTI-specific training, I'm already very satisfied with the results.</p>]]></content:encoded>
+            <category>lane-detection</category>
+            <category>scnn</category>
+            <category>TensorRT</category>
+            <category>pytorch</category>
+            <category>onnx</category>
+            <category>computer-vision</category>
+            <category>autonomous-driving</category>
+        </item>
+        <item>
+            <title><![CDATA[PianoSheetia: Converting Synthesia Piano Videos to MIDI with Computer Vision]]></title>
+            <link>https://chris7462.github.io/blog/2025/09/24/piano-sheetia</link>
+            <guid>https://chris7462.github.io/blog/2025/09/24/piano-sheetia</guid>
+            <pubDate>Wed, 24 Sep 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[Over the past few weeks, I've been working on a Python tool that converts Synthesia-style piano videos into MIDI files using computer vision — and I'm making it public today.]]></description>
+            <content:encoded><![CDATA[<p>Over the past few weeks, I've been working on a Python tool that converts Synthesia-style piano videos into MIDI files using computer vision — and I'm making it public today.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/JNZpLlN6WLU" title="PianoSheetia: Synthesia Video to MIDI Conversion" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-motivation">The Motivation<a href="https://chris7462.github.io/blog/2025/09/24/piano-sheetia#the-motivation" class="hash-link" aria-label="Direct link to The Motivation" title="Direct link to The Motivation" translate="no">​</a></h2>
+<p>The idea came from a Synthesia piano video I found on YouTube that I really wanted to learn and play. Unfortunately, after searching everywhere, I couldn't find the corresponding sheet music.</p>
+<blockquote>
+<p><strong>Disclaimer</strong>: I would gladly pay for the sheet music if it were available, but it simply doesn't seem to exist.</p>
+</blockquote>
+<p>I tried several existing Python packages for this purpose, but none worked reliably — some failed to detect the keyboard, others produced incorrect notes or tempos, and some couldn't even download the YouTube videos. So I decided to build my own solution.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="introducing-pianosheetia">Introducing PianoSheetia<a href="https://chris7462.github.io/blog/2025/09/24/piano-sheetia#introducing-pianosheetia" class="hash-link" aria-label="Direct link to Introducing PianoSheetia" title="Direct link to Introducing PianoSheetia" translate="no">​</a></h2>
+<p>The name combines <strong>Synthesia</strong> + <strong>Piano</strong> + <strong>Music Sheet</strong>. The tool uses computer vision to:</p>
+<ul>
+<li class="">Detect the piano keyboard in a Synthesia-style video</li>
+<li class="">Track which keys are pressed frame by frame</li>
+<li class="">Map key presses to correct notes and timing</li>
+<li class="">Output a valid MIDI file</li>
+</ul>
+<p>The repository is now public — feel free to try it out and contribute:</p>
+<p>👉 <strong><a href="https://github.com/Chris7462/piano-sheetia" target="_blank" rel="noopener noreferrer" class="">github.com/Chris7462/piano-sheetia</a></strong></p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="limitations-of-midi-to-sheet-conversion">Limitations of MIDI-to-Sheet Conversion<a href="https://chris7462.github.io/blog/2025/09/24/piano-sheetia#limitations-of-midi-to-sheet-conversion" class="hash-link" aria-label="Direct link to Limitations of MIDI-to-Sheet Conversion" title="Direct link to Limitations of MIDI-to-Sheet Conversion" translate="no">​</a></h2>
+<p>Raw MIDI data only contains note on/off events with timing and velocity. It does <strong>not</strong> contain musical interpretation such as phrasing, pedaling, or proper voice leading that makes sheet music readable. For best results, you'll need to manually edit the exported MIDI after importing it into notation software to add proper musical conventions.</p>
+<blockquote>
+<p><strong>Note</strong>: If you enjoy the music, please support the composer by purchasing the official sheet music whenever it is available.</p>
+</blockquote>]]></content:encoded>
+            <category>computer-vision</category>
+            <category>python</category>
+            <category>midi</category>
+            <category>music</category>
+            <category>open-source</category>
+            <category>opencv</category>
+        </item>
+        <item>
+            <title><![CDATA[Toward Panoptic Perception: Detection, Tracking, and Segmentation in Real-Time]]></title>
+            <link>https://chris7462.github.io/blog/2025/09/10/panoptic-perception</link>
+            <guid>https://chris7462.github.io/blog/2025/09/10/panoptic-perception</guid>
+            <pubDate>Wed, 10 Sep 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[I recently deployed three deep learning models covering three core perception tasks — all running simultaneously in real-time on a single GPU.]]></description>
+            <content:encoded><![CDATA[<p>I recently deployed three deep learning models covering three core perception tasks — all running simultaneously in real-time on a single GPU.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/QRWK-9q1iZU" title="Real-Time Detection, Tracking, and Segmentation with TensorRT" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="whats-running">What's Running<a href="https://chris7462.github.io/blog/2025/09/10/panoptic-perception#whats-running" class="hash-link" aria-label="Direct link to What's Running" title="Direct link to What's Running" translate="no">​</a></h2>
+<p>The three models cover the fundamental pillars of scene understanding:</p>
+<ol>
+<li class=""><strong>Object Detection</strong> — localizing and classifying objects in the scene</li>
+<li class=""><strong>Object Tracking</strong> — associating detections across frames to maintain object identities over time</li>
+<li class=""><strong>Semantic Segmentation</strong> — dense per-pixel scene labeling</li>
+</ol>
+<p>All three run concurrently on an <strong>NVIDIA GeForce RTX 2080</strong>, so they should run even more smoothly on more powerful hardware.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="how-its-built">How It's Built<a href="https://chris7462.github.io/blog/2025/09/10/panoptic-perception#how-its-built" class="hash-link" aria-label="Direct link to How It's Built" title="Direct link to How It's Built" translate="no">​</a></h2>
+<p>Each model has been:</p>
+<ul>
+<li class=""><strong>Optimized with TensorRT</strong> for GPU inference, converting models from ONNX to compiled TensorRT engines</li>
+<li class=""><strong>Accelerated with custom CUDA kernels</strong> to maximize parallelism and runtime performance in the pre- and post-processing stages</li>
+<li class=""><strong>Validated for production reliability</strong> with thorough unit tests and compliance checks against key <strong>MISRA C++</strong> and <strong>CERT</strong> coding standards</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-bigger-picture-panoptic-perception">The Bigger Picture: Panoptic Perception<a href="https://chris7462.github.io/blog/2025/09/10/panoptic-perception#the-bigger-picture-panoptic-perception" class="hash-link" aria-label="Direct link to The Bigger Picture: Panoptic Perception" title="Direct link to The Bigger Picture: Panoptic Perception" translate="no">​</a></h2>
+<p>The ultimate goal is to integrate the backbones of these three models into a <strong>unified multi-head architecture</strong> — a <strong>Panoptic Perception</strong> system. Rather than running three separate networks, a shared backbone extracts features once, and multiple task-specific heads branch off in parallel.</p>
+<p>This architecture is also designed to scale. Additional perception heads can be plugged in to support further tasks such as:</p>
+<ul>
+<li class="">Traffic light detection</li>
+<li class="">Speed limit recognition</li>
+<li class="">Weather condition analysis</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-this-matters">Why This Matters<a href="https://chris7462.github.io/blog/2025/09/10/panoptic-perception#why-this-matters" class="hash-link" aria-label="Direct link to Why This Matters" title="Direct link to Why This Matters" translate="no">​</a></h2>
+<p>Deploying multiple perception tasks as a unified, real-time system represents a meaningful step toward robust autonomous driving perception. By sharing computation across tasks and enforcing production-grade code quality, this work bridges the gap between research prototypes and deployable in-vehicle systems.</p>
+<p>The path toward truly intelligent and adaptable autonomous systems runs through architectures that can handle diverse, complex driving scenarios reliably — and this is one step in that direction.</p>]]></content:encoded>
+            <category>TensorRT</category>
+            <category>CUDA</category>
+            <category>object-detection</category>
+            <category>object-tracking</category>
+            <category>segmentation</category>
+            <category>autonomous-driving</category>
+            <category>perception</category>
+        </item>
+        <item>
+            <title><![CDATA[Deploying FCOS Object Detection in TensorRT: A 20× Speedup]]></title>
+            <link>https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt</link>
+            <guid>https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt</guid>
+            <pubDate>Tue, 09 Sep 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[This post explains how I deployed the TorchVision FCOS object detection model in TensorRT for real-time inference — achieving a ~20× speedup over the LibTorch baseline.]]></description>
+            <content:encoded><![CDATA[<p>This post explains how I deployed the TorchVision FCOS object detection model in TensorRT for real-time inference — achieving a <strong>~20× speedup</strong> over the LibTorch baseline.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/hCQMdW7kJeU" title="FCOS 3D Object Detection with TensorRT" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<blockquote>
+<p>The slight lag in the video is caused by RViz rendering multiple images simultaneously, not by delays in the object detection model itself.</p>
+</blockquote>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-challenge-nms-in-fcos">The Challenge: NMS in FCOS<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#the-challenge-nms-in-fcos" class="hash-link" aria-label="Direct link to The Challenge: NMS in FCOS" title="Direct link to The Challenge: NMS in FCOS" translate="no">​</a></h2>
+<p>If you directly compile the ONNX export of FCOS into a TensorRT engine, you will encounter an error during <strong>Non-Maximum Suppression (NMS)</strong>. This happens because FCOS relies on a complex post-processing step that includes NMS, which TensorRT cannot handle out of the box.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="two-solutions">Two Solutions<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#two-solutions" class="hash-link" aria-label="Direct link to Two Solutions" title="Direct link to Two Solutions" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="option-1-export-raw-head-outputs-recommended-for-flexibility">Option 1: Export Raw Head Outputs (Recommended for Flexibility)<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#option-1-export-raw-head-outputs-recommended-for-flexibility" class="hash-link" aria-label="Direct link to Option 1: Export Raw Head Outputs (Recommended for Flexibility)" title="Direct link to Option 1: Export Raw Head Outputs (Recommended for Flexibility)" translate="no">​</a></h3>
+<p>Export only the backbone and head outputs, then implement NMS separately — either in TensorRT or on the CPU. This is the cleanest approach: it avoids ONNX/TensorRT limitations and gives full control over post-processing.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="option-2-use-tensorrts-efficientnms-plugin">Option 2: Use TensorRT's EfficientNMS Plugin<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#option-2-use-tensorrts-efficientnms-plugin" class="hash-link" aria-label="Direct link to Option 2: Use TensorRT's EfficientNMS Plugin" title="Direct link to Option 2: Use TensorRT's EfficientNMS Plugin" translate="no">​</a></h3>
+<p>Replace PyTorch's NMS with TensorRT's <strong>EfficientNMS plugin</strong> during model export. This integrates NMS directly into the TensorRT graph, but requires installing and enabling TensorRT plugins.</p>
+<p>I initially chose <strong>Option 1</strong> because I wasn't aware of Option 2 at the time.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-by-step-process">Step-by-Step Process<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#step-by-step-process" class="hash-link" aria-label="Direct link to Step-by-Step Process" title="Direct link to Step-by-Step Process" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-1-baseline-with-libtorch">Step 1: Baseline with LibTorch<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#step-1-baseline-with-libtorch" class="hash-link" aria-label="Direct link to Step 1: Baseline with LibTorch" title="Direct link to Step 1: Baseline with LibTorch" translate="no">​</a></h3>
+<p>I exported the FCOS model in TorchScript format and ran it with <strong>LibTorch (C++ + CUDA)</strong> as a performance baseline.</p>
+<ul>
+<li class=""><strong>Runtime</strong>: ~650ms per inference cycle (backbone + head + post-processing)</li>
+<li class=""><strong>Observation</strong>: Far too slow for real-time applications</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-2-export-raw-head-outputs-to-onnx">Step 2: Export Raw Head Outputs to ONNX<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#step-2-export-raw-head-outputs-to-onnx" class="hash-link" aria-label="Direct link to Step 2: Export Raw Head Outputs to ONNX" title="Direct link to Step 2: Export Raw Head Outputs to ONNX" translate="no">​</a></h3>
+<p>Following Option 1, I exported only the raw head outputs to ONNX and compiled them into a TensorRT engine. I validated that the raw TensorRT outputs matched those from PyTorch.</p>
+<blockquote>
+<p><strong>Important</strong>: PyTorch's FCOS model resizes inputs to the shape used during training, so image size consistency is crucial when comparing outputs.</p>
+</blockquote>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-3-tensorrt-inference">Step 3: TensorRT Inference<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#step-3-tensorrt-inference" class="hash-link" aria-label="Direct link to Step 3: TensorRT Inference" title="Direct link to Step 3: TensorRT Inference" translate="no">​</a></h3>
+<p>With the TensorRT engine handling backbone + head:</p>
+<ul>
+<li class=""><strong>Runtime</strong>: ~25ms for inference</li>
+<li class=""><strong>Speedup</strong>: ~20× faster than the LibTorch baseline</li>
+</ul>
+<p>This confirmed the correctness of the deployment and validated the export pipeline.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-4-post-processing-in-c">Step 4: Post-Processing in C++<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#step-4-post-processing-in-c" class="hash-link" aria-label="Direct link to Step 4: Post-Processing in C++" title="Direct link to Step 4: Post-Processing in C++" translate="no">​</a></h3>
+<p>Finally, I implemented the full FCOS post-processing pipeline in C++, including NMS, IoU computation, and related utilities.</p>
+<ul>
+<li class=""><strong>Post-processing runtime</strong>: ~9ms</li>
+<li class=""><strong>Total end-to-end runtime</strong>: ~35ms</li>
+</ul>
+<p>Although post-processing could be further accelerated with custom CUDA kernels (potentially another 10×), the 35ms pipeline was already sufficient for real-time use. I kept the implementation simple and avoided the added complexity.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="results-summary">Results Summary<a href="https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt#results-summary" class="hash-link" aria-label="Direct link to Results Summary" title="Direct link to Results Summary" translate="no">​</a></h2>
+<table><thead><tr><th>Stage</th><th>Runtime</th></tr></thead><tbody><tr><td>Baseline (LibTorch, full pipeline)</td><td>~650ms</td></tr><tr><td>TensorRT inference (backbone + head)</td><td>~25ms</td></tr><tr><td>Post-processing (C++ NMS + IoU)</td><td>~9ms</td></tr><tr><td><strong>Total (TensorRT + Post-processing)</strong></td><td><strong>~35ms</strong></td></tr></tbody></table>
+<p>Overall, TensorRT deployment achieved a <strong>~20× speedup</strong> while keeping the pipeline accurate and reliable.</p>]]></content:encoded>
+            <category>TensorRT</category>
+            <category>object-detection</category>
+            <category>fcos</category>
+            <category>onnx</category>
+            <category>ros2</category>
+            <category>optimization</category>
+            <category>deep-learning</category>
+        </item>
+        <item>
+            <title><![CDATA[Accelerating FCN Segmentation from 2000ms to 32ms (0.5 FPS → 31 FPS)]]></title>
+            <link>https://chris7462.github.io/blog/2025/07/14/fcn-optimization</link>
+            <guid>https://chris7462.github.io/blog/2025/07/14/fcn-optimization</guid>
+            <pubDate>Mon, 14 Jul 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[This post outlines how I optimized a Fully Convolutional Network (FCN) segmentation pipeline — from 0.5 FPS (~2000ms per frame) to 31 FPS in real-time.]]></description>
+            <content:encoded><![CDATA[<p>This post outlines how I optimized a Fully Convolutional Network (FCN) segmentation pipeline — from <strong>0.5 FPS (~2000ms per frame) to 31 FPS in real-time</strong>.</p>
+<!-- -->
+<blockquote>
+<p>The numbers may not be exact (based on memory), but the key takeaways should still be clear. Also, the goal of this experiment was not to optimize segmentation accuracy, but to achieve real-time inference speed.</p>
+</blockquote>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="model-overview">Model Overview<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#model-overview" class="hash-link" aria-label="Direct link to Model Overview" title="Direct link to Model Overview" translate="no">​</a></h2>
+<p>The model is an FCN with a <strong>ResNet-101 backbone</strong>, pre-trained on a subset of COCO 2017 using only the 20 classes that overlap with Pascal VOC. Again — the goal is speed, not accuracy.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="pipeline-overview">Pipeline Overview<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#pipeline-overview" class="hash-link" aria-label="Direct link to Pipeline Overview" title="Direct link to Pipeline Overview" translate="no">​</a></h2>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">ROS2 Image Msg → Convert to OpenCV Matrix → Run FCN Inference → Decode Segmentation Mask → Apply Colormap → Publish to ROS2 Topic</span><br></div></code></pre></div></div>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/VIA2CVCuDEc" title="FCN Segmentation: 0.5 FPS to 31 FPS Optimization" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="optimization-steps">Optimization Steps<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#optimization-steps" class="hash-link" aria-label="Direct link to Optimization Steps" title="Direct link to Optimization Steps" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-0-baseline--naive-cpu-pipeline-2000ms-05-fps">Step 0: Baseline — Naive CPU Pipeline (~2000ms, 0.5 FPS)<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#step-0-baseline--naive-cpu-pipeline-2000ms-05-fps" class="hash-link" aria-label="Direct link to Step 0: Baseline — Naive CPU Pipeline (~2000ms, 0.5 FPS)" title="Direct link to Step 0: Baseline — Naive CPU Pipeline (~2000ms, 0.5 FPS)" translate="no">​</a></h3>
+<p>The entire pipeline ran on CPU to establish a baseline. It took over <strong>2000ms per frame</strong>, with inference alone accounting for ~1500ms. The inference step was the obvious bottleneck.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-1-move-inference-to-gpu-via-libtorch-70ms">Step 1: Move Inference to GPU via LibTorch (~70ms)<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#step-1-move-inference-to-gpu-via-libtorch-70ms" class="hash-link" aria-label="Direct link to Step 1: Move Inference to GPU via LibTorch (~70ms)" title="Direct link to Step 1: Move Inference to GPU via LibTorch (~70ms)" translate="no">​</a></h3>
+<p>I ported the model to GPU using <strong>LibTorch C++</strong> and loaded the <code>.pth</code> file directly. Inference dropped to under <strong>70ms</strong> — a massive improvement, but still not real-time.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-2-tensorrt-acceleration-30ms">Step 2: TensorRT Acceleration (~30ms)<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#step-2-tensorrt-acceleration-30ms" class="hash-link" aria-label="Direct link to Step 2: TensorRT Acceleration (~30ms)" title="Direct link to Step 2: TensorRT Acceleration (~30ms)" translate="no">​</a></h3>
+<p>I converted the model to ONNX, then compiled it into a <strong>TensorRT engine</strong>. Despite minor precision loss, inference dropped to under <strong>30ms</strong>. This was the single biggest speed gain in the pipeline.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-3-memory-optimization--streaming-minor-gain">Step 3: Memory Optimization &amp; Streaming (Minor Gain)<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#step-3-memory-optimization--streaming-minor-gain" class="hash-link" aria-label="Direct link to Step 3: Memory Optimization &amp; Streaming (Minor Gain)" title="Direct link to Step 3: Memory Optimization &amp; Streaming (Minor Gain)" translate="no">​</a></h3>
+<p>Two additional optimizations were tried:</p>
+<ul>
+<li class="">Switched to <strong>CUDA async memory copies</strong></li>
+<li class="">Experimented with <strong>TensorRT multi-streaming</strong></li>
+</ul>
+<p>Multi-streaming had little effect since I'm processing one image at a time — batched workloads would benefit more. I switched back to single streaming. At this point, inference was highly optimized with little room left to improve.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-4-gpu-decode--colormap-15ms">Step 4: GPU Decode &amp; Colormap (~1.5ms)<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#step-4-gpu-decode--colormap-15ms" class="hash-link" aria-label="Direct link to Step 4: GPU Decode &amp; Colormap (~1.5ms)" title="Direct link to Step 4: GPU Decode &amp; Colormap (~1.5ms)" translate="no">​</a></h3>
+<p>The next bottlenecks were decoding the segmentation mask and applying the colormap — both running on CPU and taking ~<strong>80ms total</strong>. I rewrote both as a <strong>custom CUDA kernel</strong>, running fully on GPU. This reduced the combined time to ~<strong>1.5ms</strong>.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-5-ros-image-to-gpu--zero-copy-input">Step 5: ROS Image to GPU — Zero-Copy Input<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#step-5-ros-image-to-gpu--zero-copy-input" class="hash-link" aria-label="Direct link to Step 5: ROS Image to GPU — Zero-Copy Input" title="Direct link to Step 5: ROS Image to GPU — Zero-Copy Input" translate="no">​</a></h3>
+<p>Finally, I optimized the ROS input stage by converting the image <strong>directly to GPU memory</strong>, eliminating an unnecessary copy step. The entire pipeline now runs on the GPU — from input to output.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="results">Results<a href="https://chris7462.github.io/blog/2025/07/14/fcn-optimization#results" class="hash-link" aria-label="Direct link to Results" title="Direct link to Results" translate="no">​</a></h2>
+<table><thead><tr><th>Step</th><th>Change</th><th>Latency</th><th>FPS</th></tr></thead><tbody><tr><td>Baseline</td><td>CPU pipeline</td><td>~2000ms</td><td>0.5</td></tr><tr><td>Step 1</td><td>GPU inference (LibTorch)</td><td>~70ms</td><td>~14</td></tr><tr><td>Step 2</td><td>TensorRT engine</td><td>~30ms</td><td>~33</td></tr><tr><td>Step 3</td><td>Async copies + streaming</td><td>~30ms</td><td>~33</td></tr><tr><td>Step 4</td><td>CUDA decode + colormap</td><td>~1.5ms saved</td><td>—</td></tr><tr><td>Step 5</td><td>Zero-copy ROS input</td><td><strong>~32ms</strong></td><td><strong>31</strong></td></tr></tbody></table>
+<p>Through a series of focused optimizations — CPU baseline, GPU inference, TensorRT acceleration, GPU decode, and zero-copy input — I achieved <strong>31 FPS real-time performance</strong>.</p>
+<p>Every millisecond mattered. And it all added up.</p>]]></content:encoded>
+            <category>TensorRT</category>
+            <category>CUDA</category>
+            <category>ros2</category>
+            <category>segmentation</category>
+            <category>optimization</category>
+            <category>deep-learning</category>
+            <category>performance</category>
+        </item>
+        <item>
+            <title><![CDATA[Experimenting with YOLOv11: 2D/3D Detection, Tracking, and Depth in Under Two Days]]></title>
+            <link>https://chris7462.github.io/blog/2025/05/30/yolov11</link>
+            <guid>https://chris7462.github.io/blog/2025/05/30/yolov11</guid>
+            <pubDate>Fri, 30 May 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[I've been experimenting with YOLOv11 recently, and I was genuinely surprised by how easy it is to use — it delivers accurate results with minimal effort.]]></description>
+            <content:encoded><![CDATA[<p>I've been experimenting with <strong>YOLOv11</strong> recently, and I was genuinely surprised by how easy it is to use — it delivers accurate results with minimal effort.</p>
+<!-- -->
+<p>In less than two days, I was able to get all of the following working:</p>
+<ul>
+<li class=""><strong>2D bounding boxes</strong> — standard object detection</li>
+<li class=""><strong>3D bounding boxes</strong> — spatial localization of objects in 3D</li>
+<li class=""><strong>Object tracking</strong> — multi-object tracking across frames</li>
+<li class=""><strong>Depth estimation</strong> — per-object depth from a monocular camera</li>
+</ul>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/cW1itDVPmtY" title="YOLOv11: 2D/3D Detection, Tracking, and Depth Estimation" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>Achieving all of this within just a few days would have been nearly impossible with earlier YOLO versions. It's a testament to how much the ecosystem has matured — the API is clean, the pre-trained models are strong out of the box, and the documentation has caught up with the capabilities.</p>
+<p>Having previously spent considerable time with YOLOv5 and YOLOv8, the jump to v11 feels significant. What once required careful pipeline engineering around separate tools now comes bundled and works cohesively. The progress is real, and I'm genuinely enjoying seeing how far YOLO has come.</p>]]></content:encoded>
+            <category>deep-learning</category>
+            <category>object-detection</category>
+            <category>yolo</category>
+            <category>computer-vision</category>
+            <category>autonomous-driving</category>
+            <category>depth-estimation</category>
+        </item>
+        <item>
+            <title><![CDATA[Studying the Invariant Extended Kalman Filter (IEKF)]]></title>
+            <link>https://chris7462.github.io/blog/index</link>
+            <guid>https://chris7462.github.io/blog/index</guid>
+            <pubDate>Sat, 28 Sep 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[Over the past few weeks, I have been studying the Invariant Extended Kalman Filter (IEKF) — a variant of the EKF specifically designed for systems with inherent symmetries or invariances, such as Lie group symmetries.]]></description>
+            <content:encoded><![CDATA[<p>Over the past few weeks, I have been studying the <strong>Invariant Extended Kalman Filter (IEKF)</strong> — a variant of the EKF specifically designed for systems with inherent symmetries or invariances, such as Lie group symmetries.</p>
+<!-- -->
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-is-the-iekf">What is the IEKF?<a href="https://chris7462.github.io/blog/index#what-is-the-iekf" class="hash-link" aria-label="Direct link to What is the IEKF?" title="Direct link to What is the IEKF?" translate="no">​</a></h2>
+<p>Instead of linearizing the system in the conventional manner, the IEKF leverages invariance properties to maintain better consistency in state estimation. Two key ideas distinguish it from the standard EKF:</p>
+<ul>
+<li class=""><strong>Group-affine state space representation</strong>: The system's invariance properties are directly incorporated, resulting in a more natural and accurate representation of the system's dynamics.</li>
+<li class=""><strong>Group-operation error propagation</strong>: Error dynamics are propagated using group operations, maintaining error properties more consistently and reducing linearization errors — particularly in highly non-linear systems.</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="demo-on-the-kitti-dataset">Demo on the KITTI Dataset<a href="https://chris7462.github.io/blog/index#demo-on-the-kitti-dataset" class="hash-link" aria-label="Direct link to Demo on the KITTI Dataset" title="Direct link to Demo on the KITTI Dataset" translate="no">​</a></h2>
+<p>I demonstrate the IEKF using the <a href="https://www.cvlibs.net/datasets/kitti/" target="_blank" rel="noopener noreferrer" class="">KITTI dataset</a>, where the vehicle is equipped with an IMU and GPS sensors.</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/hsVO55A4fHQ" title="Invariant Extended Kalman Filter (IEKF) Demo on KITTI Dataset" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>The <strong>Left-Invariant EKF</strong> is used to estimate the vehicle's pose $(R_k, t_k)$ and velocity $v_k$ in the world frame. The state is modeled using $SE_2(3)$, the matrix Lie group of double direct isometries. For the prediction step, a discretized IMU model is used, and predictions are updated with GPS measurements converted to local Cartesian coordinates.</p>
+<p>To visualize the expansion of covariance (the purple sphere representing translation uncertainty) during the prediction step and its reduction during the correction step, the number of corrections has been intentionally reduced to make the changes more observable.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="ekf-vs-iekf">EKF vs. IEKF<a href="https://chris7462.github.io/blog/index#ekf-vs-iekf" class="hash-link" aria-label="Direct link to EKF vs. IEKF" title="Direct link to EKF vs. IEKF" translate="no">​</a></h2>
+<table><thead><tr><th></th><th>EKF</th><th>IEKF</th></tr></thead><tbody><tr><td><strong>Linearization</strong></td><td>Standard Jacobian-based linearization</td><td>Invariant error propagation based on system symmetries</td></tr><tr><td><strong>Covariance Propagation</strong></td><td>Through linearized dynamics</td><td>Via group operations to maintain error consistency</td></tr><tr><td><strong>Application</strong></td><td>General-purpose</td><td>Specialized for systems with invariance properties</td></tr><tr><td><strong>Performance</strong></td><td>Degrades in highly non-linear regimes</td><td>Improved accuracy and stability for non-linear, symmetric systems</td></tr></tbody></table>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="summary">Summary<a href="https://chris7462.github.io/blog/index#summary" class="hash-link" aria-label="Direct link to Summary" title="Direct link to Summary" translate="no">​</a></h2>
+<p>From what I have learned, the IEKF generally offers improved performance over the standard EKF in terms of accuracy and stability for systems with significant non-linearities and symmetries. By exploiting the geometric structure of the state space, it reduces the approximation errors introduced by linearization — making it a compelling choice for vehicle localization and similar navigation problems.</p>]]></content:encoded>
+            <category>kalman-filter</category>
+            <category>lie-group</category>
+            <category>state-estimation</category>
+            <category>localization</category>
+            <category>imu</category>
+            <category>gps</category>
+        </item>
+        <item>
+            <title><![CDATA[Older YOLO Isn't Always Worse: A YOLOv5s vs YOLOv8s Comparison]]></title>
+            <link>https://chris7462.github.io/blog/2024/07/11/yolo-comparison</link>
+            <guid>https://chris7462.github.io/blog/2024/07/11/yolo-comparison</guid>
+            <pubDate>Thu, 01 Aug 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[When people think about YOLO model versions, the assumption is usually straightforward: newer is better. But that isn't always the case — especially when you're using pre-trained weights without any fine-tuning.]]></description>
+            <content:encoded><![CDATA[<p>When people think about YOLO model versions, the assumption is usually straightforward: newer is better. But that isn't always the case — especially when you're using pre-trained weights without any fine-tuning.</p>
+<!-- -->
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-experiment">The Experiment<a href="https://chris7462.github.io/blog/2024/07/11/yolo-comparison#the-experiment" class="hash-link" aria-label="Direct link to The Experiment" title="Direct link to The Experiment" translate="no">​</a></h2>
+<p>I recently ran a side-by-side comparison between <strong>YOLOv5s</strong> (top) and <strong>YOLOv8s</strong> (bottom), both using their official pre-trained weights on the same video footage — no retraining, no fine-tuning.</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/cW1itDVPmtY" title="YOLOv5s vs YOLOv8s Comparison" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-i-observed">What I Observed<a href="https://chris7462.github.io/blog/2024/07/11/yolo-comparison#what-i-observed" class="hash-link" aria-label="Direct link to What I Observed" title="Direct link to What I Observed" translate="no">​</a></h2>
+<p>By visual inspection alone, <strong>YOLOv5s outperforms YOLOv8s</strong> on this footage in three noticeable ways:</p>
+<ul>
+<li class=""><strong>More detections</strong> — YOLOv5s identifies more objects in the scene</li>
+<li class=""><strong>Fewer ghost objects</strong> — YOLOv8s produces more false positives</li>
+<li class=""><strong>Better bounding box sizing</strong> — YOLOv5s predicts more accurate bounding box dimensions</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-does-this-happen">Why Does This Happen?<a href="https://chris7462.github.io/blog/2024/07/11/yolo-comparison#why-does-this-happen" class="hash-link" aria-label="Direct link to Why Does This Happen?" title="Direct link to Why Does This Happen?" translate="no">​</a></h2>
+<p>This might seem counterintuitive, but there are a few reasons why an older model version can outperform a newer one out-of-the-box:</p>
+<ol>
+<li class="">
+<p><strong>Different training data distributions</strong> — Each YOLO version is trained on slightly different data pipelines and augmentation strategies. A newer model optimized for certain benchmarks may not generalize as well to your specific domain without fine-tuning.</p>
+</li>
+<li class="">
+<p><strong>Architecture trade-offs</strong> — Newer architectures often prioritize efficiency or generalization improvements that show up in aggregate metrics (like mAP on COCO), but may regress on specific scene types.</p>
+</li>
+<li class="">
+<p><strong>Pre-trained weight quality</strong> — The quality and diversity of the pre-trained checkpoint matters as much as the architecture itself.</p>
+</li>
+</ol>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-takeaway">The Takeaway<a href="https://chris7462.github.io/blog/2024/07/11/yolo-comparison#the-takeaway" class="hash-link" aria-label="Direct link to The Takeaway" title="Direct link to The Takeaway" translate="no">​</a></h2>
+<p>Fine-tuning and retraining on domain-specific data is always the right path for optimal performance. But if you're in a pinch and need a model that works acceptably out-of-the-box, <strong>don't dismiss older YOLO versions just because a newer one exists</strong>. It's worth running a quick comparison on your own data before committing to a specific version.</p>
+<p>Sometimes the tried-and-true solution is good enough — and occasionally, it's actually better.</p>]]></content:encoded>
+            <category>deep-learning</category>
+            <category>object-detection</category>
+            <category>yolo</category>
+            <category>computer-vision</category>
+            <category>autonomous-driving</category>
+        </item>
+        <item>
+            <title><![CDATA[Paper Published: Road Geometry Estimation Using Vehicle Trails]]></title>
+            <link>https://chris7462.github.io/blog/2021/09/19/road-geometry-paper</link>
+            <guid>https://chris7462.github.io/blog/2021/09/19/road-geometry-paper</guid>
+            <pubDate>Sun, 19 Sep 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[I am pleased to share that my paper titled "Road Geometry Estimation Using Vehicle Trails Technology, Planning, and Operations.]]></description>
+            <content:encoded><![CDATA[<p>I am pleased to share that my paper titled <strong>"Road Geometry Estimation Using Vehicle Trails: A Linear Mixed Model Approach"</strong> has been published in the <em>Journal of Intelligent Transportation Systems: Technology, Planning, and Operations</em>.</p>
+<!-- -->
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="overview">Overview<a href="https://chris7462.github.io/blog/2021/09/19/road-geometry-paper#overview" class="hash-link" aria-label="Direct link to Overview" title="Direct link to Overview" translate="no">​</a></h2>
+<p>The paper addresses a fundamental problem in autonomous highway driving: accurately estimating the shape of the road ahead using motion trajectories of leading vehicles.</p>
+<p>A <strong>vehicle trail</strong> is essentially the historical path of a vehicle, where position samples are collected longitudinally from the same vehicle over time. Such measurements are naturally available from sensor fusion systems — whether from a single sensor or multi-sensor tracking setups. The key idea is to exploit these trails from leading vehicles to infer the geometry of the road in highway scenarios.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="method">Method<a href="https://chris7462.github.io/blog/2021/09/19/road-geometry-paper#method" class="hash-link" aria-label="Direct link to Method" title="Direct link to Method" translate="no">​</a></h2>
+<p>The proposed method is built around a <strong>polynomial-based road model</strong> estimated via a <strong>Linear Mixed Model (LMM)</strong> — one of the most widely used frameworks in statistical modeling. The approach addresses two practical engineering challenges:</p>
+<ul>
+<li class=""><strong>Memory efficiency</strong>: Before feeding trail data into the LMM framework, the data undergoes a newly developed <strong>compression and chopping mechanism</strong> to prevent memory overload from accumulating trail samples.</li>
+<li class=""><strong>Computational efficiency</strong>: The <strong>profile likelihood function</strong> is used to reduce the number of iterations in the Newton-Raphson optimization, significantly alleviating the computational burden.</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="results">Results<a href="https://chris7462.github.io/blog/2021/09/19/road-geometry-paper#results" class="hash-link" aria-label="Direct link to Results" title="Direct link to Results" translate="no">​</a></h2>
+<p>The method was evaluated on two publicly available <strong>NGSIM (Next Generation Simulation)</strong> datasets. Large-scale simulation results show that the road shape estimated by the proposed method achieves an <strong>RMSE of less than 0.5 meters on average</strong> across all evaluation ranges when compared with the ground truth road shape — demonstrating both accuracy and robustness in capturing road geometry.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="links">Links<a href="https://chris7462.github.io/blog/2021/09/19/road-geometry-paper#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links" translate="no">​</a></h2>
+<ul>
+<li class="">📄 <strong>Published paper</strong>: <a href="https://www.tandfonline.com/doi/full/10.1080/15472450.2021.1974858" target="_blank" rel="noopener noreferrer" class="">Taylor &amp; Francis Online</a></li>
+<li class="">🎞️ <strong>Research talk slides</strong>: <a href="https://chris7462.github.io/assets/files/RoadShapeEstimation-5d2e9b442c99439f7decb5ba0f7654db.pdf" target="_blank" class="">Road Shape Estimation</a></li>
+</ul>]]></content:encoded>
+            <category>publication</category>
+            <category>road-geometry</category>
+            <category>linear-mixed-model</category>
+            <category>autonomous-driving</category>
+            <category>statistics</category>
+        </item>
     </channel>
 </rss>
