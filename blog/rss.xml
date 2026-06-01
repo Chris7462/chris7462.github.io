@@ -119,14 +119,14 @@ Keyframe selection based on pose quality likely plays a significant role in filt
 Even without loop closure, object filtering, or semantic understanding, the system performed reliably. Sometimes doing the fundamentals — data association and uncertainty — exceptionally well is enough.</p>
 <hr>
 <p>A well-designed classical method can still be extremely competitive. This experiment is a good reminder that algorithmic elegance and principled design often outperform complexity for its own sake.</p>]]></content:encoded>
-            <category>carla</category>
-            <category>simulation</category>
-            <category>lidar</category>
-            <category>localization</category>
-            <category>odometry</category>
-            <category>ros2</category>
-            <category>icp</category>
-            <category>autonomous-driving</category>
+            <category>CARLA</category>
+            <category>Simulation</category>
+            <category>LiDAR</category>
+            <category>Localization</category>
+            <category>Odometry</category>
+            <category>ROS 2</category>
+            <category>ICP</category>
+            <category>Autonomous Driving</category>
         </item>
         <item>
             <title><![CDATA[LiDAR Odometry in CARLA: Restructuring FLOAM for ROS 2]]></title>
@@ -161,14 +161,14 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="takeaway">Takeaway<a href="https://chris7462.github.io/blog/2026/02/25/carla-floam#takeaway" class="hash-link" aria-label="Direct link to Takeaway" title="Direct link to Takeaway" translate="no">​</a></h2>
 <p>This is another small but meaningful experiment showing that CARLA can be a practical tool for validating perception and localization pipelines before moving to real-world data. Between this and the camera-based detection experiment, CARLA is proving to be a genuinely useful sandbox for early-stage development.</p>
 <p>The sim-to-real gap for LiDAR remains an open question for me — curious to hear how others are approaching it.</p>]]></content:encoded>
-            <category>carla</category>
-            <category>simulation</category>
-            <category>lidar</category>
-            <category>localization</category>
-            <category>odometry</category>
-            <category>ros2</category>
-            <category>floam</category>
-            <category>autonomous-driving</category>
+            <category>CARLA</category>
+            <category>Simulation</category>
+            <category>LiDAR</category>
+            <category>Localization</category>
+            <category>Odometry</category>
+            <category>ROS 2</category>
+            <category>FLOAM</category>
+            <category>Autonomous Driving</category>
         </item>
         <item>
             <title><![CDATA[Testing Pre-Trained FCOS on CARLA Simulated Imagery: Surprisingly Good Results]]></title>
@@ -199,13 +199,13 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <p>Despite the clear visual differences between simulated and real-world images, the pre-trained model generalized well enough to reliably detect vehicles in the CARLA environment. This raises an interesting question: how far can we push simulation as a <strong>quick validation tool</strong> for perception pipelines, even without domain-specific training?</p>
 <p>If a model trained purely on real data can perform this well on synthetic imagery with no adaptation, simulation starts to look like a low-cost, high-speed option for early-stage pipeline validation — before investing in real-world data collection or domain adaptation techniques.</p>
 <p>I'm looking forward to exploring this further.</p>]]></content:encoded>
-            <category>carla</category>
-            <category>simulation</category>
-            <category>object-detection</category>
-            <category>fcos</category>
+            <category>CARLA</category>
+            <category>Simulation</category>
+            <category>Object Detection</category>
+            <category>FCOS</category>
             <category>TensorRT</category>
-            <category>ros2</category>
-            <category>autonomous-driving</category>
+            <category>ROS 2</category>
+            <category>Autonomous Driving</category>
         </item>
         <item>
             <title><![CDATA[Reimplementing RESA: When Paper Results Don't Reproduce]]></title>
@@ -249,13 +249,13 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <p>This suggests the reported gains in the paper may be highly sensitive to dataset-specific preprocessing and evaluation choices, rather than reflecting a robust architectural improvement.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="takeaway">Takeaway<a href="https://chris7462.github.io/blog/2026/01/10/resa-lane-detection#takeaway" class="hash-link" aria-label="Direct link to Takeaway" title="Direct link to Takeaway" translate="no">​</a></h2>
 <p>Reproducing published results is hard — and sometimes, the results don't hold up under clean experimental conditions. The RESA case is a good reminder that preprocessing choices and evaluation methodology can significantly inflate benchmark numbers, and that independent reimplementation remains one of the most valuable ways to validate a paper's claims.</p>]]></content:encoded>
-            <category>lane-detection</category>
-            <category>resa</category>
-            <category>scnn</category>
-            <category>reproducibility</category>
-            <category>deep-learning</category>
-            <category>computer-vision</category>
-            <category>autonomous-driving</category>
+            <category>Lane Detection</category>
+            <category>RESA</category>
+            <category>SCNN</category>
+            <category>Reproducibility</category>
+            <category>Deep Learning</category>
+            <category>Computer Vision</category>
+            <category>Autonomous Driving</category>
         </item>
         <item>
             <title><![CDATA[Reimplementing SCNN for Lane Detection: Architectural Improvements and TensorRT Deployment]]></title>
@@ -302,13 +302,13 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <li class=""><strong>Strong sunlight</strong> — overexposure washing out lane markings</li>
 </ul>
 <p>More aggressive or targeted data augmentation would likely mitigate these. Given the simplicity of the model and the complete absence of KITTI-specific training, I'm already very satisfied with the results.</p>]]></content:encoded>
-            <category>lane-detection</category>
-            <category>scnn</category>
+            <category>Lane Detection</category>
+            <category>SCNN</category>
             <category>TensorRT</category>
-            <category>pytorch</category>
-            <category>onnx</category>
-            <category>computer-vision</category>
-            <category>autonomous-driving</category>
+            <category>PyTorch</category>
+            <category>ONNX</category>
+            <category>Computer Vision</category>
+            <category>Autonomous Driving</category>
         </item>
         <item>
             <title><![CDATA[PianoSheetia: Converting Synthesia Piano Videos to MIDI with Computer Vision]]></title>
@@ -340,12 +340,12 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <blockquote>
 <p><strong>Note</strong>: If you enjoy the music, please support the composer by purchasing the official sheet music whenever it is available.</p>
 </blockquote>]]></content:encoded>
-            <category>computer-vision</category>
-            <category>python</category>
-            <category>midi</category>
-            <category>music</category>
-            <category>open-source</category>
-            <category>opencv</category>
+            <category>Computer Vision</category>
+            <category>Python</category>
+            <category>MIDI</category>
+            <category>Music</category>
+            <category>Open Source</category>
+            <category>OpenCV</category>
         </item>
         <item>
             <title><![CDATA[Toward Panoptic Perception: Detection, Tracking, and Segmentation in Real-Time]]></title>
@@ -384,11 +384,11 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <p>The path toward truly intelligent and adaptable autonomous systems runs through architectures that can handle diverse, complex driving scenarios reliably — and this is one step in that direction.</p>]]></content:encoded>
             <category>TensorRT</category>
             <category>CUDA</category>
-            <category>object-detection</category>
-            <category>object-tracking</category>
-            <category>segmentation</category>
-            <category>autonomous-driving</category>
-            <category>perception</category>
+            <category>Object Detection</category>
+            <category>Object Tracking</category>
+            <category>Segmentation</category>
+            <category>Autonomous Driving</category>
+            <category>Perception</category>
         </item>
         <item>
             <title><![CDATA[Deploying FCOS Object Detection in TensorRT: A 20× Speedup]]></title>
@@ -440,12 +440,12 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <table><thead><tr><th>Stage</th><th>Runtime</th></tr></thead><tbody><tr><td>Baseline (LibTorch, full pipeline)</td><td>~650ms</td></tr><tr><td>TensorRT inference (backbone + head)</td><td>~25ms</td></tr><tr><td>Post-processing (C++ NMS + IoU)</td><td>~9ms</td></tr><tr><td><strong>Total (TensorRT + Post-processing)</strong></td><td><strong>~35ms</strong></td></tr></tbody></table>
 <p>Overall, TensorRT deployment achieved a <strong>~20× speedup</strong> while keeping the pipeline accurate and reliable.</p>]]></content:encoded>
             <category>TensorRT</category>
-            <category>object-detection</category>
-            <category>fcos</category>
-            <category>onnx</category>
-            <category>ros2</category>
-            <category>optimization</category>
-            <category>deep-learning</category>
+            <category>Object Detection</category>
+            <category>FCOS</category>
+            <category>ONNX</category>
+            <category>ROS 2</category>
+            <category>Optimization</category>
+            <category>Deep Learning</category>
         </item>
         <item>
             <title><![CDATA[Accelerating FCN Segmentation from 2000ms to 32ms (0.5 FPS → 31 FPS)]]></title>
@@ -487,11 +487,11 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <p>Every millisecond mattered. And it all added up.</p>]]></content:encoded>
             <category>TensorRT</category>
             <category>CUDA</category>
-            <category>ros2</category>
-            <category>segmentation</category>
-            <category>optimization</category>
-            <category>deep-learning</category>
-            <category>performance</category>
+            <category>ROS 2</category>
+            <category>Segmentation</category>
+            <category>Optimization</category>
+            <category>Deep Learning</category>
+            <category>Performance</category>
         </item>
         <item>
             <title><![CDATA[Experimenting with YOLOv11: 2D/3D Detection, Tracking, and Depth in Under Two Days]]></title>
@@ -511,12 +511,12 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/cW1itDVPmtY" title="YOLOv11: 2D/3D Detection, Tracking, and Depth Estimation" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
 <p>Achieving all of this within just a few days would have been nearly impossible with earlier YOLO versions. It's a testament to how much the ecosystem has matured — the API is clean, the pre-trained models are strong out of the box, and the documentation has caught up with the capabilities.</p>
 <p>Having previously spent considerable time with YOLOv5 and YOLOv8, the jump to v11 feels significant. What once required careful pipeline engineering around separate tools now comes bundled and works cohesively. The progress is real, and I'm genuinely enjoying seeing how far YOLO has come.</p>]]></content:encoded>
-            <category>deep-learning</category>
-            <category>object-detection</category>
-            <category>yolo</category>
-            <category>computer-vision</category>
-            <category>autonomous-driving</category>
-            <category>depth-estimation</category>
+            <category>Deep Learning</category>
+            <category>Object Detection</category>
+            <category>YOLO</category>
+            <category>Computer Vision</category>
+            <category>Autonomous Driving</category>
+            <category>Depth Estimation</category>
         </item>
         <item>
             <title><![CDATA[Studying the Invariant Extended Kalman Filter (IEKF)]]></title>
@@ -541,12 +541,12 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <table><thead><tr><th></th><th>EKF</th><th>IEKF</th></tr></thead><tbody><tr><td><strong>Linearization</strong></td><td>Standard Jacobian-based linearization</td><td>Invariant error propagation based on system symmetries</td></tr><tr><td><strong>Covariance Propagation</strong></td><td>Through linearized dynamics</td><td>Via group operations to maintain error consistency</td></tr><tr><td><strong>Application</strong></td><td>General-purpose</td><td>Specialized for systems with invariance properties</td></tr><tr><td><strong>Performance</strong></td><td>Degrades in highly non-linear regimes</td><td>Improved accuracy and stability for non-linear, symmetric systems</td></tr></tbody></table>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="summary">Summary<a href="https://chris7462.github.io/blog/index#summary" class="hash-link" aria-label="Direct link to Summary" title="Direct link to Summary" translate="no">​</a></h2>
 <p>From what I have learned, the IEKF generally offers improved performance over the standard EKF in terms of accuracy and stability for systems with significant non-linearities and symmetries. By exploiting the geometric structure of the state space, it reduces the approximation errors introduced by linearization — making it a compelling choice for vehicle localization and similar navigation problems.</p>]]></content:encoded>
-            <category>kalman-filter</category>
-            <category>lie-group</category>
-            <category>state-estimation</category>
-            <category>localization</category>
-            <category>imu</category>
-            <category>gps</category>
+            <category>Kalman Filter</category>
+            <category>Lie Group</category>
+            <category>State Estimation</category>
+            <category>Localization</category>
+            <category>IMU</category>
+            <category>GPS</category>
         </item>
         <item>
             <title><![CDATA[Older YOLO Isn't Always Worse: A YOLOv5s vs YOLOv8s Comparison]]></title>
@@ -582,11 +582,11 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-takeaway">The Takeaway<a href="https://chris7462.github.io/blog/2024/07/11/yolo-comparison#the-takeaway" class="hash-link" aria-label="Direct link to The Takeaway" title="Direct link to The Takeaway" translate="no">​</a></h2>
 <p>Fine-tuning and retraining on domain-specific data is always the right path for optimal performance. But if you're in a pinch and need a model that works acceptably out-of-the-box, <strong>don't dismiss older YOLO versions just because a newer one exists</strong>. It's worth running a quick comparison on your own data before committing to a specific version.</p>
 <p>Sometimes the tried-and-true solution is good enough — and occasionally, it's actually better.</p>]]></content:encoded>
-            <category>deep-learning</category>
-            <category>object-detection</category>
-            <category>yolo</category>
-            <category>computer-vision</category>
-            <category>autonomous-driving</category>
+            <category>Deep Learning</category>
+            <category>Object Detection</category>
+            <category>YOLO</category>
+            <category>Computer Vision</category>
+            <category>Autonomous Driving</category>
         </item>
         <item>
             <title><![CDATA[Paper Published: Road Geometry Estimation Using Vehicle Trails]]></title>
@@ -612,11 +612,11 @@ Even without loop closure, object filtering, or semantic understanding, the syst
 <li class="">📄 <strong>Published paper</strong>: <a href="https://www.tandfonline.com/doi/full/10.1080/15472450.2021.1974858" target="_blank" rel="noopener noreferrer" class="">Taylor &amp; Francis Online</a></li>
 <li class="">🎞️ <strong>Research talk slides</strong>: <a href="https://chris7462.github.io/assets/files/RoadShapeEstimation-5d2e9b442c99439f7decb5ba0f7654db.pdf" target="_blank" class="">Road Shape Estimation</a></li>
 </ul>]]></content:encoded>
-            <category>publication</category>
-            <category>road-geometry</category>
-            <category>linear-mixed-model</category>
-            <category>autonomous-driving</category>
-            <category>statistics</category>
+            <category>Publication</category>
+            <category>Road Geometry</category>
+            <category>Linear Mixed Model</category>
+            <category>Autonomous Driving</category>
+            <category>Statistics</category>
         </item>
     </channel>
 </rss>

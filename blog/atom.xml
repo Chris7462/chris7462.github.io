@@ -126,14 +126,14 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="carla" term="carla"/>
-        <category label="simulation" term="simulation"/>
-        <category label="lidar" term="lidar"/>
-        <category label="localization" term="localization"/>
-        <category label="odometry" term="odometry"/>
-        <category label="ros2" term="ros2"/>
-        <category label="icp" term="icp"/>
-        <category label="autonomous-driving" term="autonomous-driving"/>
+        <category label="CARLA" term="CARLA"/>
+        <category label="Simulation" term="Simulation"/>
+        <category label="LiDAR" term="LiDAR"/>
+        <category label="Localization" term="Localization"/>
+        <category label="Odometry" term="Odometry"/>
+        <category label="ROS 2" term="ROS 2"/>
+        <category label="ICP" term="ICP"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[LiDAR Odometry in CARLA: Restructuring FLOAM for ROS 2]]></title>
@@ -172,14 +172,14 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="carla" term="carla"/>
-        <category label="simulation" term="simulation"/>
-        <category label="lidar" term="lidar"/>
-        <category label="localization" term="localization"/>
-        <category label="odometry" term="odometry"/>
-        <category label="ros2" term="ros2"/>
-        <category label="floam" term="floam"/>
-        <category label="autonomous-driving" term="autonomous-driving"/>
+        <category label="CARLA" term="CARLA"/>
+        <category label="Simulation" term="Simulation"/>
+        <category label="LiDAR" term="LiDAR"/>
+        <category label="Localization" term="Localization"/>
+        <category label="Odometry" term="Odometry"/>
+        <category label="ROS 2" term="ROS 2"/>
+        <category label="FLOAM" term="FLOAM"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Testing Pre-Trained FCOS on CARLA Simulated Imagery: Surprisingly Good Results]]></title>
@@ -214,13 +214,13 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="carla" term="carla"/>
-        <category label="simulation" term="simulation"/>
-        <category label="object-detection" term="object-detection"/>
-        <category label="fcos" term="fcos"/>
+        <category label="CARLA" term="CARLA"/>
+        <category label="Simulation" term="Simulation"/>
+        <category label="Object Detection" term="Object Detection"/>
+        <category label="FCOS" term="FCOS"/>
         <category label="TensorRT" term="TensorRT"/>
-        <category label="ros2" term="ros2"/>
-        <category label="autonomous-driving" term="autonomous-driving"/>
+        <category label="ROS 2" term="ROS 2"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Reimplementing RESA: When Paper Results Don't Reproduce]]></title>
@@ -268,13 +268,13 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="lane-detection" term="lane-detection"/>
-        <category label="resa" term="resa"/>
-        <category label="scnn" term="scnn"/>
-        <category label="reproducibility" term="reproducibility"/>
-        <category label="deep-learning" term="deep-learning"/>
-        <category label="computer-vision" term="computer-vision"/>
-        <category label="autonomous-driving" term="autonomous-driving"/>
+        <category label="Lane Detection" term="Lane Detection"/>
+        <category label="RESA" term="RESA"/>
+        <category label="SCNN" term="SCNN"/>
+        <category label="Reproducibility" term="Reproducibility"/>
+        <category label="Deep Learning" term="Deep Learning"/>
+        <category label="Computer Vision" term="Computer Vision"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Reimplementing SCNN for Lane Detection: Architectural Improvements and TensorRT Deployment]]></title>
@@ -325,13 +325,13 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="lane-detection" term="lane-detection"/>
-        <category label="scnn" term="scnn"/>
+        <category label="Lane Detection" term="Lane Detection"/>
+        <category label="SCNN" term="SCNN"/>
         <category label="TensorRT" term="TensorRT"/>
-        <category label="pytorch" term="pytorch"/>
-        <category label="onnx" term="onnx"/>
-        <category label="computer-vision" term="computer-vision"/>
-        <category label="autonomous-driving" term="autonomous-driving"/>
+        <category label="PyTorch" term="PyTorch"/>
+        <category label="ONNX" term="ONNX"/>
+        <category label="Computer Vision" term="Computer Vision"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[PianoSheetia: Converting Synthesia Piano Videos to MIDI with Computer Vision]]></title>
@@ -367,12 +367,12 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="computer-vision" term="computer-vision"/>
-        <category label="python" term="python"/>
-        <category label="midi" term="midi"/>
-        <category label="music" term="music"/>
-        <category label="open-source" term="open-source"/>
-        <category label="opencv" term="opencv"/>
+        <category label="Computer Vision" term="Computer Vision"/>
+        <category label="Python" term="Python"/>
+        <category label="MIDI" term="MIDI"/>
+        <category label="Music" term="Music"/>
+        <category label="Open Source" term="Open Source"/>
+        <category label="OpenCV" term="OpenCV"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Toward Panoptic Perception: Detection, Tracking, and Segmentation in Real-Time]]></title>
@@ -415,11 +415,11 @@ Even without loop closure, object filtering, or semantic understanding, the syst
         </author>
         <category label="TensorRT" term="TensorRT"/>
         <category label="CUDA" term="CUDA"/>
-        <category label="object-detection" term="object-detection"/>
-        <category label="object-tracking" term="object-tracking"/>
-        <category label="segmentation" term="segmentation"/>
-        <category label="autonomous-driving" term="autonomous-driving"/>
-        <category label="perception" term="perception"/>
+        <category label="Object Detection" term="Object Detection"/>
+        <category label="Object Tracking" term="Object Tracking"/>
+        <category label="Segmentation" term="Segmentation"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
+        <category label="Perception" term="Perception"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Deploying FCOS Object Detection in TensorRT: A 20× Speedup]]></title>
@@ -475,12 +475,12 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <uri>https://chris7462.github.io</uri>
         </author>
         <category label="TensorRT" term="TensorRT"/>
-        <category label="object-detection" term="object-detection"/>
-        <category label="fcos" term="fcos"/>
-        <category label="onnx" term="onnx"/>
-        <category label="ros2" term="ros2"/>
-        <category label="optimization" term="optimization"/>
-        <category label="deep-learning" term="deep-learning"/>
+        <category label="Object Detection" term="Object Detection"/>
+        <category label="FCOS" term="FCOS"/>
+        <category label="ONNX" term="ONNX"/>
+        <category label="ROS 2" term="ROS 2"/>
+        <category label="Optimization" term="Optimization"/>
+        <category label="Deep Learning" term="Deep Learning"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Accelerating FCN Segmentation from 2000ms to 32ms (0.5 FPS → 31 FPS)]]></title>
@@ -526,11 +526,11 @@ Even without loop closure, object filtering, or semantic understanding, the syst
         </author>
         <category label="TensorRT" term="TensorRT"/>
         <category label="CUDA" term="CUDA"/>
-        <category label="ros2" term="ros2"/>
-        <category label="segmentation" term="segmentation"/>
-        <category label="optimization" term="optimization"/>
-        <category label="deep-learning" term="deep-learning"/>
-        <category label="performance" term="performance"/>
+        <category label="ROS 2" term="ROS 2"/>
+        <category label="Segmentation" term="Segmentation"/>
+        <category label="Optimization" term="Optimization"/>
+        <category label="Deep Learning" term="Deep Learning"/>
+        <category label="Performance" term="Performance"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Experimenting with YOLOv11: 2D/3D Detection, Tracking, and Depth in Under Two Days]]></title>
@@ -554,12 +554,12 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="deep-learning" term="deep-learning"/>
-        <category label="object-detection" term="object-detection"/>
-        <category label="yolo" term="yolo"/>
-        <category label="computer-vision" term="computer-vision"/>
-        <category label="autonomous-driving" term="autonomous-driving"/>
-        <category label="depth-estimation" term="depth-estimation"/>
+        <category label="Deep Learning" term="Deep Learning"/>
+        <category label="Object Detection" term="Object Detection"/>
+        <category label="YOLO" term="YOLO"/>
+        <category label="Computer Vision" term="Computer Vision"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
+        <category label="Depth Estimation" term="Depth Estimation"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Studying the Invariant Extended Kalman Filter (IEKF)]]></title>
@@ -588,12 +588,12 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="kalman-filter" term="kalman-filter"/>
-        <category label="lie-group" term="lie-group"/>
-        <category label="state-estimation" term="state-estimation"/>
-        <category label="localization" term="localization"/>
-        <category label="imu" term="imu"/>
-        <category label="gps" term="gps"/>
+        <category label="Kalman Filter" term="Kalman Filter"/>
+        <category label="Lie Group" term="Lie Group"/>
+        <category label="State Estimation" term="State Estimation"/>
+        <category label="Localization" term="Localization"/>
+        <category label="IMU" term="IMU"/>
+        <category label="GPS" term="GPS"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Older YOLO Isn't Always Worse: A YOLOv5s vs YOLOv8s Comparison]]></title>
@@ -633,11 +633,11 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="deep-learning" term="deep-learning"/>
-        <category label="object-detection" term="object-detection"/>
-        <category label="yolo" term="yolo"/>
-        <category label="computer-vision" term="computer-vision"/>
-        <category label="autonomous-driving" term="autonomous-driving"/>
+        <category label="Deep Learning" term="Deep Learning"/>
+        <category label="Object Detection" term="Object Detection"/>
+        <category label="YOLO" term="YOLO"/>
+        <category label="Computer Vision" term="Computer Vision"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Paper Published: Road Geometry Estimation Using Vehicle Trails]]></title>
@@ -667,10 +667,10 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="publication" term="publication"/>
-        <category label="road-geometry" term="road-geometry"/>
-        <category label="linear-mixed-model" term="linear-mixed-model"/>
-        <category label="autonomous-driving" term="autonomous-driving"/>
-        <category label="statistics" term="statistics"/>
+        <category label="Publication" term="Publication"/>
+        <category label="Road Geometry" term="Road Geometry"/>
+        <category label="Linear Mixed Model" term="Linear Mixed Model"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
+        <category label="Statistics" term="Statistics"/>
     </entry>
 </feed>
