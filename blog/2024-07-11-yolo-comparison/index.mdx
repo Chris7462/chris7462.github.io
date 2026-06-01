@@ -1,0 +1,48 @@
+---
+title: "Older YOLO Isn't Always Worse: A YOLOv5s vs YOLOv8s Comparison"
+date: 2024-08-01
+authors: yc
+tags: [deep-learning, object-detection, yolo, computer-vision, autonomous-driving]
+---
+
+When people think about YOLO model versions, the assumption is usually straightforward: newer is better. But that isn't always the case — especially when you're using pre-trained weights without any fine-tuning.
+
+{/* truncate */}
+
+## The Experiment
+
+I recently ran a side-by-side comparison between **YOLOv5s** (top) and **YOLOv8s** (bottom), both using their official pre-trained weights on the same video footage — no retraining, no fine-tuning.
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/cW1itDVPmtY"
+    title="YOLOv5s vs YOLOv8s Comparison"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+## What I Observed
+
+By visual inspection alone, **YOLOv5s outperforms YOLOv8s** on this footage in three noticeable ways:
+
+- **More detections** — YOLOv5s identifies more objects in the scene
+- **Fewer ghost objects** — YOLOv8s produces more false positives
+- **Better bounding box sizing** — YOLOv5s predicts more accurate bounding box dimensions
+
+## Why Does This Happen?
+
+This might seem counterintuitive, but there are a few reasons why an older model version can outperform a newer one out-of-the-box:
+
+1. **Different training data distributions** — Each YOLO version is trained on slightly different data pipelines and augmentation strategies. A newer model optimized for certain benchmarks may not generalize as well to your specific domain without fine-tuning.
+
+2. **Architecture trade-offs** — Newer architectures often prioritize efficiency or generalization improvements that show up in aggregate metrics (like mAP on COCO), but may regress on specific scene types.
+
+3. **Pre-trained weight quality** — The quality and diversity of the pre-trained checkpoint matters as much as the architecture itself.
+
+## The Takeaway
+
+Fine-tuning and retraining on domain-specific data is always the right path for optimal performance. But if you're in a pinch and need a model that works acceptably out-of-the-box, **don't dismiss older YOLO versions just because a newer one exists**. It's worth running a quick comparison on your own data before committing to a specific version.
+
+Sometimes the tried-and-true solution is good enough — and occasionally, it's actually better.

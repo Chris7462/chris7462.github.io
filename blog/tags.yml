@@ -26,4 +26,204 @@ tensorrt:
 cuda:
   label: CUDA
   permalink: /cuda
-  description: CUDA programming and setup
+  description: CUDA programming and optimization
+
+deep-learning:
+  label: Deep Learning
+  permalink: /deep-learning
+  description: Deep learning research and experiments
+
+object-detection:
+  label: Object Detection
+  permalink: /object-detection
+  description: Object detection models and pipelines
+
+object-tracking:
+  label: Object Tracking
+  permalink: /object-tracking
+  description: Multi-object tracking algorithms
+
+segmentation:
+  label: Segmentation
+  permalink: /segmentation
+  description: Semantic and instance segmentation
+
+yolo:
+  label: YOLO
+  permalink: /yolo
+  description: YOLO object detection models
+
+computer-vision:
+  label: Computer Vision
+  permalink: /computer-vision
+  description: Computer vision techniques and applications
+
+autonomous-driving:
+  label: Autonomous Driving
+  permalink: /autonomous-driving
+  description: Autonomous driving perception and localization
+
+ros2:
+  label: ROS 2
+  permalink: /ros2
+  description: Robot Operating System 2
+
+optimization:
+  label: Optimization
+  permalink: /optimization
+  description: Performance optimization techniques
+
+performance:
+  label: Performance
+  permalink: /performance
+  description: Runtime performance and benchmarking
+
+onnx:
+  label: ONNX
+  permalink: /onnx
+  description: ONNX model export and inference
+
+fcos:
+  label: FCOS
+  permalink: /fcos
+  description: FCOS object detection
+
+perception:
+  label: Perception
+  permalink: /perception
+  description: Autonomous driving perception systems
+
+lane-detection:
+  label: Lane Detection
+  permalink: /lane-detection
+  description: Lane marking detection and segmentation
+
+scnn:
+  label: SCNN
+  permalink: /scnn
+  description: Spatial CNN for lane detection
+
+resa:
+  label: RESA
+  permalink: /resa
+  description: Recurrent Feature Shift Aggregator
+
+pytorch:
+  label: PyTorch
+  permalink: /pytorch
+  description: PyTorch model development and training
+
+reproducibility:
+  label: Reproducibility
+  permalink: /reproducibility
+  description: ML research reproducibility and replication
+
+carla:
+  label: CARLA
+  permalink: /carla
+  description: CARLA autonomous driving simulator
+
+simulation:
+  label: Simulation
+  permalink: /simulation
+  description: Simulation environments for robotics and AD
+
+lidar:
+  label: LiDAR
+  permalink: /lidar
+  description: LiDAR sensors and point cloud processing
+
+localization:
+  label: Localization
+  permalink: /localization
+  description: Vehicle localization and state estimation
+
+odometry:
+  label: Odometry
+  permalink: /odometry
+  description: LiDAR and visual odometry
+
+floam:
+  label: FLOAM
+  permalink: /floam
+  description: Fast LiDAR odometry and mapping
+
+icp:
+  label: ICP
+  permalink: /icp
+  description: Iterative Closest Point algorithms
+
+kalman-filter:
+  label: Kalman Filter
+  permalink: /kalman-filter
+  description: Kalman filter and variants for state estimation
+
+lie-group:
+  label: Lie Group
+  permalink: /lie-group
+  description: Matrix Lie group methods for robotics
+
+state-estimation:
+  label: State Estimation
+  permalink: /state-estimation
+  description: State estimation and sensor fusion
+
+imu:
+  label: IMU
+  permalink: /imu
+  description: Inertial measurement unit processing
+
+gps:
+  label: GPS
+  permalink: /gps
+  description: GPS and GNSS sensor integration
+
+publication:
+  label: Publication
+  permalink: /publication
+  description: Research paper publications
+
+road-geometry:
+  label: Road Geometry
+  permalink: /road-geometry
+  description: Road geometry estimation
+
+linear-mixed-model:
+  label: Linear Mixed Model
+  permalink: /linear-mixed-model
+  description: Linear mixed model statistical methods
+
+statistics:
+  label: Statistics
+  permalink: /statistics
+  description: Statistical modeling and inference
+
+depth-estimation:
+  label: Depth Estimation
+  permalink: /depth-estimation
+  description: Monocular depth estimation
+
+python:
+  label: Python
+  permalink: /python
+  description: Python programming and tools
+
+midi:
+  label: MIDI
+  permalink: /midi
+  description: MIDI file generation and music processing
+
+music:
+  label: Music
+  permalink: /music
+  description: Music-related projects
+
+open-source:
+  label: Open Source
+  permalink: /open-source
+  description: Open source projects and contributions
+
+opencv:
+  label: OpenCV
+  permalink: /opencv
+  description: OpenCV computer vision library

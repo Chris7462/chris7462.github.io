@@ -1,0 +1,76 @@
+---
+title: "Reimplementing SCNN for Lane Detection: Architectural Improvements and TensorRT Deployment"
+date: 2026-01-05
+authors: yc
+tags: [lane-detection, scnn, tensorrt, pytorch, onnx, computer-vision, autonomous-driving]
+---
+
+I recently worked on a lane marking detection project. After reviewing the literature, I decided to use the **SCNN** (Spatial CNN) model — not because it's state of the art, but because it falls squarely into my *"if you can't implement it, you don't really understand it"* category.
+
+{/* truncate */}
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/tFX7SLOLkI4"
+    title="SCNN Lane Detection with TensorRT on KITTI Dataset"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+SCNN is simple, manageable with limited GPU resources, and well-suited for understanding the fundamentals of lane detection. The video above demonstrates TensorRT GPU inference on the KITTI dataset.
+
+## Architectural Changes
+
+Compared to the original implementation, I made three significant changes:
+
+### 1. Framework and Modularization
+
+The original implementation is written in Lua, which is difficult to follow without prior experience. I reimplemented the model in **PyTorch** and modularized all components, making the codebase cleaner and easier to reason about.
+
+### 2. Segmentation (Decode) Head Redesign
+
+The original segmentation head uses simple interpolation for upsampling. I replaced it with an **FCN-style decoder using transposed convolutions**, which provides:
+
+- Smoother outputs
+- Better numerical stability
+- Improved gradient flow during training
+
+### 3. Existence Head Redesign
+
+This is the most impactful change. The original existence head uses two fixed-size fully connected layers, which are unfriendly for ONNX and TensorRT export. I replaced it with a **fully convolutional, FCOS-style classification head**.
+
+Lane existence is analogous to object vs. background classification, making the FCOS-style head a natural fit. This change:
+
+- Removes the fixed-size input constraint
+- Reduces parameter count significantly
+- Stabilizes existence probability predictions
+- Enables ONNX and TensorRT export for **arbitrary image sizes**
+
+#### Why This Matters for KITTI
+
+CULane images are 590×1640 (resized to 288×800, aspect ratio ≈ 2.78), while KITTI images are 370×1226 (aspect ratio ≈ 3.31). The original fixed fully connected layers implicitly assume a fixed aspect ratio, causing geometric distortion when applied to KITTI images. The fully convolutional design avoids this issue entirely.
+
+## Results
+
+Despite being trained **only on CULane** — with no KITTI-specific training or fine-tuning — the model demonstrates strong generalization:
+
+| Metric | Improvement |
+|--------|-------------|
+| F1 score | ~1% improvement |
+| Existence head parameters | ~1000× fewer |
+| ONNX / TensorRT export | ✅ Resolution-agnostic |
+| Validation categories | Better in 7 out of 8 |
+
+## Failure Cases
+
+Most failures occur in challenging scenarios that are largely data-driven:
+
+- **Tunnel shadows** — heavily shadowed lane markings
+- **Missing or degraded lane lines** — worn or absent road markings
+- **Intersections** — cross-traffic scenarios
+- **Sharp curves** — tight geometry at the edge of the training distribution
+- **Strong sunlight** — overexposure washing out lane markings
+
+More aggressive or targeted data augmentation would likely mitigate these. Given the simplicity of the model and the complete absence of KITTI-specific training, I'm already very satisfied with the results.

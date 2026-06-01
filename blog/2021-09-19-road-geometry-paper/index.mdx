@@ -1,0 +1,32 @@
+---
+title: "Paper Published: Road Geometry Estimation Using Vehicle Trails"
+date: 2021-09-19
+authors: yc
+tags: [publication, road-geometry, linear-mixed-model, autonomous-driving, statistics]
+---
+
+I am pleased to share that my paper titled **"Road Geometry Estimation Using Vehicle Trails: A Linear Mixed Model Approach"** has been published in the *Journal of Intelligent Transportation Systems: Technology, Planning, and Operations*.
+
+{/* truncate */}
+
+## Overview
+
+The paper addresses a fundamental problem in autonomous highway driving: accurately estimating the shape of the road ahead using motion trajectories of leading vehicles.
+
+A **vehicle trail** is essentially the historical path of a vehicle, where position samples are collected longitudinally from the same vehicle over time. Such measurements are naturally available from sensor fusion systems — whether from a single sensor or multi-sensor tracking setups. The key idea is to exploit these trails from leading vehicles to infer the geometry of the road in highway scenarios.
+
+## Method
+
+The proposed method is built around a **polynomial-based road model** estimated via a **Linear Mixed Model (LMM)** — one of the most widely used frameworks in statistical modeling. The approach addresses two practical engineering challenges:
+
+- **Memory efficiency**: Before feeding trail data into the LMM framework, the data undergoes a newly developed **compression and chopping mechanism** to prevent memory overload from accumulating trail samples.
+- **Computational efficiency**: The **profile likelihood function** is used to reduce the number of iterations in the Newton-Raphson optimization, significantly alleviating the computational burden.
+
+## Results
+
+The method was evaluated on two publicly available **NGSIM (Next Generation Simulation)** datasets. Large-scale simulation results show that the road shape estimated by the proposed method achieves an **RMSE of less than 0.5 meters on average** across all evaluation ranges when compared with the ground truth road shape — demonstrating both accuracy and robustness in capturing road geometry.
+
+## Links
+
+- 📄 **Published paper**: [Taylor & Francis Online](https://www.tandfonline.com/doi/full/10.1080/15472450.2021.1974858)
+- 🎞️ **Research talk slides**: [Road Shape Estimation](/talk/RoadShapeEstimation.pdf)

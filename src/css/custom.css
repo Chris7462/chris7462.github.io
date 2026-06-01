@@ -30,10 +30,17 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
+/* Blog post titles on the list page and article title */
 article h1 {
   font-size: 2rem;
 }
 
-article h2 {
+/* Blog post titles on the list page (they render as h2 in <header>) */
+article header h2 {
   font-size: 2rem;
+}
+
+/* Section headers inside the article body (Overview, Method, etc.) */
+article .markdown h2 {
+  font-size: 1.5rem;
 }

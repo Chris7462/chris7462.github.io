@@ -1,0 +1,66 @@
+---
+title: "Reimplementing RESA: When Paper Results Don't Reproduce"
+date: 2026-01-10
+authors: yc
+tags: [lane-detection, resa, scnn, reproducibility, deep-learning, computer-vision, autonomous-driving]
+---
+
+After completing my [SCNN lane detection project](/blog/2026/01/05/scnn-lane-detection), I reviewed the **RESA** paper (2020), which extends SCNN's message-passing mechanism with a Recurrent Feature Shift Aggregator (RESA) and a Bilateral Up-Sampling Decoder (BUSD). The paper claimed a **9% F1-score improvement** over SCNN. My experiments told a different story.
+
+{/* truncate */}
+
+## What RESA Proposes
+
+RESA introduces two architectural components on top of SCNN:
+
+- **Recurrent Feature Shift Aggregator (RESA)**: Extends SCNN's slice-by-slice message passing into a recurrent, multi-directional aggregation mechanism
+- **Bilateral Up-Sampling Decoder (BUSD)**: Replaces simple interpolation-based upsampling by combining a coarse-grained branch and a fine-detail branch to improve lane segmentation accuracy
+
+Based on the paper, I expected RESA to outperform SCNN and potentially strengthen my perception stack. Before reimplementing, I reviewed the authors' official code — and found two concerning issues.
+
+## Methodology Concerns in the Official Implementation
+
+### 1. Dataset-Specific Sky Cropping
+
+The preprocessing pipeline removes the sky region (`cut_height`) before training, meaning the model **never sees the full image**. While this reduces computation and focuses the network on lane features, it encodes strong dataset-specific prior knowledge that simplifies the task and limits generalization to other datasets or deployment scenarios.
+
+### 2. Test Set Validation — Data Leakage
+
+More critically, the authors select the "best" model checkpoint based on **test set performance**. Benchmark evaluations are repeatedly run on the test set during training, leaking test information into model selection and inflating reported metrics. This is a fundamental evaluation methodology issue.
+
+> I filed a detailed issue on the official repository: [github.com/ZJULearning/resa/issues/55](https://github.com/ZJULearning/resa/issues/55)
+
+Given these concerns, I reimplemented the model from scratch using clean preprocessing and a proper train/validation/test split.
+
+## Reimplementation
+
+Since RESA is architecturally similar to SCNN, only the RESA layers and BUSD decoder needed to be added — the remaining components were reused from my SCNN implementation. All hyperparameters were kept consistent with those reported in the paper.
+
+👉 **My implementation**: [github.com/Chris7462/resa_torch](https://github.com/Chris7462/resa_torch)  
+👉 **Official implementation**: [github.com/ZJULearning/resa](https://github.com/ZJULearning/resa)
+
+## Experimental Results
+
+To ensure a fair comparison, both SCNN and RESA were trained under **identical conditions**: same datasets, same data splits, same evaluation metrics, same hyperparameters, training schedules, and optimization settings. The only differences were the RESA-specific architectural components.
+
+The results were the opposite of what the paper claimed:
+
+| Model | Backbone | F1 Score |
+|-------|----------|----------|
+| SCNN (my impl.) | VGG-16 | Baseline |
+| RESA (my impl.) | ResNet-50 | ~2% **lower** than SCNN |
+
+Despite RESA using a more powerful ResNet-50 backbone versus SCNN's VGG-16, it consistently **underperformed** — a ~2% F1 drop rather than the claimed 9% improvement.
+
+## Additional Observations
+
+Beyond the accuracy gap, RESA exhibited further signs of instability:
+
+- **Rapid overfitting** — quick divergence between training and validation performance
+- **High variance** across training runs
+
+This suggests the reported gains in the paper may be highly sensitive to dataset-specific preprocessing and evaluation choices, rather than reflecting a robust architectural improvement.
+
+## Takeaway
+
+Reproducing published results is hard — and sometimes, the results don't hold up under clean experimental conditions. The RESA case is a good reminder that preprocessing choices and evaluation methodology can significantly inflate benchmark numbers, and that independent reimplementation remains one of the most valuable ways to validate a paper's claims.

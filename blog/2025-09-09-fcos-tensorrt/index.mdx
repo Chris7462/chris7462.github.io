@@ -1,0 +1,82 @@
+---
+title: "Deploying FCOS Object Detection in TensorRT: A 20× Speedup"
+date: 2025-09-09
+authors: yc
+tags: [tensorrt, object-detection, fcos, onnx, ros2, optimization, deep-learning]
+---
+
+This post explains how I deployed the TorchVision FCOS object detection model in TensorRT for real-time inference — achieving a **~20× speedup** over the LibTorch baseline.
+
+{/* truncate */}
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/hCQMdW7kJeU"
+    title="FCOS 3D Object Detection with TensorRT"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+> The slight lag in the video is caused by RViz rendering multiple images simultaneously, not by delays in the object detection model itself.
+
+## The Challenge: NMS in FCOS
+
+If you directly compile the ONNX export of FCOS into a TensorRT engine, you will encounter an error during **Non-Maximum Suppression (NMS)**. This happens because FCOS relies on a complex post-processing step that includes NMS, which TensorRT cannot handle out of the box.
+
+## Two Solutions
+
+### Option 1: Export Raw Head Outputs (Recommended for Flexibility)
+
+Export only the backbone and head outputs, then implement NMS separately — either in TensorRT or on the CPU. This is the cleanest approach: it avoids ONNX/TensorRT limitations and gives full control over post-processing.
+
+### Option 2: Use TensorRT's EfficientNMS Plugin
+
+Replace PyTorch's NMS with TensorRT's **EfficientNMS plugin** during model export. This integrates NMS directly into the TensorRT graph, but requires installing and enabling TensorRT plugins.
+
+I initially chose **Option 1** because I wasn't aware of Option 2 at the time.
+
+## Step-by-Step Process
+
+### Step 1: Baseline with LibTorch
+
+I exported the FCOS model in TorchScript format and ran it with **LibTorch (C++ + CUDA)** as a performance baseline.
+
+- **Runtime**: ~650ms per inference cycle (backbone + head + post-processing)
+- **Observation**: Far too slow for real-time applications
+
+### Step 2: Export Raw Head Outputs to ONNX
+
+Following Option 1, I exported only the raw head outputs to ONNX and compiled them into a TensorRT engine. I validated that the raw TensorRT outputs matched those from PyTorch.
+
+> **Important**: PyTorch's FCOS model resizes inputs to the shape used during training, so image size consistency is crucial when comparing outputs.
+
+### Step 3: TensorRT Inference
+
+With the TensorRT engine handling backbone + head:
+
+- **Runtime**: ~25ms for inference
+- **Speedup**: ~20× faster than the LibTorch baseline
+
+This confirmed the correctness of the deployment and validated the export pipeline.
+
+### Step 4: Post-Processing in C++
+
+Finally, I implemented the full FCOS post-processing pipeline in C++, including NMS, IoU computation, and related utilities.
+
+- **Post-processing runtime**: ~9ms
+- **Total end-to-end runtime**: ~35ms
+
+Although post-processing could be further accelerated with custom CUDA kernels (potentially another 10×), the 35ms pipeline was already sufficient for real-time use. I kept the implementation simple and avoided the added complexity.
+
+## Results Summary
+
+| Stage | Runtime |
+|-------|---------|
+| Baseline (LibTorch, full pipeline) | ~650ms |
+| TensorRT inference (backbone + head) | ~25ms |
+| Post-processing (C++ NMS + IoU) | ~9ms |
+| **Total (TensorRT + Post-processing)** | **~35ms** |
+
+Overall, TensorRT deployment achieved a **~20× speedup** while keeping the pipeline accurate and reliable.

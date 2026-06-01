@@ -1,0 +1,78 @@
+---
+title: "Testing MAD-ICP Robustness in CARLA: Odometry in Dynamic, Unfiltered Scenes"
+date: 2026-03-24
+authors: yc
+tags: [carla, simulation, lidar, localization, odometry, ros2, icp, autonomous-driving]
+---
+
+After my previous experiments with [camera-based detection](/blog/2026/02/14/carla-fcos) and [FLOAM-based LiDAR odometry](/blog/2026/02/25/carla-floam) in CARLA, I wanted to push things further — this time focusing on **robustness under adversarial conditions**.
+
+{/* truncate */}
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/5yWIGytg16c"
+    title="MAD-ICP LiDAR Odometry in CARLA with Dynamic Objects"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+## What is MAD-ICP?
+
+**MAD-ICP** (*It's All About Matching Data*) is a LiDAR odometry method built around three core ideas:
+
+- **Minimal assumptions** about the environment
+- **Strong robustness** across different motion profiles
+- **Clean ICP-based formulation** with smart data representation
+
+What stood out to me is its philosophy: instead of relying on handcrafted features or heuristics, it focuses on better data association and uncertainty-aware mapping. The PCA-based point structure and keyframe selection based on pose quality are central to why it handles noise well.
+
+## Restructuring for ROS 2
+
+As with FLOAM, I simplified the original implementation to fit my pipeline:
+
+- Extracted the core algorithm into a pure C++ library (`mad_icp_core`)
+- Removed unnecessary components like Python bindings
+- Wrapped it with a ROS 2 node and connected it to CARLA
+
+This keeps the system modular, clean, and easy to integrate or swap out for future experiments.
+
+## Deliberately Making the Problem Harder
+
+ICP-based methods are notoriously sensitive to dynamic objects. Rather than making things easy, I set up a stress test:
+
+- Spawned **multiple moving vehicles** in CARLA
+- Kept **all LiDAR points from dynamic objects** — no filtering
+- No object detection
+- No semantic understanding
+
+The odometry had to deal with **raw, contaminated point clouds** by design. This was specifically intended to probe whether MAD-ICP is as robust as the paper claims.
+
+## Results
+
+The results were surprisingly good:
+
+- ✅ No visible map skew or distortion
+- ✅ No obvious gaps or misalignment
+- ✅ Without loop closure, the trajectory stayed consistent and returned close to the starting point
+
+This is particularly striking because traditional ICP pipelines tend to degrade quickly in dynamic scenes — yet MAD-ICP maintained stable localization without any explicit dynamic object handling.
+
+## What This Experiment Reinforced
+
+Three observations stood out:
+
+**1. Data representation matters more than complexity.**
+MAD-ICP's PCA-based structure and matching strategy handle noise well without requiring additional preprocessing or segmentation modules.
+
+**2. Uncertainty-aware mapping is powerful.**
+Keyframe selection based on pose quality likely plays a significant role in filtering out the influence of dynamic points on the map.
+
+**3. Robustness doesn't always require more modules.**
+Even without loop closure, object filtering, or semantic understanding, the system performed reliably. Sometimes doing the fundamentals — data association and uncertainty — exceptionally well is enough.
+
+---
+
+A well-designed classical method can still be extremely competitive. This experiment is a good reminder that algorithmic elegance and principled design often outperform complexity for its own sake.

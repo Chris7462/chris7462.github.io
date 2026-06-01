@@ -1,0 +1,47 @@
+---
+title: "PianoSheetia: Converting Synthesia Piano Videos to MIDI with Computer Vision"
+date: 2025-09-24
+authors: yc
+tags: [computer-vision, python, midi, music, open-source, opencv]
+---
+
+Over the past few weeks, I've been working on a Python tool that converts Synthesia-style piano videos into MIDI files using computer vision — and I'm making it public today.
+
+{/* truncate */}
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/JNZpLlN6WLU"
+    title="PianoSheetia: Synthesia Video to MIDI Conversion"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+## The Motivation
+
+The idea came from a Synthesia piano video I found on YouTube that I really wanted to learn and play. Unfortunately, after searching everywhere, I couldn't find the corresponding sheet music.
+
+> **Disclaimer**: I would gladly pay for the sheet music if it were available, but it simply doesn't seem to exist.
+
+I tried several existing Python packages for this purpose, but none worked reliably — some failed to detect the keyboard, others produced incorrect notes or tempos, and some couldn't even download the YouTube videos. So I decided to build my own solution.
+
+## Introducing PianoSheetia
+
+The name combines **Synthesia** + **Piano** + **Music Sheet**. The tool uses computer vision to:
+
+- Detect the piano keyboard in a Synthesia-style video
+- Track which keys are pressed frame by frame
+- Map key presses to correct notes and timing
+- Output a valid MIDI file
+
+The repository is now public — feel free to try it out and contribute:
+
+👉 **[github.com/Chris7462/piano-sheetia](https://github.com/Chris7462/piano-sheetia)**
+
+## Limitations of MIDI-to-Sheet Conversion
+
+Raw MIDI data only contains note on/off events with timing and velocity. It does **not** contain musical interpretation such as phrasing, pedaling, or proper voice leading that makes sheet music readable. For best results, you'll need to manually edit the exported MIDI after importing it into notation software to add proper musical conventions.
+
+> **Note**: If you enjoy the music, please support the composer by purchasing the official sheet music whenever it is available.

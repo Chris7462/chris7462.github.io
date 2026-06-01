@@ -1,0 +1,48 @@
+---
+title: "Studying the Invariant Extended Kalman Filter (IEKF)"
+date: 2024-09-28
+authors: yc
+tags: [kalman-filter, lie-group, state-estimation, localization, imu, gps]
+---
+
+Over the past few weeks, I have been studying the **Invariant Extended Kalman Filter (IEKF)** — a variant of the EKF specifically designed for systems with inherent symmetries or invariances, such as Lie group symmetries.
+
+{/* truncate */}
+
+## What is the IEKF?
+
+Instead of linearizing the system in the conventional manner, the IEKF leverages invariance properties to maintain better consistency in state estimation. Two key ideas distinguish it from the standard EKF:
+
+- **Group-affine state space representation**: The system's invariance properties are directly incorporated, resulting in a more natural and accurate representation of the system's dynamics.
+- **Group-operation error propagation**: Error dynamics are propagated using group operations, maintaining error properties more consistently and reducing linearization errors — particularly in highly non-linear systems.
+
+## Demo on the KITTI Dataset
+
+I demonstrate the IEKF using the [KITTI dataset](https://www.cvlibs.net/datasets/kitti/), where the vehicle is equipped with an IMU and GPS sensors.
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/hsVO55A4fHQ"
+    title="Invariant Extended Kalman Filter (IEKF) Demo on KITTI Dataset"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+The **Left-Invariant EKF** is used to estimate the vehicle's pose $(R_k, t_k)$ and velocity $v_k$ in the world frame. The state is modeled using $SE_2(3)$, the matrix Lie group of double direct isometries. For the prediction step, a discretized IMU model is used, and predictions are updated with GPS measurements converted to local Cartesian coordinates.
+
+To visualize the expansion of covariance (the purple sphere representing translation uncertainty) during the prediction step and its reduction during the correction step, the number of corrections has been intentionally reduced to make the changes more observable.
+
+## EKF vs. IEKF
+
+| | EKF | IEKF |
+|---|---|---|
+| **Linearization** | Standard Jacobian-based linearization | Invariant error propagation based on system symmetries |
+| **Covariance Propagation** | Through linearized dynamics | Via group operations to maintain error consistency |
+| **Application** | General-purpose | Specialized for systems with invariance properties |
+| **Performance** | Degrades in highly non-linear regimes | Improved accuracy and stability for non-linear, symmetric systems |
+
+## Summary
+
+From what I have learned, the IEKF generally offers improved performance over the standard EKF in terms of accuracy and stability for systems with significant non-linearities and symmetries. By exploiting the geometric structure of the state space, it reduces the approximation errors introduced by linearization — making it a compelling choice for vehicle localization and similar navigation problems.

@@ -1,0 +1,54 @@
+---
+title: "Toward Panoptic Perception: Detection, Tracking, and Segmentation in Real-Time"
+date: 2025-09-10
+authors: yc
+tags: [tensorrt, cuda, object-detection, object-tracking, segmentation, autonomous-driving, perception]
+---
+
+I recently deployed three deep learning models covering three core perception tasks — all running simultaneously in real-time on a single GPU.
+
+{/* truncate */}
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/QRWK-9q1iZU"
+    title="Real-Time Detection, Tracking, and Segmentation with TensorRT"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+## What's Running
+
+The three models cover the fundamental pillars of scene understanding:
+
+1. **Object Detection** — localizing and classifying objects in the scene
+2. **Object Tracking** — associating detections across frames to maintain object identities over time
+3. **Semantic Segmentation** — dense per-pixel scene labeling
+
+All three run concurrently on an **NVIDIA GeForce RTX 2080**, so they should run even more smoothly on more powerful hardware.
+
+## How It's Built
+
+Each model has been:
+
+- **Optimized with TensorRT** for GPU inference, converting models from ONNX to compiled TensorRT engines
+- **Accelerated with custom CUDA kernels** to maximize parallelism and runtime performance in the pre- and post-processing stages
+- **Validated for production reliability** with thorough unit tests and compliance checks against key **MISRA C++** and **CERT** coding standards
+
+## The Bigger Picture: Panoptic Perception
+
+The ultimate goal is to integrate the backbones of these three models into a **unified multi-head architecture** — a **Panoptic Perception** system. Rather than running three separate networks, a shared backbone extracts features once, and multiple task-specific heads branch off in parallel.
+
+This architecture is also designed to scale. Additional perception heads can be plugged in to support further tasks such as:
+
+- Traffic light detection
+- Speed limit recognition
+- Weather condition analysis
+
+## Why This Matters
+
+Deploying multiple perception tasks as a unified, real-time system represents a meaningful step toward robust autonomous driving perception. By sharing computation across tasks and enforcing production-grade code quality, this work bridges the gap between research prototypes and deployable in-vehicle systems.
+
+The path toward truly intelligent and adaptable autonomous systems runs through architectures that can handle diverse, complex driving scenarios reliably — and this is one step in that direction.

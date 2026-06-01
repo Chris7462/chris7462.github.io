@@ -1,0 +1,49 @@
+---
+title: "Testing Pre-Trained FCOS on CARLA Simulated Imagery: Surprisingly Good Results"
+date: 2026-02-14
+authors: yc
+tags: [carla, simulation, object-detection, fcos, tensorrt, ros2, autonomous-driving]
+---
+
+I recently started experimenting with the **CARLA simulator** and decided to test whether a pre-trained perception model — with zero exposure to simulated data — could hold up against synthetic imagery.
+
+{/* truncate */}
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/XEfIlB_XYXE"
+    title="FCOS Object Detection on CARLA Simulated Camera Stream"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+## Setup
+
+In CARLA version 0.9.16, the simulator provides **native ROS 2 support**, publishing ROS 2 topics directly without requiring the `carla-ros-bridge`. After spending a few days exploring the simulator, I put together a quick experiment:
+
+1. Launched CARLA with ROS 2 support enabled
+2. Generated a simple driving scenario: a straight road with five lanes and multiple vehicles spawned in traffic
+3. Ran my [TensorRT-deployed FCOS object detection model](/blog/2025/09/09/fcos-tensorrt) against the simulated camera stream
+
+## Why I Expected Poor Results
+
+I went in with low expectations, for two reasons:
+
+- **Synthetic imagery**: CARLA's camera model produces images that are visually distinguishable from real-world footage — even to the human eye. A neural network trained on real data should notice the domain gap even more readily.
+- **Zero domain adaptation**: The FCOS model is pre-trained on real-world data and has never been fine-tuned on CARLA or any simulated dataset.
+
+Given both factors, poor detection performance would have been entirely expected.
+
+## Results
+
+The results were surprisingly good. The model **correctly detected all vehicles** in the scene. There were a few phantom detections, but considering that the model had never seen simulated data, the performance was genuinely impressive.
+
+## What This Suggests
+
+Despite the clear visual differences between simulated and real-world images, the pre-trained model generalized well enough to reliably detect vehicles in the CARLA environment. This raises an interesting question: how far can we push simulation as a **quick validation tool** for perception pipelines, even without domain-specific training?
+
+If a model trained purely on real data can perform this well on synthetic imagery with no adaptation, simulation starts to look like a low-cost, high-speed option for early-stage pipeline validation — before investing in real-world data collection or domain adaptation techniques.
+
+I'm looking forward to exploring this further.
