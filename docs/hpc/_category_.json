@@ -1,5 +1,5 @@
 {
-  "label": "HPC",
+  "label": "High Performance Cluster (HPC)",
   "position": 2,
   "link": {
     "type": "generated-index"
