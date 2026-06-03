@@ -15,7 +15,7 @@ sudo apt install cmake libeigen3-dev
 ```
 
 :::tip
-g2o can optionally use **Ceres Solver**. See the [Install Ceres Solver](../ceres-solver) page if you need it.
+g2o can optionally use **Ceres Solver**. See the [Install Ceres Solver](./ceres-solver) page if you need it.
 :::
 
 ## Build and Install
