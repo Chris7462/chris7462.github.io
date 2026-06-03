@@ -6,7 +6,7 @@ description: Install NVIDIA GPU driver on a Lenovo Legion Pro 7i Gen 10 (RTX 509
 
 # Install NVIDIA Driver
 
-This guide covers installing the NVIDIA proprietary driver on a **Lenovo Legion Pro 7i Gen 10** running Ubuntu 24.04. These steps disable the Nouveau open-source driver and configure the system to use the discrete NVIDIA GPU exclusively.
+This guide covers installing the NVIDIA proprietary driver on a **Lenovo Legion Pro 7i Gen 10** running Ubuntu 26.04. These steps disable the Nouveau open-source driver and configure the system to use the discrete NVIDIA GPU exclusively.
 
 ## System Specs
 

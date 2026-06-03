@@ -26,7 +26,7 @@ sudo apt-get install libsuitesparse-dev
 ## Build and Install
 
 ```bash
-git clone --recursive-submodule git@github.com:ceres-solver/ceres-solver.git
+git clone --recursive-submodule https://github.com/ceres-solver/ceres-solver.git
 cd ceres-solver
 mkdir build
 cd build
