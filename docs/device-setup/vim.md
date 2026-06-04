@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: Vim Configuration
+title: Configure Vim
 description: Personal Vim configuration for Yi-Chen Zhang
 ---
 

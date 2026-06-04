@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-title: Screen Configuration
+title: Configure Screen
 description: Personal GNU Screen configuration for Yi-Chen Zhang
 ---
 
