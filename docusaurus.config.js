@@ -45,6 +45,23 @@ const config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@docusaurus/plugin-content-blog',
+      {
+        id: 'music',
+        path: 'music',
+        routeBasePath: 'music',
+        blogTitle: 'Music',
+        blogDescription: 'Piano pieces by Yi-Chen Zhang',
+        blogSidebarTitle: 'All pieces',
+        blogSidebarCount: 'ALL',
+        showReadingTime: false,
+        authorsMapPath: '../blog/authors.yml',
+      },
+    ],
+  ],
+
   themeConfig:
     ({
       image: '/img/profile.jpg',
@@ -82,6 +99,11 @@ const config = {
             to: '/blog',
             position: 'left',
             label: 'Blog',
+          },
+          {
+            to: '/music',
+            position: 'left',
+            label: 'Music',
           },
         ],
       },
