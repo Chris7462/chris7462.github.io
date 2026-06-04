@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkchris7462_github_io=globalThis.webpackChunkchris7462_github_io||[]).push([[9796],{3354(i){i.exports=JSON.parse('{"title":"All pieces","items":[{"title":"About","permalink":"/music/2024/11/24/about","unlisted":false,"date":"2024-11-24T00:00:00.000Z"}]}')}}]);

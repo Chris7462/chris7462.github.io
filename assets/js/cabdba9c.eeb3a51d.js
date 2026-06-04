@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkchris7462_github_io=self.webpackChunkchris7462_github_io||[]).push([["2031"],{8340(e){e.exports=JSON.parse('{"metadata":{"permalink":"/music","page":1,"postsPerPage":10,"totalPages":1,"totalCount":1,"blogDescription":"Piano pieces by Yi-Chen Zhang","blogTitle":"Music"}}')}}]);
