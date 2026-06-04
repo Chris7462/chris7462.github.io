@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        <title>Yi-Chen Zhang Blog</title>
+        <link>https://chris7462.github.io/music</link>
+        <description>Yi-Chen Zhang Blog</description>
+        <lastBuildDate>Sun, 24 Nov 2024 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en</language>
+        <item>
+            <title><![CDATA[About]]></title>
+            <link>https://chris7462.github.io/music/2024/11/24/about</link>
+            <guid>https://chris7462.github.io/music/2024/11/24/about</guid>
+            <pubDate>Sun, 24 Nov 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[Playing the piano has been a childhood dream of mine — something I always wanted to do but never had the chance to pursue. In November 2024, I finally decided to make it happen.]]></description>
+            <content:encoded><![CDATA[<p>Playing the piano has been a childhood dream of mine — something I always wanted to do but never had the chance to pursue. In November 2024, I finally decided to make it happen.</p>
+<p>I am entirely self-taught. Most of my learning comes from watching YouTube videos, studying how others play, and learning by ear. I'm still working on reading sheet music, so a lot of what I play is learned by observation and repetition rather than from notation.</p>
+<p>This section of the site is where I share pieces I've been working on. They are not perfect, and that's okay — this is a journal of progress, not a recital.</p>]]></content:encoded>
+        </item>
+    </channel>
+</rss>
