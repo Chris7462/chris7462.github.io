@@ -31,7 +31,7 @@ sudo cmake --install .
 ```
 
 :::tip
-If you encounter build issues, make sure the CUDA environment variables are set correctly. See the [Install CUDA](../cuda/index.md) page for the system-wide setup.
+If you encounter build issues, make sure the CUDA environment variables are set correctly. See the [Install CUDA](./cuda.md) page for the system-wide setup.
 :::
 
 Or, you can simply do:

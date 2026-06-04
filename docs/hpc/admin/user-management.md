@@ -93,7 +93,7 @@ sudo systemctl restart gdm3
 ## 4. Disk Quota Setup
 
 :::info
-This section applies to **local disk quotas only** (e.g. on a local `/home` partition). If `/home` is mounted from the NAS via NFS, quota management is handled on the NAS via ZFS `userquota`. See the [Storage](../storage/index.md) doc for details.
+This section applies to **local disk quotas only** (e.g. on a local `/home` partition). If `/home` is mounted from the NAS via NFS, quota management is handled on the NAS via ZFS `userquota`. See the [Storage](./storage.md) doc for details.
 :::
 
 ### Prerequisites (One-time Setup)

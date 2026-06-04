@@ -62,6 +62,6 @@ Then build and install:
 
 ```bash
 cmake --build . -j$(nproc)
-sudo cmake install .
+sudo cmake --install .
 sudo ldconfig
 ```

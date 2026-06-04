@@ -29,7 +29,7 @@ The cluster consists of two workstations and a shared NAS storage:
 | NAS | 192.168.220.80 | Shared storage | Home directories (`/home`) |
 
 :::note
-**node02** is the dedicated Docker machine. You can SSH directly into node02 and run Docker containers freely without SLURM. See the [Docker](../docker/index.md) guide for details.
+**node02** is the dedicated Docker machine. You can SSH directly into node02 and run Docker containers freely without SLURM. See the [Docker](./docker.md) guide for details.
 
 **node01** enforces SLURM for compute jobs. Any non-SLURM process running longer than 5 minutes will be automatically terminated.
 :::
@@ -68,7 +68,7 @@ rviz2
 If configured correctly, the GUI application will appear on your local machine while running on the remote server.
 
 :::tip
-For better performance with OpenGL applications like `rviz2` or Gazebo, use VirtualGL instead of plain X11 forwarding. See the [VirtualGL](../../admin/virtualgl/index.md) guide for setup details.
+For better performance with OpenGL applications like `rviz2` or Gazebo, use VirtualGL instead of plain X11 forwarding. See the [VirtualGL](../admin/virtualgl.md) guide for setup details.
 :::
 
 ---
@@ -77,9 +77,9 @@ For better performance with OpenGL applications like `rviz2` or Gazebo, use Virt
 
 Once logged in:
 
-- Submit compute jobs through SLURM — see the [SLURM Tutorial](../slurm/index.md)
-- Run Docker containers on node02 — see the [Docker](../docker/index.md) guide
-- Transfer files to/from the cluster — see the [File Transfer](../file-transfer/index.md) guide
+- Submit compute jobs through SLURM — see the [SLURM Tutorial](./slurm.md)
+- Run Docker containers on node02 — see the [Docker](./docker.md) guide
+- Transfer files to/from the cluster — see the [File Transfer](./file-transfer.md) guide
 
 :::warning
 **SLURM usage is mandatory for compute jobs on node01.** Any non-SLURM compute process running longer than 5 minutes will be automatically terminated. Always use `srun` or `sbatch` to submit jobs.
