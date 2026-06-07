@@ -23,29 +23,45 @@ git clone https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build
 cd build
+
+OPENCV_CONTRIB_MODULES=/home/yi-chen/thirdparty/opencv_contrib/modules
+OPENBLAS_INCLUDE_DIR=/usr/include/x86_64-linux-gnu/openblas-pthread
+OPENBLAS_LIB=/usr/lib/x86_64-linux-gnu/libopenblas.so
+
 cmake -DCMAKE_BUILD_TYPE=RELEASE \
       -DCMAKE_INSTALL_PREFIX=/usr/local \
-      -DCUDA_ARCH_BIN="7.5;8.9;12.0" \
-      -DENABLE_CUDA_FIRST_CLASS_LANGUAGE=ON \
-      -DOPENCV_DNN_CUDA=ON \
-      -DWITH_CUBLAS=1 \
+      \
       -DWITH_CUDA=ON \
+      -DENABLE_CUDA_FIRST_CLASS_LANGUAGE=ON \
+      -DCUDA_ARCH_BIN="7.5;8.9;12.0" \
+      -DWITH_CUBLAS=ON \
       -DWITH_CUDNN=ON \
-      -DCUDA_FAST_MATH=1 \
-      -DENABLE_FAST_MATH=1 \
+      -DOPENCV_DNN_CUDA=ON \
+      -DCUDA_FAST_MATH=ON \
+      -DENABLE_FAST_MATH=ON \
+      \
       -DBUILD_opencv_python3=ON \
-      -DPYTHON3_EXECUTABLE=$(which python3) \
+      -DPYTHON3_EXECUTABLE="$(which python3)" \
+      \
       -DWITH_TBB=ON \
       -DWITH_GSTREAMER=ON \
       -DWITH_FFMPEG=ON \
       -DWITH_OPENMP=ON \
+      \
+      -DWITH_OPENBLAS=ON \
+      -DWITH_LAPACK=ON \
+      -DOpenBLAS_LIB="${OPENBLAS_LIB}" \
+      -DOpenBLAS_INCLUDE_DIR="${OPENBLAS_INCLUDE_DIR}" \
+      \
       -DBUILD_opencv_sfm=ON \
       -DBUILD_opencv_cudacodec=ON \
+      -DOPENCV_ENABLE_NONFREE=ON \
+      -DOPENCV_EXTRA_MODULES_PATH="${OPENCV_CONTRIB_MODULES}" \
+      \
       -DBUILD_EXAMPLES=ON \
       -DINSTALL_PYTHON_EXAMPLES=ON \
       -DINSTALL_C_EXAMPLES=ON \
-      -DOPENCV_ENABLE_NONFREE=ON \
-      -DOPENCV_EXTRA_MODULES_PATH=/home/yi-chen/thirdparty/opencv_contrib/modules \
+      \
       ..
 ```
 
