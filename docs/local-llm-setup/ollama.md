@@ -73,9 +73,9 @@ Verify the model list:
 ollama list
 ```
 
-## Step 4. Create a Modelfile (Limit Context Window)
+## Step 4. Create a Modelfile to Limit Context Window (Optional)
 
-The default context window is too large and will cause the KV cache to overflow VRAM, offloading part of the weights to RAM and slowing inference significantly.
+If your GPU has limited VRAM (e.g. 24 GB), the default context window may cause the KV cache to overflow VRAM, offloading part of the weights to RAM and slowing inference significantly. You can limit it with a Modelfile.
 
 ```bash
 cat << 'EOF' > /tmp/Modelfile
@@ -95,6 +95,18 @@ Verify the model was created:
 ```bash
 ollama list
 # Should show qwen3.6-8k:latest
+```
+
+## Step 5. Set System-wide Environment Variables
+
+Create `/etc/profile.d/ollama.sh` to make `OLLAMA_API_BASE` available to all users:
+
+```bash
+sudo tee /etc/profile.d/ollama.sh << 'EOF'
+export OLLAMA_API_BASE=http://localhost:11434
+EOF
+sudo chmod +x /etc/profile.d/ollama.sh
+source /etc/profile.d/ollama.sh
 ```
 
 ## Monitor GPU Usage

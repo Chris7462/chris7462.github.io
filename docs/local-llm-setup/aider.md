@@ -42,7 +42,7 @@ python3.12 --version
 python3.12 -m venv ~/.aider
 source ~/.aider/bin/activate
 
-pip install "aider-chat>=0.80" --no-cache-dir
+pip install aider-chat
 ```
 
 Verify the installation:
@@ -52,14 +52,7 @@ aider --version
 # Expected output: Aider v0.86.x or above
 ```
 
-## Step 3. Set Environment Variables
-
-```bash
-echo 'export OLLAMA_API_BASE=http://localhost:11434' >> ~/.bashrc
-source ~/.bashrc
-```
-
-## Step 4. Launch Aider
+## Step 3. Launch Aider
 
 Activate the virtual environment before each session:
 
@@ -74,7 +67,7 @@ cd ~/kitti_ws
 aider --model ollama/qwen3.6-8k --no-git
 ```
 
-## Step 5. Basic Aider Commands
+## Step 4. Basic Aider Commands
 
 | Command | Description |
 |---|---|
