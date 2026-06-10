@@ -105,7 +105,6 @@ Create `/etc/profile.d/ollama.sh` to make `OLLAMA_API_BASE` available to all use
 sudo tee /etc/profile.d/ollama.sh << 'EOF'
 export OLLAMA_API_BASE=http://localhost:11434
 EOF
-sudo chmod +x /etc/profile.d/ollama.sh
 source /etc/profile.d/ollama.sh
 ```
 

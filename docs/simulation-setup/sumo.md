@@ -85,19 +85,13 @@ Files are installed to:
 `/usr/local/bin` is already on users' `PATH` by default, so only `SUMO_HOME` needs to be set. Create `/etc/profile.d/sumo.sh`:
 
 ```bash
-sudo nano /etc/profile.d/sumo.sh
+sudo vim /etc/profile.d/sumo.sh
 ```
 
 Add:
 
 ```bash
 export SUMO_HOME=/usr/local/share/sumo
-```
-
-Make it executable:
-
-```bash
-sudo chmod +x /etc/profile.d/sumo.sh
 ```
 
 Apply immediately:
