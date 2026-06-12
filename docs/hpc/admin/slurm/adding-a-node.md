@@ -137,6 +137,10 @@ done
 
 Output must be identical (UIDs, primary GIDs). Secondary groups like `sudo`, `docker` can differ.
 
+:::note
+The steps above cover bulk-creating all existing users when first provisioning a new node. For the ongoing workflow of adding a **single new user** to an already-running two-node cluster, see [User Management — Syncing User Accounts Between node01 and node02](../user-management.md#14-syncing-user-accounts-between-node01-and-node02).
+:::
+
 ---
 
 ## Step 4: Install SLURM on the New Node

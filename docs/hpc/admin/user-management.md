@@ -6,7 +6,7 @@ sidebar_position: 5
 
 # User Management
 
-This document covers the complete process for managing users on the HPC cluster, including creation, group access, disk quotas, Docker access, and account lifecycle management.
+This document covers the complete process for managing users on the HPC cluster, including creation, group access, disk quotas, Docker access, account lifecycle management, and syncing accounts across cluster nodes.
 
 ---
 
@@ -21,6 +21,14 @@ sudo useradd -m -s /bin/bash -g <primary_group> USERNAME
 # Set password
 sudo passwd USERNAME
 ```
+
+:::note
+This is run on **node01**, where `-m` creates the user's home directory on the NFS-shared `/home`. Since `/home` is shared, this directory becomes immediately visible on node02 as well — so on node02 the user should be created **without** `-m`/with `-M` (see [Syncing User Accounts](#14-syncing-user-accounts-between-node01-and-node02) below).
+:::
+
+:::note
+After creating a user on node01, you must also replicate the account (UID/GID, groups, and password) on node02. See [Syncing User Accounts Between node01 and node02](#14-syncing-user-accounts-between-node01-and-node02) below.
+:::
 
 ### Verify User Created
 
@@ -434,68 +442,158 @@ sudo chage -l USERNAME
 
 ---
 
-## 13. Quick Setup Scripts
+## 13. Adding to or Removing from `vglusers`
 
-### Standard HPC User (SSH-only, with quota)
+For users who need VirtualGL access for GPU-accelerated remote rendering:
 
 ```bash
-#!/bin/bash
-# Usage: ./add_hpc_user.sh USERNAME "Full Name" QUOTA_GB
+# Add user
+sudo usermod -aG vglusers USERNAME
 
-USERNAME=$1
-FULLNAME=$2
-QUOTA_GB=$3
-QUOTA_KB=$((QUOTA_GB * 1024 * 1024))
-
-# Create user
-sudo useradd -m -s /bin/bash $USERNAME
-sudo passwd $USERNAME
-
-# Force password change on first login
-sudo chage -d 0 $USERNAME
-
-# Set display name
-sudo chfn -f "$FULLNAME" $USERNAME
-
-# Hide from GDM
-echo -e "[User]\nSystemAccount=true" | sudo tee /var/lib/AccountsService/users/$USERNAME
-
-# Set quota (local disk only — for NAS quota see Storage doc)
-sudo setquota -u $USERNAME $QUOTA_KB $QUOTA_KB 0 0 /home
-
-# Add to docker group
-sudo usermod -aG docker $USERNAME
-
-# Verify
-echo "=== User Setup Complete ==="
-id $USERNAME
-groups $USERNAME
-sudo quota -u $USERNAME
-sudo chage -l $USERNAME | grep "Last password change"
+# Remove user
+sudo deluser USERNAME vglusers
 ```
 
-### Add Users to Shared Group
+:::note
+Users must log out and back in (or reboot) for group changes to take effect. See the [VirtualGL](./virtualgl.md) guide for details.
+:::
+
+---
+
+## 14. Syncing User Accounts Between node01 and node02
+
+This section covers how to replicate a user account (UID/GID, group memberships, and password) from the head node (`node01`) to the compute node (`node02`) for the two-node SLURM cluster.
+
+:::warning
+Since `/home` is shared via NFS, user accounts must exist locally with **matching UID/GID** on both nodes — this is required for SLURM to function correctly (see [Adding a Node](./slurm/adding-a-node.md)). However, home directories should **not** be created by `useradd` on node02 (they already exist on the NFS share).
+:::
+
+### Step 1: List Users
+
+To list all regular (non-system) usernames on a node:
 
 ```bash
-#!/bin/bash
-# Usage: ./setup_shared_group.sh GROUPNAME USER1 USER2 ...
+awk -F: '$3 >= 1000 && $3 < 65534 {print $1}' /etc/passwd
+```
 
-GROUPNAME=$1
-shift
-USERS=$@
+### Step 2: Check User/Group Info
 
-# Create group
-sudo groupadd $GROUPNAME 2>/dev/null || echo "Group exists"
+On `node01`, check the UID, primary GID, and supplementary groups for the new user:
 
-# Add users
-for USER in $USERS; do
-    sudo usermod -aG $GROUPNAME $USER
-    sudo chgrp $GROUPNAME /home/$USER
-    sudo chmod 750 /home/$USER
-    echo "Added $USER to $GROUPNAME"
+```bash
+id username
+groups username
+```
+
+### Step 3: Create the User on node02
+
+Ensure any required groups exist on `node02` with matching GIDs first:
+
+```bash
+sudo groupadd -g <gid> <groupname>
+```
+
+Then create the user **without** creating a home directory (NFS-shared `/home`):
+
+```bash
+sudo useradd -u <uid> -g <primary_gid> -s /bin/bash -c "Full Name" -d /home/username -M username
+sudo usermod -aG docker,tools,... username
+```
+
+| Flag | Meaning |
+|------|---------|
+| `-M` | Do not create home directory |
+| `-G` | Supplementary groups (replaces all existing supplementary groups) |
+
+### Step 4: Sync Group Membership
+
+Compare and align supplementary groups so they match between nodes:
+
+```bash
+for u in user1 user2 user3; do
+  echo "== $u =="
+  echo -n "groups: "; groups $u
+  echo -n "id:     "; id $u
 done
-
-# Verify
-echo "=== Group Members ==="
-getent group $GROUPNAME
 ```
+
+Run this on both `node01` and `node02` and compare output side by side. Fix mismatches with:
+
+```bash
+sudo usermod -G group1,group2,... username
+```
+
+:::warning
+`usermod -G` **replaces** all supplementary groups for that user, so list all groups the user should belong to.
+:::
+
+### Step 5: Sync Passwords
+
+Passwords are stored as hashes in `/etc/shadow`. Never edit `/etc/shadow` directly with `echo >>` — use `chpasswd -e` or `usermod -p`, which write safely with proper locking.
+
+#### Get the Hash from node01
+
+```bash
+sudo grep ^username: /etc/shadow
+```
+
+This returns:
+
+```
+username:$y$j9T$.../...:lastchange:0:99999:7:::
+```
+
+Copy the `username:hash` portion (first two fields, separated by `:`).
+
+#### Apply the Hash on node02
+
+**Option A — `usermod -p` (single user, recommended for one-off changes):**
+
+```bash
+sudo usermod -p '$y$j9T$...' username
+```
+
+**Option B — `chpasswd` (heredoc, useful for syncing multiple users at once):**
+
+```bash
+sudo chpasswd -e <<'EOF'
+username1:$y$j9T$...
+username2:$y$j9T$...
+EOF
+```
+
+#### Verify
+
+Run on both nodes and compare:
+
+```bash
+for u in user1 user2 user3; do
+  sudo grep ^$u: /etc/shadow | cut -d: -f1,2
+done
+```
+
+### `/etc/shadow` Field Reference
+
+The shadow file format is:
+
+```
+username:hash:lastchange:min:max:warn:inactive:expire:reserved
+```
+
+| Field | Meaning |
+|---|---|
+| `hash` | Encrypted password hash |
+| `lastchange` | Days since Unix epoch (1970-01-01) when password was last changed |
+| `min` | Minimum days before password can be changed again |
+| `max` | Maximum days password is valid (`99999` ≈ never expires) |
+| `warn` | Days before expiration to warn the user |
+| `inactive` | Days after expiration before account is disabled |
+| `expire` | Account expiration date (days since epoch) |
+
+:::note
+When using `chpasswd -e`, verify that `lastchange` updates correctly and isn't left blank or reset to `0`.
+:::
+
+### Long-Term Recommendation
+
+For more than a handful of users, consider centralizing authentication with **LDAP/SSSD** so accounts only need to be created once and are automatically consistent across all nodes.
