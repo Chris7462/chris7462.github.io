@@ -64,7 +64,7 @@ Navigate to your project directory and launch Aider with `--no-git` mode (recomm
 
 ```bash
 cd ~/kitti_ws
-aider --model ollama/qwen3.6-8k --no-git
+aider --model ollama/qwen3-coder-next:latest --no-git
 ```
 
 ## Step 4. Basic Aider Commands
