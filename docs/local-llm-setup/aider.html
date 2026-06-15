@@ -12,7 +12,7 @@
 <link rel="alternate" type="application/rss+xml" href="/music/rss.xml" title="Yi-Chen Zhang RSS Feed">
 <link rel="alternate" type="application/atom+xml" href="/music/atom.xml" title="Yi-Chen Zhang Atom Feed">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css" integrity="sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM" crossorigin="anonymous"><link rel="stylesheet" href="/assets/css/styles.9763260c.css">
-<script src="/assets/js/runtime~main.afac5c67.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.24fe35c8.js" defer="defer"></script>
 <script src="/assets/js/main.9f445a2f.js" defer="defer"></script>
 </head>
 <body>
@@ -42,7 +42,7 @@
 <p>Activate the virtual environment before each session:</p>
 <div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">source ~/.aider/bin/activate</span><br></div></code></pre></div></div>
 <p>Navigate to your project directory and launch Aider with <code>--no-git</code> mode (recommended for workspaces with submodules):</p>
-<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">cd ~/kitti_ws</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">aider --model ollama/qwen3.6-8k --no-git</span><br></div></code></pre></div></div>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">cd ~/kitti_ws</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">aider --model ollama/qwen3-coder-next:latest --no-git</span><br></div></code></pre></div></div>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-4-basic-aider-commands">Step 4. Basic Aider Commands<a href="#step-4-basic-aider-commands" class="hash-link" aria-label="Direct link to Step 4. Basic Aider Commands" title="Direct link to Step 4. Basic Aider Commands" translate="no">​</a></h2>
 <table><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody><tr><td><code>/add &lt;file_path&gt;</code></td><td>Add a file for the model to read and edit</td></tr><tr><td><code>/ls</code></td><td>List currently loaded files</td></tr><tr><td><code>/drop &lt;file_path&gt;</code></td><td>Remove a file</td></tr><tr><td><code>/exit</code></td><td>Quit Aider</td></tr></tbody></table>
 <p>Example:</p>
