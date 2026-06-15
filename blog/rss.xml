@@ -68,6 +68,44 @@ Reboot one more time manually after setting up your fingerprint.</p>]]></content
             <category>Repair</category>
         </item>
         <item>
+            <title><![CDATA[Upgrading Our NAS with NVMe Cache: A 4× Write Speed Boost]]></title>
+            <link>https://chris7462.github.io/blog/2026/05/20/qnap-nvme-cache</link>
+            <guid>https://chris7462.github.io/blog/2026/05/20/qnap-nvme-cache</guid>
+            <pubDate>Wed, 20 May 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[I recently installed two Samsung 970 EVO Plus 1TB NVMe drives into our QNAP TS-855X NAS as a read/write cache layer. The result: write speed jumped from 169 MB/s to 673 MB/s — nearly 4×.]]></description>
+            <content:encoded><![CDATA[<p>I recently installed two Samsung 970 EVO Plus 1TB NVMe drives into our QNAP TS-855X NAS as a read/write cache layer. The result: write speed jumped from 169 MB/s to 673 MB/s — nearly 4×.</p>
+<!-- -->
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-we-needed-this">Why We Needed This<a href="https://chris7462.github.io/blog/2026/05/20/qnap-nvme-cache#why-we-needed-this" class="hash-link" aria-label="Direct link to Why We Needed This" title="Direct link to Why We Needed This" translate="no">​</a></h2>
+<p>Our HPC cluster shares a single NFS <code>/home</code> across both nodes over 10GbE. The NAS itself was already fast on reads (~1.2 GB/s, limited by the 10GbE link), but writes were the bottleneck — 169 MB/s is slow when users are saving checkpoints, logging training runs, or syncing large datasets. The QNAP TS-855X has two M.2 PCIe slots on the motherboard, so adding NVMe cache was the natural next step.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-hardware">The Hardware<a href="https://chris7462.github.io/blog/2026/05/20/qnap-nvme-cache#the-hardware" class="hash-link" aria-label="Direct link to The Hardware" title="Direct link to The Hardware" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>NAS</strong>: QNAP TS-855X-8G-US</li>
+<li class=""><strong>Drives</strong>: 2× Samsung 970 EVO Plus 1TB (M.2 PCIe)</li>
+<li class=""><strong>Cache config</strong>: Read Cache (RAID 0, 1.73 TB) + ZIL Synchronous Write Log (RAID 1, ~10 GB mirrored)</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="installation">Installation<a href="https://chris7462.github.io/blog/2026/05/20/qnap-nvme-cache#installation" class="hash-link" aria-label="Direct link to Installation" title="Direct link to Installation" translate="no">​</a></h2>
+<p>The physical installation was straightforward — the QNAP TS-855X has two M.2 PCIe slots directly on the motherboard, accessible by opening the side panel. Slot 1 was empty; I installed the first drive there, then the second in slot 2.</p>
+<p><img decoding="async" loading="lazy" alt="Samsung 970 EVO Plus installed in M.2 PCIe slot 1 on the QNAP motherboard" src="https://chris7462.github.io/assets/images/qnap-nvme-installed-fa41165b677ca0f1c5a5641b5caf020e.jpeg" width="2573" height="1448" class="img_ev3q"></p>
+<p>Once both drives were seated, I powered the NAS back on and configured the cache in <strong>Storage &amp; Snapshots → Cache Acceleration</strong>:</p>
+<ul>
+<li class=""><strong>Read cache</strong>: both drives in RAID 0 for maximum read throughput</li>
+<li class=""><strong>ZIL write log</strong>: a small mirrored partition across both drives to accelerate synchronous writes safely</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="results">Results<a href="https://chris7462.github.io/blog/2026/05/20/qnap-nvme-cache#results" class="hash-link" aria-label="Direct link to Results" title="Direct link to Results" translate="no">​</a></h2>
+<p>The difference was immediately measurable:</p>
+<table><thead><tr><th></th><th>Before NVMe cache</th><th>After NVMe cache</th></tr></thead><tbody><tr><td><strong>Write</strong></td><td>169 MB/s</td><td><strong>673 MB/s</strong></td></tr><tr><td><strong>Read</strong></td><td>1.2 GB/s</td><td>1.2 GB/s (10GbE limited)</td></tr></tbody></table>
+<p>Read speed didn't change — it was already hitting the 10GbE ceiling (~1.25 GB/s). But write speed went from a bottleneck to genuinely comfortable for our workloads. Checkpoint saves and rsync transfers all feel noticeably snappier.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="one-thing-to-know">One Thing to Know<a href="https://chris7462.github.io/blog/2026/05/20/qnap-nvme-cache#one-thing-to-know" class="hash-link" aria-label="Direct link to One Thing to Know" title="Direct link to One Thing to Know" translate="no">​</a></h2>
+<div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>warning</div><div class="admonitionContent_BuS1"><p>Never physically remove the NVMe drives while cache is active — even with the NAS powered off, this risks data loss. To safely remove them, first disable the cache in the QNAP UI and wait for it to fully flush before powering down.</p></div></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="worth-it">Worth It?<a href="https://chris7462.github.io/blog/2026/05/20/qnap-nvme-cache#worth-it" class="hash-link" aria-label="Direct link to Worth It?" title="Direct link to Worth It?" translate="no">​</a></h2>
+<p>For a NAS serving as shared NFS storage for an HPC cluster, absolutely. The Samsung 970 EVO Plus drives are relatively affordable, the installation took under 30 minutes, and the write speed improvement is significant for our day-to-day workloads. If your NAS has empty M.2 slots, this is one of the easiest upgrades you can make.</p>]]></content:encoded>
+            <category>nas</category>
+            <category>qnap</category>
+            <category>nvme</category>
+            <category>storage</category>
+            <category>hpc</category>
+        </item>
+        <item>
             <title><![CDATA[Testing MAD-ICP Robustness in CARLA: Odometry in Dynamic, Unfiltered Scenes]]></title>
             <link>https://chris7462.github.io/blog/2026/03/24/carla-mad-icp</link>
             <guid>https://chris7462.github.io/blog/2026/03/24/carla-mad-icp</guid>
