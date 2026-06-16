@@ -25,7 +25,11 @@ The physical installation was straightforward — the QNAP TS-855X has two M.2 P
 
 ![Samsung 970 EVO Plus installed in M.2 PCIe slot 1 on the QNAP motherboard](./qnap-nvme-installed.jpeg)
 
-Once both drives were seated, I powered the NAS back on and configured the cache in **Storage & Snapshots → Cache Acceleration**:
+Once both drives were seated, I powered the NAS back on. The front panel confirmed both M.2 slots were recognized — both indicator lights lit up green:
+
+![Both M.2 indicator lights illuminated on the QNAP TS-855X front panel, confirming both NVMe drives are detected](./qnap-nvme-m2-indicator.jpeg)
+
+Then I configured the cache in **Storage & Snapshots → Cache Acceleration**:
 
 - **Read cache**: both drives in RAID 0 for maximum read throughput
 - **ZIL write log**: a small mirrored partition across both drives to accelerate synchronous writes safely
