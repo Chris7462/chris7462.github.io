@@ -1,6 +1,6 @@
 LATEX=/usr/bin/latex
 DVIPDFMX=/usr/bin/dvipdfmx
-CV=CV
+CV=cv
 
 defalut:
 	${LATEX} ${CV}.tex

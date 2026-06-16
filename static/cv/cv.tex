@@ -30,14 +30,15 @@
 \begin{itemize}[noitemsep,nolistsep]
   \item[] Lead Engineer, Autonomous \& Artificial Intelligence -- Advanced Engineering \hfill Jun 2024 -- Present
     \begin{itemize}[noitemsep,nolistsep]
-      \item Deployed perception components on NVIDIA TensorRT, including
-        \href{https://youtu.be/hCQMdW7kJeU}{FCOS object detection} and \href{https://youtu.be/VIA2CVCuDEc}{segmentation}, \href{https://youtu.be/QRWK-9q1iZU}{SORT multi-object tracking},
-        and \href{https://youtu.be/tFX7SLOLkI4}{SCNN lane detection} for autonomous driving applications.
-      \item Conducted research on Transformer-based perception architectures and manifold (matrix Lie group) methods for vehicle localization.
-      \item Designed and deployed a multi-user SLURM-based GPU compute environment on Linux workstations, supporting large-scale perception and localization experiments with CPU/GPU/memory isolation.
-      \item Implemented system-level enforcement to prevent non-SLURM compute workloads using custom systemd services, including user warnings, automatic process termination, and centralized logging.
-      \item Built HPC user and group management infrastructure with disk quotas, Docker access control, shared project workspaces, and automated onboarding scripts.
-      \item Authored internal SLURM and HPC documentation to standardize GPU job submission, debugging workflows, and best practices across engineering teams.
+      \item Deployed \href{https://chris7462.github.io/blog/2025/09/09/fcos-tensorrt}{FCOS object detection} in TensorRT, achieving a 20$\times$ speedup over the LibTorch baseline (650ms $\to$ 35ms end-to-end, including custom \CC~post-processing for NMS and IoU; \href{https://youtu.be/hCQMdW7kJeU}{demo video}).
+      \item Optimized a ResNet-101 FCN \href{https://chris7462.github.io/blog/2025/07/14/fcn-optimization}{segmentation} pipeline from 0.5 FPS to 31 FPS (2000ms $\to$ 32ms per frame) via TensorRT inference and custom CUDA kernels for mask decoding and colormap application (\href{https://youtu.be/VIA2CVCuDEc}{demo video}).
+      \item Deployed three perception models -- object detection, multi-object tracking, and segmentation -- running concurrently in real-time on a single GPU, as a step toward a planned \href{https://chris7462.github.io/blog/2025/09/10/panoptic-perception}{Panoptic Perception architecture} with a shared backbone and task-specific heads (\href{https://youtu.be/QRWK-9q1iZU}{demo video}).
+      \item Deployed \href{https://chris7462.github.io/blog/2026/01/05/scnn-lane-detection}{SCNN lane detection} in TensorRT for autonomous driving applications, with production-grade validation against MISRA \CC~and CERT coding standards (\href{https://youtu.be/tFX7SLOLkI4}{demo video}).
+      \item Conducted research on Transformer-based perception architectures and \href{https://chris7462.github.io/blog/2024/09/28/iekf}{manifold (matrix Lie group) methods} for vehicle localization.
+      \item Architected and administered a multi-node \href{https://chris7462.github.io/docs/hpc/admin/slurm/setup}{SLURM cluster} (control node + dedicated Docker/GPU compute node, with shared NAS storage for home directories), supporting large-scale perception and localization experiments with CPU/GPU/memory isolation via cgroups.
+      \item Designed a layered \href{https://chris7462.github.io/docs/hpc/admin/slurm/enforcement}{enforcement daemon} (cgroup membership, \texttt{SLURM\_JOB\_ID} environment checks, and parent/grandparent process inspection) that automatically warns and terminates non-SLURM compute workloads via custom systemd services, while correctly exempting legitimate jobs spawned from IDEs running inside SLURM sessions.
+      \item Built \href{https://chris7462.github.io/docs/hpc/admin/user-management}{HPC user and group management} infrastructure with disk quotas, Docker access control, shared project workspaces, automated onboarding scripts, and documented procedures (UID/GID mapping, Munge authentication) for \href{https://chris7462.github.io/docs/hpc/admin/slurm/adding-a-node}{adding new compute nodes}.
+      \item Authored internal \href{https://chris7462.github.io/docs/hpc}{SLURM and HPC documentation} to standardize GPU job submission, debugging workflows, and best practices across engineering teams.
     \end{itemize}
   \item[] Sr.~Engineer, Autonomous \& Artificial Intelligence -- Advanced Engineering \hfill Jan 2022 -- May 2024
     \begin{itemize}[noitemsep,nolistsep]
@@ -90,6 +91,7 @@
   \item \textbf{Robotics \& Middleware:} ROS~2 (custom packages, ament/CMake, rviz, rosbag workflows)
   \item \textbf{Model Deployment \& Acceleration:} TensorRT (engine build, ONNX import, \CC/Python inference), CUDA
   \item \textbf{Computer Vision \& 3D Perception:} OpenCV, Point Cloud Library (PCL), Ceres Solver, g2o
+  \item \textbf{Deep Learning Architectures:} FCOS, SCNN, YOLO (object detection), FCN (segmentation), SORT (tracking)
   \item \textbf{Machine Learning Frameworks:} PyTorch, ONNX ecosystem
   \item \textbf{Operating Systems:} Linux/Unix (extensive experience with Ubuntu, shell and system commands)
   \item \textbf{Software Quality \& Standards:} AUTOSAR \CC, MISRA \CC, CERT \CC~static analysis and compliance
