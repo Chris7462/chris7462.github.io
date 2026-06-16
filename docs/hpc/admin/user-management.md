@@ -468,6 +468,10 @@ This section covers how to replicate a user account (UID/GID, group memberships,
 Since `/home` is shared via NFS, user accounts must exist locally with **matching UID/GID** on both nodes — this is required for SLURM to function correctly (see [Adding a Node](./slurm/adding-a-node.md)). However, home directories should **not** be created by `useradd` on node02 (they already exist on the NFS share).
 :::
 
+:::tip
+Creating a **new group** that isn't tied to a specific user — e.g. a shared project group — instead of syncing an existing user account? See [Worked Example: Creating a New Project Group](#15-worked-example-creating-a-new-project-group) below.
+:::
+
 ### Step 1: List Users
 
 To list all regular (non-system) usernames on a node:
@@ -597,3 +601,69 @@ When using `chpasswd -e`, verify that `lastchange` updates correctly and isn't l
 ### Long-Term Recommendation
 
 For more than a handful of users, consider centralizing authentication with **LDAP/SSSD** so accounts only need to be created once and are automatically consistent across all nodes.
+
+---
+
+## 15. Worked Example: Creating a New Project Group
+
+This walks through creating a brand-new shared group (not tied to a single user) and a shared project folder, on the two-node cluster.
+
+### Step 1: Find a Free GID on Both Nodes
+
+```bash
+getent group | sort -t: -k3 -n
+```
+
+Run on **both** node01 and node02, and pick a GID that's unused on both.
+
+### Step 2: Create the Group with the Same GID on Both Nodes
+
+```bash
+# On node01
+sudo groupadd -g <GID> <groupname>
+
+# On node02
+sudo groupadd -g <GID> <groupname>
+```
+
+:::warning
+Both nodes must use the **identical GID**, the same way SLURM requires matching UID/GID for users. If you run `groupadd <groupname>` without `-g` on each node separately, they can end up with different GIDs and silently break permissions on the NFS-shared `/home`.
+:::
+
+Verify:
+
+```bash
+getent group <groupname>
+```
+
+Should print the same `groupname:x:<GID>:` on both nodes.
+
+### Step 3: Add Existing Users to the Group (Both Nodes)
+
+```bash
+sudo usermod -aG <groupname> USERNAME
+```
+
+:::warning
+Use `-aG` (append), not `-G` (replace). `-G` wipes out the user's other supplementary groups (e.g. `docker`, `tools`).
+:::
+
+Run on both nodes, then verify with `groups USERNAME` on each — output should match.
+
+### Step 4: Create a Shared Project Folder
+
+Run once on either node (`/home` is NFS-shared, so this is visible on both immediately):
+
+```bash
+sudo mkdir /home/<folder_name>
+sudo chown <owner_user>:<groupname> /home/<folder_name>
+sudo chmod 2770 /home/<folder_name>
+```
+
+The setgid bit (`2`) makes new files/folders created inside inherit the group, so it stays usable as a shared workspace.
+
+Verify:
+
+```bash
+ls -ld /home/<folder_name>
+```
