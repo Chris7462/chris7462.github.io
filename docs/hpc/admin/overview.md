@@ -44,10 +44,14 @@ The cluster consists of two workstations and a NAS, interconnected via a 10GbE i
 |-----------|----------------------------------------------------|
 | CPU       | AMD Threadripper PRO 9985WX — 64 cores / 128 threads @ up to 5.5 GHz |
 | RAM       | 256 GB (8× 32GB DIMMs)                             |
-| GPU       | NVIDIA RTX PRO 6000 Blackwell — ~96 GB VRAM        |
+| GPU       | 2× NVIDIA RTX PRO 6000 Blackwell Max-Q — ~96 GB VRAM each (~192 GB total) |
 | Storage   | Samsung 990 PRO 4TB NVMe                           |
 | OS        | Ubuntu 24.04                                       |
 | IP        | 192.168.220.75                                     |
+
+:::note
+node01 was expanded from 1 to 2 GPUs — see [Adding a Second GPU](./slurm/gpu-expansion) for the full hardware, SLURM, and monitoring update walkthrough.
+:::
 
 ### Compute Node
 

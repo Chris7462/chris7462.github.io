@@ -16,7 +16,7 @@ This document covers the SLURM installation and configuration for shared use of 
 |-----------|---------------|
 | CPU       | AMD Ryzen Threadripper PRO 9985WX — 64 cores / 128 threads @ up to 5.5 GHz |
 | RAM       | 256 GB (8× 32GB DIMMs) |
-| GPU       | NVIDIA RTX PRO 6000 Blackwell — ~96 GB VRAM |
+| GPU       | 2× NVIDIA RTX PRO 6000 Blackwell Max-Q — ~96 GB VRAM each (~192 GB total) |
 | Storage   | Samsung 990 PRO 4TB NVMe |
 | OS        | Ubuntu 24.04 |
 | Hostname  | node01       |
@@ -189,6 +189,10 @@ PartitionName=main \
 - `MaxTime=7-00:00:00` — Maximum job duration is 7 days
 - Backfill scheduler automatically prioritizes shorter jobs when resources are available
 
+:::note
+The `slurm.conf` snippet above reflects the original single-GPU setup. The node has since been expanded to 2 GPUs — see [Adding a Second GPU](./gpu-expansion) for the updated `Gres=` line and full reconfiguration walkthrough.
+:::
+
 ### 3.2 GPU Configuration (`gres.conf`)
 
 ```bash
@@ -217,6 +221,8 @@ Then update the node definition in `slurm.conf`:
 ```bash
 Gres=gpu:rtx6000:6
 ```
+
+For a real-world walkthrough of this exact process — including a stale Gres-count node drain and how it was resolved, plus the matching Grafana dashboard updates — see [Adding a Second GPU](./gpu-expansion).
 :::
 
 ### 3.3 Cgroup Configuration (`cgroup.conf`)

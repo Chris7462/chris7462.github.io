@@ -200,6 +200,10 @@ This exposes metrics like:
 | `nvidia_smi_temperature_gpu` | GPU temperature |
 | `nvidia_smi_power_draw` | Power draw (W) |
 
+:::note
+The exporter automatically reports every GPU visible on the host — no config changes are needed when a node's GPU count changes. See [Adding a Second GPU](./slurm/gpu-expansion#51-exporter-verification--no-config-changes-needed) for a worked example of node01 going from 1 to 2 GPUs.
+:::
+
 ---
 
 ## Step 4: Install Prometheus SLURM Exporter
@@ -372,6 +376,10 @@ SLURM Jobs
 ```
 
 Each node's panels are filtered by Prometheus instance label so they display independently.
+
+:::note
+As of new dashboard version, the Control Node · GPU row is split into two per-GPU panel blocks (GPU 0 / GPU 1), since node01 now has 2 physical GPUs reporting under the same `instance` label. See [Adding a Second GPU — Dashboard Restructuring](./slurm/gpu-expansion#53-dashboard-restructuring) for the full rationale and layout, and download the updated `hpc-overview-nas-gpu.json` from that page.
+:::
 
 ---
 
