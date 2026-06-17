@@ -52,6 +52,9 @@ cmake -DCMAKE_BUILD_TYPE=RELEASE \
       -DWITH_LAPACK=ON \
       -DOpenBLAS_LIB="${OPENBLAS_LIB}" \
       -DOpenBLAS_INCLUDE_DIR="${OPENBLAS_INCLUDE_DIR}" \
+      -DLAPACK_CBLAS_H="${OPENBLAS_INCLUDE_DIR}/cblas.h" \
+      -DLAPACK_LAPACKE_H=/usr/include/lapacke.h \
+      -DLAPACK_LIBRARIES="${OPENBLAS_LIB}" \
       \
       -DBUILD_opencv_sfm=ON \
       -DBUILD_opencv_cudacodec=ON \
