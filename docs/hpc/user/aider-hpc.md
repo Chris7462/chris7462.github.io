@@ -37,7 +37,7 @@ All interactive sessions must be run inside a SLURM allocation. Processes left r
 srun --time=04:00:00 --cpus-per-task=2 --mem=4G --pty bash
 ```
 
-- No GPU request needed — inference runs on node01's GPU over the network
+- No GPU request needed — inference runs on node01's GPUs over the network
 - `--cpus-per-task=2` — Aider itself is lightweight (mostly waiting on network responses from the Ollama server), so 2 CPUs is generally sufficient unless you're also running other tools (linters, test suites, builds) in the same session
 - `--mem=4G` — covers Aider plus typical editor/shell overhead; increase this if your project's build or test commands need more memory
 - `--time=04:00:00` gives a 4-hour working window (adjust as needed)

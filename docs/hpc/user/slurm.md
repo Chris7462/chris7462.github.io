@@ -18,8 +18,8 @@ The cluster consists of two nodes:
 |----------|-----------------------|-----------------------|
 | CPU | Threadripper PRO 9985WX — 128 threads | Ryzen 9 9950X3D — 32 threads |
 | RAM | 256 GB | 128 GB |
-| GPU | RTX PRO 6000 (~96 GB VRAM) | RTX 5000 Ada (~32 GB VRAM) |
-| Shards | 8 shards (~12 GB each) | 2 shards (~16 GB each) |
+| GPU | 2× RTX PRO 6000 Blackwell Max-Q (~96 GB VRAM each, ~192 GB total) | RTX 5000 Ada (~32 GB VRAM) |
+| Shards | 16 shards (~12 GB each) | 2 shards (~16 GB each) |
 | Feature tag | `large` | `small` |
 
 | Setting | Value |
@@ -31,18 +31,19 @@ The cluster consists of two nodes:
 
 ## GPU Allocation Policy
 
-The GPU can be allocated in two ways:
+The GPU(s) can be allocated a few ways:
 
 | Allocation | Command | Use Case |
 |------------|---------|----------|
 | Shared (default) | `--gres=shard:N` | Development, inference, small training jobs |
-| Exclusive | `--gres=gpu:1` | Large training jobs requiring full GPU |
+| Exclusive (single GPU) | `--gres=gpu:1` | Large training jobs requiring one full GPU |
+| Exclusive (multi-GPU) | `--gres=gpu:2` | Multi-GPU parallel training (e.g. PyTorch DDP) needing both GPUs on node01 |
 
 ### Shards per Node
 
 | Node | GPU | Shards | VRAM per Shard |
 |------|-----|--------|----------------|
-| node01 | RTX PRO 6000 | 8 shards | ~12 GB each |
+| node01 | 2× RTX PRO 6000 Blackwell Max-Q | 16 shards | ~12 GB each |
 | node02 | RTX 5000 Ada | 2 shards | ~16 GB each |
 
 :::warning
@@ -51,14 +52,19 @@ SLURM does **not** enforce VRAM limits per shard. If you exceed your allocation,
 
 ### GPU Request Guidelines
 
-**node01 (RTX PRO 6000 — 96GB):**
+**node01 (2× RTX PRO 6000 Blackwell Max-Q — 96GB each):**
 
 | VRAM Needed | Request |
 |-------------|---------|
 | < 12 GB | `--gres=shard:1` |
 | 12–24 GB | `--gres=shard:2` |
 | 24–48 GB | `--gres=shard:4` |
-| 48–96 GB | `--gres=gpu:1` (full GPU) |
+| 48–96 GB | `--gres=gpu:1` (one full GPU) |
+| Multi-GPU parallel training (DDP, model/data parallel) | `--gres=gpu:2` (both GPUs, exclusive) |
+
+:::note
+`--gres=gpu:1` gives you exclusive access to **one** of node01's two GPUs (96GB) — it no longer means "the whole node" now that there are two cards. If your job needs to spread work across both GPUs simultaneously (e.g. `torchrun --nproc_per_node=2`), request `--gres=gpu:2` instead. See [Multi-GPU Parallel Training](#multi-gpu-parallel-training-ddp-both-gpus) below for a full example.
+:::
 
 **node02 (RTX 5000 Ada — 32GB):**
 
@@ -149,6 +155,9 @@ exit  # release resources when done
 
 # For large jobs needing full GPU
 srun --gres=gpu:1 --mem=64G --time=04:00:00 --pty bash
+
+# For multi-GPU jobs needing both GPUs on node01
+srun --gres=gpu:2 --ntasks=2 --mem=128G --time=04:00:00 --pty bash
 ```
 
 ---
@@ -197,8 +206,7 @@ For most GPU jobs, use shards:
 #SBATCH --gres=shard:2
 
 # Load environment
-source ~/.bashrc
-conda activate myenv
+source ~/venvs/myenv/bin/activate
 
 # Run training
 python train.py --epochs 100 --batch-size 32
@@ -221,8 +229,7 @@ For large models requiring full GPU:
 #SBATCH --gres=gpu:1
 
 # Load environment
-source ~/.bashrc
-conda activate myenv
+source ~/venvs/myenv/bin/activate
 
 # Run large model training
 python train.py --model large --batch-size 128
@@ -233,6 +240,41 @@ Submit:
 
 ```bash
 mkdir -p logs  # create logs directory first
+sbatch job.sh
+```
+
+### GPU Job Script (Multi-GPU, Both GPUs)
+
+For PyTorch DistributedDataParallel or other multi-GPU parallel training that needs **both** GPUs on node01 simultaneously:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=ddp_training
+#SBATCH --output=logs/%x_%j.log
+#SBATCH --error=logs/%x_%j.err
+#SBATCH --time=48:00:00
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=128G
+#SBATCH --constraint=large
+#SBATCH --gres=gpu:2
+#SBATCH --ntasks=2
+
+# Load environment
+source ~/venvs/myenv/bin/activate
+
+# torchrun spawns one process per GPU
+torchrun --nproc_per_node=2 train_ddp.py --epochs 100 --batch-size 256
+echo "Training complete"
+```
+
+:::note
+`--gres=gpu:2` reserves both physical GPUs exclusively for the duration of the job — no other user's `shard` or `gpu` jobs can use either card until it finishes. Only request this when your job is actually structured to use both GPUs (e.g. via `torchrun`, `accelerate`, or `deepspeed`); otherwise use `--gres=gpu:1` or a shard request.
+:::
+
+Submit:
+
+```bash
+mkdir -p logs
 sbatch job.sh
 ```
 
@@ -266,7 +308,8 @@ sbatch job.sh 0.001 50
 | `--cpus-per-task` | Number of CPU threads | `--cpus-per-task=8` |
 | `--mem` | Total memory | `--mem=32G` |
 | `--gres=shard:N` | Shared GPU (N shards) | `--gres=shard:2` |
-| `--gres=gpu:1` | Full GPU (exclusive access) | `--gres=gpu:1` |
+| `--gres=gpu:1` | One full GPU (exclusive access) | `--gres=gpu:1` |
+| `--gres=gpu:2` | Both GPUs on node01 (exclusive, multi-GPU) | `--gres=gpu:2` |
 | `--constraint` | Target node by capability | `--constraint=large` |
 
 ---
@@ -458,6 +501,8 @@ Over-requesting blocks resources from others:
 #SBATCH --gres=shard:2
 ```
 
+Likewise, only request `--gres=gpu:2` when your job is genuinely structured to use both GPUs — it blocks both cards from every other user until it finishes.
+
 ### Test Interactively First
 
 ```bash
@@ -495,8 +540,7 @@ echo "GPUs: $CUDA_VISIBLE_DEVICES"
 echo "Start time: $(date)"
 
 # Setup environment
-source ~/.bashrc
-conda activate pytorch
+source ~/venvs/pytorch/bin/activate
 
 # Run training
 python train.py \
@@ -529,8 +573,7 @@ echo "GPUs: $CUDA_VISIBLE_DEVICES"
 echo "Start time: $(date)"
 
 # Setup environment
-source ~/.bashrc
-conda activate pytorch
+source ~/venvs/pytorch/bin/activate
 
 # Run large model training
 python train.py \
@@ -543,6 +586,47 @@ python train.py \
 echo "End time: $(date)"
 ```
 
+### Multi-GPU Parallel Training (DDP, Both GPUs)
+
+For models that need to be split across both GPUs, or that train faster with data-parallel DDP across both cards:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=ddp_train
+#SBATCH --output=logs/%x_%j.log
+#SBATCH --error=logs/%x_%j.err
+#SBATCH --time=72:00:00
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=128G
+#SBATCH --constraint=large
+#SBATCH --gres=gpu:2
+#SBATCH --ntasks=2
+
+# Print job info
+echo "Job ID: $SLURM_JOB_ID"
+echo "Node: $SLURM_NODELIST"
+echo "GPUs: $CUDA_VISIBLE_DEVICES"
+echo "Start time: $(date)"
+
+# Setup environment
+source ~/venvs/pytorch/bin/activate
+
+# torchrun spawns one training process per GPU and handles
+# the DDP process group setup (rank, world size, etc.) automatically
+torchrun --nproc_per_node=2 train_ddp.py \
+    --model resnet50 \
+    --epochs 100 \
+    --batch-size 256 \
+    --learning-rate 0.001 \
+    --output-dir results/$SLURM_JOB_ID
+
+echo "End time: $(date)"
+```
+
+:::tip
+Test your DDP setup interactively first with a short run before submitting a long `sbatch` job — see [Test Interactively First](#test-interactively-first) above, using `srun --gres=gpu:2 --ntasks=2 --pty bash` instead of the shard version.
+:::
+
 ---
 
 ## Quick Reference
@@ -551,8 +635,11 @@ echo "End time: $(date)"
 # Interactive session with shared GPU (recommended)
 srun --gres=shard:2 --mem=32G --time=02:00:00 --pty bash
 
-# Interactive session with full GPU (large jobs only)
+# Interactive session with one full GPU (large jobs only)
 srun --gres=gpu:1 --mem=64G --time=04:00:00 --pty bash
+
+# Interactive session with both GPUs (multi-GPU DDP testing)
+srun --gres=gpu:2 --ntasks=2 --mem=128G --time=04:00:00 --pty bash
 
 # Interactive session on the larger node specifically
 srun --constraint=large --gres=shard:2 --time=02:00:00 --pty bash
