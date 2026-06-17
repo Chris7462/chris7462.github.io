@@ -4,10 +4,59 @@
         <title>Yi-Chen Zhang Blog</title>
         <link>https://chris7462.github.io/blog</link>
         <description>Yi-Chen Zhang Blog</description>
-        <lastBuildDate>Sat, 23 May 2026 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 16 Jun 2026 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Doubling Up: Adding a Second RTX PRO 6000 Blackwell to node01]]></title>
+            <link>https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu</link>
+            <guid>https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu</guid>
+            <pubDate>Tue, 16 Jun 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[node01 just went from one NVIDIA RTX PRO 6000 Blackwell to two. The motivation was simple: a single 96GB card is plenty for shared inference and small-to-medium training jobs, but it can't run true multi-GPU parallel training. With model sizes creeping up, we needed a second card so people can actually spread a training job across GPUs instead of being capped at one.]]></description>
+            <content:encoded><![CDATA[<p>node01 just went from one NVIDIA RTX PRO 6000 Blackwell to two. The motivation was simple: a single 96GB card is plenty for shared inference and small-to-medium training jobs, but it can't run true multi-GPU parallel training. With model sizes creeping up, we needed a second card so people can actually spread a training job across GPUs instead of being capped at one.</p>
+<!-- -->
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-we-needed-this">Why We Needed This<a href="https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu#why-we-needed-this" class="hash-link" aria-label="Direct link to Why We Needed This" title="Direct link to Why We Needed This" translate="no">​</a></h2>
+<p>node01's single RTX PRO 6000 Blackwell has been carved into 8 SLURM shards so multiple users can share it for inference and lighter workloads. That works well for shared use, but it means nobody could request more than one full GPU at a time — there simply wasn't a second one to allocate. For data-parallel or model-parallel training runs, that's a hard ceiling. Adding a second, identical card removes it: two GPUs now means jobs can actually use <code>--gres=gpu:2</code> and split work (or a model) across both.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-hardware">The Hardware<a href="https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu#the-hardware" class="hash-link" aria-label="Direct link to The Hardware" title="Direct link to The Hardware" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>GPU</strong>: NVIDIA RTX PRO 6000 Blackwell (PNY), ~96 GB VRAM</li>
+<li class=""><strong>Now installed</strong>: 2× identical cards on node01, ~192 GB VRAM combined</li>
+<li class=""><strong>Host</strong>: AMD Threadripper PRO 9985WX workstation (64 cores / 128 threads, 256 GB RAM)</li>
+</ul>
+<p><img decoding="async" loading="lazy" alt="PNY-boxed RTX PRO 6000 Blackwell, unopened" src="https://chris7462.github.io/assets/images/pny-rtx-pro-6000-box-46ccdb7ef7e29675af100c28e65a0b04.jpeg" width="4080" height="3072" class="img_ev3q"></p>
+<p>The new card ships in a plain white PNY box — no surprises there. Inside is the card itself, NVIDIA reference design, with a "Remove Film Before Use" sticker over the fan shroud and the protective film still on.</p>
+<p><img decoding="async" loading="lazy" alt="The new RTX PRO 6000 Blackwell card next to a pen for scale" src="https://chris7462.github.io/assets/images/rtx-pro-6000-unboxed-9ef5151448a7923587d52188ba35ae1f.jpeg" width="4080" height="3072" class="img_ev3q"></p>
+<p>It's a full-length, blower-style workstation card — for scale, that's a standard ballpoint pen sitting next to it. The rear edge shows the usual NVIDIA branding along with stereo and sync connectors, standard on this class of professional card:</p>
+<p><img decoding="async" loading="lazy" alt="Rear I/O edge of the card showing the NVIDIA logo, STEREO and SYNC connectors" src="https://chris7462.github.io/assets/images/rtx-pro-6000-rear-io-d746d26fc6809d9c4290eaab80a5e98c.jpeg" width="4080" height="3072" class="img_ev3q"></p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="installation">Installation<a href="https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu#installation" class="hash-link" aria-label="Direct link to Installation" title="Direct link to Installation" translate="no">​</a></h2>
+<p>The Threadripper PRO motherboard has the PCIe lanes to spare, so the install itself was mechanically simple: open the case, pull the protective film off the new card, slot it into the second open x16 slot, and reconnect power. The case already has three intake fans up front feeding both GPUs, so no extra cooling changes were needed.</p>
+<p><img decoding="async" loading="lazy" alt="Both NVIDIA GPUs installed side by side inside the case, with power and data cables connected" src="https://chris7462.github.io/assets/images/dual-gpu-installed-6f044d4b64c1062a84f6868a37fb3fe1.jpeg" width="4080" height="3072" class="img_ev3q"></p>
+<p>With the case open you can see both cards seated, power cables routed, and the existing AIO cooler tubing for the CPU running across the top.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="verification">Verification<a href="https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu#verification" class="hash-link" aria-label="Direct link to Verification" title="Direct link to Verification" translate="no">​</a></h2>
+<p>After buttoning the case back up and powering on, <code>lspci</code> confirms the OS sees both cards:</p>
+<p><img decoding="async" loading="lazy" alt="Terminal output of lspci showing two NVIDIA Device 2bb4 entries on separate PCIe buses" src="https://chris7462.github.io/assets/images/lspci-dual-gpu-verify-cbd6bfa2412ce639f7ef873b7103be97.png" width="771" height="95" class="img_ev3q"></p>
+<p>Both entries report the same device ID (<code>2bb4</code>), confirming they're identical RTX PRO 6000 Blackwell cards, each living on its own PCIe root (<code>11:00.0</code> and <code>f1:00.0</code>) — exactly what you'd want for two full-bandwidth GPUs rather than a bifurcated single slot.</p>
+<p><code>nvidia-smi</code> confirms the same from the driver's side, listing both as fully recognized RTX PRO 6000 Blackwell cards with their own 97.9 GB of VRAM each:</p>
+<p><img decoding="async" loading="lazy" alt="nvidia-smi output showing two NVIDIA RTX PRO 6000 Blackwell GPUs, each with ~97.9GB VRAM" src="https://chris7462.github.io/assets/images/nvidia-smi-dual-gpu-verify-63c48185a82dbf6275cc6e2367c0675f.png" width="938" height="573" class="img_ev3q"></p>
+<p>Both cards are idling at P8 with low power draw and no compute load, just the usual Xorg/gnome-shell overhead — exactly what you'd expect before any jobs are running.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="next-up-exposing-the-second-gpu-to-slurm">Next Up: Exposing the Second GPU to SLURM<a href="https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu#next-up-exposing-the-second-gpu-to-slurm" class="hash-link" aria-label="Direct link to Next Up: Exposing the Second GPU to SLURM" title="Direct link to Next Up: Exposing the Second GPU to SLURM" translate="no">​</a></h2>
+<p>The OS sees both cards, but SLURM doesn't yet — <code>gres.conf</code> and <code>slurm.conf</code> on node01 still only declare one. That's the next step:</p>
+<ul>
+<li class="">Add a second <code>Name=gpu Type=rtx6000 File=/dev/nvidia1</code> line to <code>gres.conf</code></li>
+<li class="">Bump the node definition in <code>slurm.conf</code> to <code>Gres=gpu:rtx6000:2</code></li>
+<li class="">Decide whether to also double the shard count (16 instead of 8) so shared inference workloads keep their current granularity alongside the new full-GPU parallel training option</li>
+<li class="">Restart <code>slurmctld</code> and <code>slurmd</code>, then verify with <code>scontrol show node node01</code> and a test job using <code>--gres=gpu:2</code></li>
+</ul>
+<p>I'll cover that config update in a follow-up post once it's done and tested.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="worth-it">Worth It?<a href="https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu#worth-it" class="hash-link" aria-label="Direct link to Worth It?" title="Direct link to Worth It?" translate="no">​</a></h2>
+<p>For shared inference and small jobs, nothing changes day to day — those still run fine on shards. But for anyone training larger models, this unlocks real multi-GPU parallelism on node01 for the first time. Once the SLURM config catches up, <code>--gres=gpu:2</code> should be ready to go.</p>]]></content:encoded>
+            <category>hpc</category>
+            <category>gpu</category>
+            <category>nvidia</category>
+            <category>slurm</category>
+            <category>hardware</category>
+        </item>
         <item>
             <title><![CDATA[Fix Pixel 8 Fingerprint Scanner After Screen Replacement (Ubuntu)]]></title>
             <link>https://chris7462.github.io/blog/2026/05/23/pixel8-fingerprint</link>
