@@ -24,6 +24,22 @@
         <category label="piano" term="piano"/>
     </entry>
     <entry>
+        <title type="html"><![CDATA[La Dispute]]></title>
+        <id>https://chris7462.github.io/music/2026/02/23/la-dispute</id>
+        <link href="https://chris7462.github.io/music/2026/02/23/la-dispute"/>
+        <updated>2026-02-23T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA["La Dispute" by Yann Tiersen.]]></summary>
+        <content type="html"><![CDATA[<p>"La Dispute" by Yann Tiersen.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/rLfzz6YnmQU" title="La Dispute - Yann Tiersen" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>]]></content>
+        <author>
+            <name>Yi-Chen Zhang</name>
+            <uri>https://chris7462.github.io</uri>
+        </author>
+        <category label="music" term="music"/>
+        <category label="piano" term="piano"/>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[About]]></title>
         <id>https://chris7462.github.io/music/2024/11/24/about</id>
         <link href="https://chris7462.github.io/music/2024/11/24/about"/>
