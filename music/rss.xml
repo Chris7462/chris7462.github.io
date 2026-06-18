@@ -4,10 +4,22 @@
         <title>Yi-Chen Zhang Blog</title>
         <link>https://chris7462.github.io/music</link>
         <description>Yi-Chen Zhang Blog</description>
-        <lastBuildDate>Sun, 24 Nov 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 14 Mar 2026 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Comptine d'été No. 2]]></title>
+            <link>https://chris7462.github.io/music/2026/03/14/comptine-dete-no-2</link>
+            <guid>https://chris7462.github.io/music/2026/03/14/comptine-dete-no-2</guid>
+            <pubDate>Sat, 14 Mar 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA["Comptine d'été No. 2" by Yann Tiersen.]]></description>
+            <content:encoded><![CDATA[<p>"Comptine d'été No. 2" by Yann Tiersen.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/cn-OiAhOiaU" title="Comptine d'été No. 2 - Yann Tiersen" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>]]></content:encoded>
+            <category>music</category>
+            <category>piano</category>
+        </item>
         <item>
             <title><![CDATA[About]]></title>
             <link>https://chris7462.github.io/music/2024/11/24/about</link>
