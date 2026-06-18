@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunkchris7462_github_io=globalThis.webpackChunkchris7462_github_io||[]).push([[84],{5694(i){i.exports=JSON.parse('{"tags":[{"label":"music","permalink":"/music/tags/music","count":2},{"label":"piano","permalink":"/music/tags/piano","count":2}]}')}}]);
