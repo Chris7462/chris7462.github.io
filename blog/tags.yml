@@ -218,6 +218,11 @@ music:
   permalink: /music
   description: Music-related projects
 
+piano:
+  label: Piano
+  permalink: /piano
+  description: Piano performance videos and recordings
+
 open-source:
   label: Open Source
   permalink: /open-source
