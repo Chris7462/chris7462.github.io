@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 title: Lenovo Legion Pro 7i Gen 10 — Install NVIDIA Driver
 description: Install NVIDIA GPU driver on a Lenovo Legion Pro 7i Gen 10 (RTX 5090) running Ubuntu 26.04
 ---

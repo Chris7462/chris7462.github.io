@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 1
 title: Lambda Tensorbook — Install NVIDIA Driver
 description: Install the pinned NVIDIA driver and fix a hybrid-graphics Xorg crash on a Lambda Tensorbook running Ubuntu 26.04
 ---

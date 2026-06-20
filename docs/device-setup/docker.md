@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: Install Docker with NVIDIA Support
 description: Install Docker and the NVIDIA Container Toolkit on Ubuntu 26.04
 ---

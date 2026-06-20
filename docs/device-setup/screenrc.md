@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: Configure Screen
 description: Personal GNU Screen configuration for Yi-Chen Zhang
 ---
