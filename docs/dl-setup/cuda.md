@@ -6,11 +6,11 @@ description: Install the NVIDIA CUDA Toolkit and configure system-wide environme
 
 # Install CUDA
 
-Update the Ubuntu version below if needed. This example was created for Ubuntu 24.04.
+Set the `os` variable below to match your Ubuntu version (e.g. `ubuntu2404` for 24.04, `ubuntu2604` for 26.04):
 
 ```bash
 # Set the Ubuntu version
-os=ubuntu2404
+os=ubuntu2604
 
 # Download and install the CUDA repository keyring
 wget https://developer.download.nvidia.com/compute/cuda/repos/${os}/x86_64/cuda-keyring_1.1-1_all.deb
@@ -18,11 +18,38 @@ sudo apt install ./cuda-keyring_1.1-1_all.deb
 
 # Update package lists
 sudo apt update
-# If you want to have specific nvidia driver version
-# sudo apt install nvidia-driver-pinning-610    # pinning on 610 driver
-sudo apt install nvidia-driver-open
+```
+
+## Choosing a Driver: Pinned vs Rolling
+
+Two ways to install the NVIDIA driver from this point:
+
+- **`nvidia-driver-pinning-XXX`** — pins to a specific major driver version (e.g. `610`). Recommended in general, since CUDA Toolkit and TensorRT versions are tested against specific driver versions, and a pinned install won't silently jump to a newer (potentially incompatible) driver on a routine `apt upgrade`.
+- **`nvidia-driver-open`** — always installs whatever the latest open-kernel-module driver is. Simpler, but less reproducible.
+
+Check what version is currently available before deciding:
+
+```bash
+apt policy nvidia-driver-open
+```
+
+This shows the candidate version apt would install (e.g. `610.xx-xxx`). Use that major version number to pin:
+
+```bash
+sudo apt install nvidia-driver-pinning-610
+```
+
+:::tip
+If you'd rather not pin and just want the latest driver, skip the pinning package and run `sudo apt install nvidia-driver-open` instead.
+:::
+
+## Install the CUDA Toolkit
+
+```bash
 sudo apt install cuda-toolkit
 ```
+
+## Configure Environment Variables
 
 Configure CUDA environment variables system-wide by creating `/etc/profile.d/cuda.sh`:
 
@@ -45,3 +72,9 @@ Apply the changes by logging out and back in, or run:
 source /etc/profile.d/cuda.sh
 ```
 
+## Validation
+
+```bash
+nvidia-smi
+nvcc --version
+```
