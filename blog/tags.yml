@@ -232,3 +232,48 @@ opencv:
   label: OpenCV
   permalink: /opencv
   description: OpenCV computer vision library
+
+hpc:
+  label: HPC
+  permalink: /hpc
+  description: High-performance computing cluster administration
+
+hardware:
+  label: Hardware
+  permalink: /hardware
+  description: Hardware specs, builds, and upgrades
+
+gpu:
+  label: GPU
+  permalink: /gpu
+  description: GPU hardware and configuration
+
+nvidia:
+  label: NVIDIA
+  permalink: /nvidia
+  description: NVIDIA hardware and software ecosystem
+
+slurm:
+  label: SLURM
+  permalink: /slurm
+  description: SLURM workload manager
+
+storage:
+  label: Storage
+  permalink: /storage
+  description: Storage systems and configuration
+
+nas:
+  label: NAS
+  permalink: /nas
+  description: Network-attached storage setup and administration
+
+qnap:
+  label: QNAP
+  permalink: /qnap
+  description: QNAP NAS hardware and configuration
+
+nvme:
+  label: NVMe
+  permalink: /nvme
+  description: NVMe storage and caching
