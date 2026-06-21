@@ -51,11 +51,11 @@
 <p>I'll cover that config update in a follow-up post once it's done and tested.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="worth-it">Worth It?<a href="https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu#worth-it" class="hash-link" aria-label="Direct link to Worth It?" title="Direct link to Worth It?" translate="no">​</a></h2>
 <p>For shared inference and small jobs, nothing changes day to day — those still run fine on shards. But for anyone training larger models, this unlocks real multi-GPU parallelism on node01 for the first time. Once the SLURM config catches up, <code>--gres=gpu:2</code> should be ready to go.</p>]]></content:encoded>
-            <category>hpc</category>
-            <category>gpu</category>
-            <category>nvidia</category>
-            <category>slurm</category>
-            <category>hardware</category>
+            <category>HPC</category>
+            <category>GPU</category>
+            <category>NVIDIA</category>
+            <category>SLURM</category>
+            <category>Hardware</category>
         </item>
         <item>
             <title><![CDATA[Fix Pixel 8 Fingerprint Scanner After Screen Replacement (Ubuntu)]]></title>
@@ -150,11 +150,11 @@ Reboot one more time manually after setting up your fingerprint.</p>]]></content
 <div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>warning</div><div class="admonitionContent_BuS1"><p>Never physically remove the NVMe drives while cache is active — even with the NAS powered off, this risks data loss. To safely remove them, first disable the cache in the QNAP UI and wait for it to fully flush before powering down.</p></div></div>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="worth-it">Worth It?<a href="https://chris7462.github.io/blog/2026/05/20/qnap-nvme-cache#worth-it" class="hash-link" aria-label="Direct link to Worth It?" title="Direct link to Worth It?" translate="no">​</a></h2>
 <p>For a NAS serving as shared NFS storage for an HPC cluster, absolutely. The Samsung 970 EVO Plus drives are relatively affordable, the installation took under 30 minutes, and the write speed improvement is significant for our day-to-day workloads. If your NAS has empty M.2 slots, this is one of the easiest upgrades you can make.</p>]]></content:encoded>
-            <category>nas</category>
-            <category>qnap</category>
-            <category>nvme</category>
-            <category>storage</category>
-            <category>hpc</category>
+            <category>NAS</category>
+            <category>QNAP</category>
+            <category>NVMe</category>
+            <category>Storage</category>
+            <category>HPC</category>
         </item>
         <item>
             <title><![CDATA[Testing MAD-ICP Robustness in CARLA: Odometry in Dynamic, Unfiltered Scenes]]></title>

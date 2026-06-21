@@ -54,11 +54,11 @@
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="hpc" term="hpc"/>
-        <category label="gpu" term="gpu"/>
-        <category label="nvidia" term="nvidia"/>
-        <category label="slurm" term="slurm"/>
-        <category label="hardware" term="hardware"/>
+        <category label="HPC" term="HPC"/>
+        <category label="GPU" term="GPU"/>
+        <category label="NVIDIA" term="NVIDIA"/>
+        <category label="SLURM" term="SLURM"/>
+        <category label="Hardware" term="Hardware"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Fix Pixel 8 Fingerprint Scanner After Screen Replacement (Ubuntu)]]></title>
@@ -161,11 +161,11 @@ Reboot one more time manually after setting up your fingerprint.</p>]]></content
             <name>Yi-Chen Zhang</name>
             <uri>https://chris7462.github.io</uri>
         </author>
-        <category label="nas" term="nas"/>
-        <category label="qnap" term="qnap"/>
-        <category label="nvme" term="nvme"/>
-        <category label="storage" term="storage"/>
-        <category label="hpc" term="hpc"/>
+        <category label="NAS" term="NAS"/>
+        <category label="QNAP" term="QNAP"/>
+        <category label="NVMe" term="NVMe"/>
+        <category label="Storage" term="Storage"/>
+        <category label="HPC" term="HPC"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Testing MAD-ICP Robustness in CARLA: Odometry in Dynamic, Unfiltered Scenes]]></title>
