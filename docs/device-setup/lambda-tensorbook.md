@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
 title: Lambda Tensorbook — Install NVIDIA Driver
-description: Install the pinned NVIDIA driver and fix a hybrid-graphics Xorg crash on a Lambda Tensorbook running Ubuntu 26.04
+description: Install the NVIDIA driver on a Lambda Tensorbook running Ubuntu 26.04
 ---
 
 # Install NVIDIA Driver
 
-This guide covers installing the NVIDIA proprietary driver on a **Lambda Tensorbook** running Ubuntu 26.04, and fixing a hybrid-graphics Xorg crash that shows up after a fresh install.
+This guide covers installing the NVIDIA proprietary driver on a **Lambda Tensorbook** running Ubuntu 26.04.
 
 ## System Specs
 
@@ -29,62 +29,28 @@ sudo apt install ./cuda-keyring_1.1-1_all.deb
 sudo apt update
 apt policy nvidia-driver-open
 sudo apt install nvidia-driver-pinning-610
-sudo reboot
 ```
 
-## Step 2: Hybrid-Graphics Xorg Crash
+## Step 2: Blacklist the Nouveau Driver
 
-After rebooting, the system may drop to a TTY with a fatal Xorg error instead of reaching the login screen:
-
-```
-(EE) modeset(G0): Failed to create pixmap
-(EE) failed to create screen resources(EE)
-Fatal server error:
-(EE) failed to create screen resources(EE)
-Server terminated with error (1). Closing log file.
-```
-
-### Diagnosis
-
-First confirm the driver itself is fine — this is a Xorg config issue, not a driver problem:
+The Nouveau open-source driver must be disabled before rebooting into the NVIDIA driver:
 
 ```bash
-nvidia-smi
-```
-
-If this shows the GPU correctly (driver version, temperature, memory), the driver and kernel module are working. The actual error is in `/var/log/Xorg.0.log`:
-
-```bash
-grep -E "\(EE\)|Failed to create pixmap" /var/log/Xorg.0.log
-```
-
-```
-(EE) [drm] Failed to open DRM device for (null): -2
-(EE) modeset(G0): Failed to create pixmap
-(EE) failed to create screen resources(EE)
-```
-
-`-2` is `ENOENT` with a `(null)` device path. The Tensorbook is a hybrid-graphics laptop (`lshw -C display` shows both the NVIDIA dGPU on `driver=nvidia` and the Intel iGPU on `driver=i915`). Xorg's `AutoAddGPU` behavior tries to automatically attach the second GPU as an extra provider using the generic `modesetting` driver — even though the NVIDIA card already has its own driver bound — and fails to resolve a device path for it, crashing the whole server.
-
-:::note
-The Insyde H2O BIOS on this machine (and Clevo/Sager-based machines in general) does **not** expose a Discrete-Graphics-only mode in Setup Utility, even after unlocking the hidden Clevo menu via **Advanced Chipset Control → Setup Menu Insyde Full Show → Show**. So unlike the [Lenovo Legion](./lenovo-legion.md), this isn't fixable from the BIOS side — it has to be fixed in Xorg config.
-:::
-
-### Fix
-
-Disable `AutoAddGPU` so Xorg lets each GPU's own driver (udev `OutputClass`) handle it instead of trying to bolt on an extra provider:
-
-```bash
-sudo mkdir -p /etc/X11/xorg.conf.d
-sudo tee /etc/X11/xorg.conf.d/10-disable-autoaddgpu.conf << 'EOF'
-Section "ServerFlags"
-    Option "AutoAddGPU" "false"
-EndSection
+sudo tee /etc/modprobe.d/blacklist-nouveau.conf > /dev/null << EOF
+blacklist nouveau
+options nouveau modeset=0
 EOF
-sudo reboot
+sudo update-initramfs -u
 ```
 
-This only affects whether Xorg auto-attaches extra GPU providers — it doesn't touch the NVIDIA driver or CUDA/`nvidia-smi` functionality. After rebooting, the system should reach the normal login screen.
+## Step 3: Install the Xorg NVIDIA Video Driver
+
+The CUDA repo package does not pull in `xserver-xorg-video-nvidia` automatically. Without it, X falls back to nouveau and fails to start:
+
+```bash
+sudo apt install xserver-xorg-video-nvidia
+sudo reboot
+```
 
 ## Validation
 
