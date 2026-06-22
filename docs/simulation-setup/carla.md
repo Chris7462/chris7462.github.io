@@ -49,10 +49,22 @@ sudo rsync -av /opt/carla/tmp/Engine/ /opt/carla/0.9.16/Engine/
 
 ## Step 2. Python Virtual Environment
 
-Ubuntu 24.04 ships Python 3.12, and CARLA 0.9.16 provides a `cp312` wheel — no additional Python installation needed.
+CARLA 0.9.16 provides wheels up to Python 3.12 (`cp312`). Ubuntu 24.04 ships Python 3.12 by default, but Ubuntu 26.04 ships Python 3.14, which has no matching wheel. If you are on Ubuntu 26.04, install Python 3.12 first via the deadsnakes PPA:
 
 ```bash
-python3 -m venv ~/carla-env
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3.12 python3.12-venv python3.12-dev
+```
+
+:::note
+Ubuntu 24.04 ships with Python 3.12 by default, so this step can be skipped on 24.04.
+:::
+
+Then create the virtual environment using Python 3.12 explicitly:
+
+```bash
+python3.12 -m venv ~/carla-env
 source ~/carla-env/bin/activate
 
 pip install /opt/carla/0.9.16/PythonAPI/carla/dist/carla-0.9.16-cp312-cp312-manylinux_2_31_x86_64.whl
@@ -182,4 +194,4 @@ This alias launches CARLA with a visible window at 640×640. Adjust `-ResX` and 
 ## Notes
 
 - No bundled `libstdc++.so.6` found in `CarlaUE4/Binaries/Linux/` — this build uses the system library directly and is compatible with Ubuntu 24.04 out of the box.
-- The `manylinux_2_31` wheel tag requires glibc ≥ 2.31; Ubuntu 24.04 ships glibc 2.39 ✅
+- The `manylinux_2_31` wheel tag requires glibc ≥ 2.31; Ubuntu 24.04 ships glibc 2.39
