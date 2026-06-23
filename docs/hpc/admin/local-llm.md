@@ -24,6 +24,12 @@ sidebar_position: 8
 
 ## Setup Steps
 
+:::note
+This guide assumes Ollama is already installed on `node01` and models have been pulled. See [Install and Configure Ollama](../../local-llm-setup/ollama.md) for installation instructions.
+
+The network-binding configuration below replaces the default single-node setup — do not set `OLLAMA_HOST` or system-wide environment variables as described in that guide.
+:::
+
 ### 1. Configure Ollama on node01 to listen on the network
 
 Default Ollama binds to `127.0.0.1` only. Edit the systemd override:
