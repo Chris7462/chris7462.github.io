@@ -1,15 +1,19 @@
 ---
 title: OpenCode on Your Laptop
 sidebar_label: OpenCode on Your Laptop
-sidebar_position: 6
+sidebar_position: 5
 ---
 
 # User Guide: Running OpenCode from Your Own Laptop
 
-This guide covers connecting to the shared Ollama server from your personal laptop instead of node02. For an overview of available models and basic OpenCode usage, see [OpenCode on HPC](./opencode-hpc.md).
+This guide covers installing and configuring OpenCode to connect to the shared Ollama server on the HPC cluster. The same setup applies whether you are on your personal laptop or on node02.
 
 :::note
-This requires VPN access to the internal cluster network (`192.168.220.0/24`) so your laptop can reach `node01:11434`.
+This requires VPN access to the internal cluster network (`192.168.220.0/24`) so your machine can reach `node01:11434`.
+:::
+
+:::tip
+Running OpenCode on node02? See [OpenCode on HPC](./opencode-hpc.md) for the additional SLURM requirement.
 :::
 
 ## 1. Install OpenCode
@@ -129,6 +133,12 @@ Unlike Aider, OpenCode does not take a `--model` flag on the command line. Model
 | `/share` | Generate a shareable link for the current session |
 | `/exit` | Quit OpenCode |
 
+**Adding files to context:** use \`@filename\` inline in your prompt to reference a file or folder, e.g.:
+
+```
+@src/my_package explain the overall architecture
+```
+
 **Mode toggle:** press `Tab` to switch between **Plan mode** (read-only, proposes changes without applying them) and **Build mode** (applies changes directly). Plan mode is useful for reviewing what OpenCode intends to do before committing to any edits.
 
 **Shell passthrough:** prefix a line with `!` to run it as a shell command in the current directory, e.g. `!make -j4`.
@@ -147,23 +157,17 @@ Start in **Plan mode** (the default) so OpenCode cannot modify any files during 
 
 This scans the workspace and writes an `AGENTS.md` file that persists context about your project structure across sessions.
 
-**Step 2 — Add the folder you want to explore:**
+**Step 2 — Reference files or folders in your prompt:**
+
+Use \`@\` inline to load a specific file or folder into context:
 
 ```
-/add filename
-```
-
-Or reference it inline directly in your prompt using `@`:
-
-```
-@filename explain the overall architecture
+@src/my_package explain the overall architecture
 ```
 
 **Step 3 — Review, then switch to Build mode only when ready:**
 
 Press `Tab` to switch to Build mode when you want OpenCode to apply changes. Switch back to Plan at any time to review without risk.
-
-See [Basic TUI Commands](./opencode-hpc.md#3-basic-tui-commands) and [Git Workflow](./opencode-hpc.md#4-git-workflow) for usage details.
 
 ---
 
@@ -187,7 +191,7 @@ See [Basic TUI Commands](./opencode-hpc.md#3-basic-tui-commands) and [Git Workfl
 ## Troubleshooting
 
 - **OpenCode can't find the `opencode` binary**: check `echo $PATH` and ensure `~/.opencode/bin` is included. Re-source your shell profile or open a new terminal.
-- **`/models` returns `Not Found: 404`**: this means OpenCode launched before the provider config was fully applied, or the `baseURL` is incorrect. Exit and restart OpenCode — config changes in `opencode.json` are not picked up live. Verify the endpoint with `curl http://node01:11434/v1/models` before relaunching.
+- **`/models` returns `Not Found: 404`**: OpenCode launched before the provider config was fully applied, or the `baseURL` is incorrect. Exit and restart OpenCode — config changes in `opencode.json` are not picked up live. Verify the endpoint with `curl http://node01:11434/v1/models` before relaunching.
 - **Provider not showing up in `/models`**: restart OpenCode after editing `opencode.json` — config changes are not picked up live.
 - **Connection refused or timeout**: confirm you are connected to the VPN, then run `curl http://node01:11434/api/tags` to verify connectivity directly.
 - **Tool calls not working (file edits, bash)**: this is most often a context window issue on the model side. Contact admin if the problem persists — the Ollama server configuration controls `num_ctx`.

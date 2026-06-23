@@ -119,6 +119,7 @@ To select the model, type `/models` inside the TUI and choose from the Ollama (L
 | `/init` | Analyse the project and generate an `AGENTS.md` context file |
 | `/undo` | Revert the last AI-made file change (requires a Git repo) |
 | `/redo` | Reapply a reverted change |
+| `/share` | Generate a shareable link for the current session |
 | `/exit` | Quit OpenCode |
 
 **Adding files to context:** use `@filename` inline in your prompt to reference a file or folder, e.g.:
