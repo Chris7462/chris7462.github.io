@@ -98,17 +98,6 @@ ollama list
 # Should show qwen3.6-8k:latest
 ```
 
-## Step 5. Set System-wide Environment Variables
-
-Create `/etc/profile.d/ollama.sh` to make `OLLAMA_API_BASE` available to all users:
-
-```bash
-sudo tee /etc/profile.d/ollama.sh << 'EOF'
-export OLLAMA_API_BASE=http://localhost:11434
-EOF
-source /etc/profile.d/ollama.sh
-```
-
 ## Monitor GPU Usage
 
 ```bash
