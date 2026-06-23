@@ -123,7 +123,6 @@ Unlike Aider, OpenCode does not take a `--model` flag on the command line. Model
 | Command | Description |
 |---|---|
 | `/models` | Switch the active model |
-| `/add <file_path>` | Add a file or folder into the context (also `@filename` inline) |
 | `/init` | Analyse the project and generate an `AGENTS.md` context file |
 | `/undo` | Revert the last AI-made file change (requires a Git repo) |
 | `/redo` | Reapply a reverted change |
