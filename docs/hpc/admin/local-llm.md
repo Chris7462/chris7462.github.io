@@ -1,16 +1,24 @@
 ---
-title: Ollama + Aider Local LLM Setup
+title: Ollama Local LLM Setup
 sidebar_label: Local LLM
 sidebar_position: 8
 ---
 
-# Admin Guide: Ollama + Aider Local LLM Setup
+# Admin Guide: Ollama Local LLM Setup
 
 ## Architecture
 
 - **Ollama server**: runs only on `node01` (control node), uses GPU (RTX PRO 6000 Blackwell, ~96GB VRAM)
-- **Aider client**: runs on `node02` (or node01), connects to Ollama over network — no local Ollama install required
-- **Model**: `qwen3-coder-next:latest` (51GB, 79.7B params)
+- **Client**: runs on `node01`, `node02`, or a user's laptop — connects to Ollama over the network
+- **No client tool is installed system-wide** — users install their preferred coding assistant (Aider, OpenCode, etc.) in their own environment. See the User Guide for details.
+
+### Available Models
+
+| Model | Size | Parameters | Notes |
+|---|---|---|---|
+| `qwen3-coder-next:latest` | 51 GB | 79.7B | Default — best for complex coding tasks |
+| `qwen3.6:27b` | 17 GB | 27.8B | Smaller/faster alternative |
+| `deepseek-r1:70b` | 43 GB | 70.6B | Strong reasoning model |
 
 ---
 
@@ -40,40 +48,23 @@ sudo systemctl restart ollama
 sudo ss -tlnp | grep 11434   # should show *:11434
 ```
 
-### 2. Install Aider as a shared system-wide tool
+### 2. Verify the server is reachable
 
-For a shared multi-user workstation, install Aider in a single shared venv owned by root, with the binary symlinked into `/usr/local/bin` so all users can run `aider` directly:
-
-```bash
-sudo python3 -m venv /opt/aider-venv
-sudo /opt/aider-venv/bin/pip install --upgrade pip
-sudo /opt/aider-venv/bin/pip install aider-chat
-sudo ln -s /opt/aider-venv/bin/aider /usr/local/bin/aider
-```
-
-This avoids each user maintaining their own venv and ensures version consistency across the cluster.
-
-### 3. Point client nodes at the Ollama server
-
-On **node02** (and any other client nodes), set `OLLAMA_API_BASE` system-wide:
-
-```bash
-sudo tee /etc/profile.d/ollama.sh << 'EOF'
-export OLLAMA_API_BASE=http://node01:11434
-EOF
-```
-
-(Optional on node01 itself, pointing to `http://localhost:11434`, for consistency.)
-
-Verify connectivity:
+Check the native Ollama endpoint:
 
 ```bash
 curl http://node01:11434/api/tags
 ```
 
-This should return JSON listing the models available on node01.
+Check the OpenAI-compatible endpoint (required by OpenCode and other tools):
 
-### 4. Removing Ollama from a node (if mistakenly installed)
+```bash
+curl http://node01:11434/v1/models
+```
+
+Both should return JSON listing the available models.
+
+### 3. Removing Ollama from a node (if mistakenly installed)
 
 ```bash
 sudo systemctl stop ollama
@@ -93,5 +84,5 @@ sudo rm -rf /usr/share/ollama /scratch/ollama
 ## SLURM Enforcement Notes
 
 - The Ollama server (systemd service, UID < 1000) is exempt from `slurm-enforcer` (`MIN_UID=1000`) — no action needed
-- `aider` is a `python3` process and matches `COMPUTE_PROCS` — if run outside SLURM for >5 minutes it will be warned (4 min) and killed (5 min)
-- Users must be instructed to wrap interactive Aider sessions in `srun` (see User Guide)
+- Client tools (Aider, OpenCode, etc.) are user-installed in their own environments — users are responsible for wrapping their sessions in `srun` (see User Guide)
+- Any compute process matching `COMPUTE_PROCS` running outside SLURM for more than 5 minutes will be warned (4 min) and killed (5 min) regardless of which client tool is used
