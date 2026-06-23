@@ -12,7 +12,7 @@
 <link rel="alternate" type="application/rss+xml" href="/music/rss.xml" title="Yi-Chen Zhang RSS Feed">
 <link rel="alternate" type="application/atom+xml" href="/music/atom.xml" title="Yi-Chen Zhang Atom Feed">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css" integrity="sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM" crossorigin="anonymous"><link rel="stylesheet" href="/assets/css/styles.9763260c.css">
-<script src="/assets/js/runtime~main.99c6df7d.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.682ef6f2.js" defer="defer"></script>
 <script src="/assets/js/main.7a753746.js" defer="defer"></script>
 </head>
 <body>
@@ -50,7 +50,7 @@
 <p>OpenCode opens a full TUI in your terminal. On first launch it may download a small provider package (<code>@ai-sdk/openai-compatible</code>) — this is a one-time step.</p>
 <p>To select the model, type <code>/models</code> inside the TUI and choose from the Ollama (Local) provider entries.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="step-4-basic-tui-commands">Step 4. Basic TUI Commands<a href="#step-4-basic-tui-commands" class="hash-link" aria-label="Direct link to Step 4. Basic TUI Commands" title="Direct link to Step 4. Basic TUI Commands" translate="no">​</a></h2>
-<table><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody><tr><td><code>/models</code></td><td>Switch the active model</td></tr><tr><td><code>/init</code></td><td>Analyse the project and generate an <code>AGENTS.md</code> context file</td></tr><tr><td><code>/undo</code></td><td>Revert the last AI-made file change (requires a Git repo)</td></tr><tr><td><code>/redo</code></td><td>Reapply a reverted change</td></tr><tr><td><code>/exit</code></td><td>Quit OpenCode</td></tr></tbody></table>
+<table><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody><tr><td><code>/models</code></td><td>Switch the active model</td></tr><tr><td><code>/init</code></td><td>Analyse the project and generate an <code>AGENTS.md</code> context file</td></tr><tr><td><code>/undo</code></td><td>Revert the last AI-made file change (requires a Git repo)</td></tr><tr><td><code>/redo</code></td><td>Reapply a reverted change</td></tr><tr><td><code>/share</code></td><td>Generate a shareable link for the current session</td></tr><tr><td><code>/exit</code></td><td>Quit OpenCode</td></tr></tbody></table>
 <p><strong>Adding files to context:</strong> use <code>@filename</code> inline in your prompt to reference a file or folder, e.g.:</p>
 <div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">@src/perception/fcn_segmentation/src/fcn_segmentation.cpp explain this file</span><br></div></code></pre></div></div>
 <p><strong>Mode toggle:</strong> press <code>Tab</code> to switch between <strong>Plan mode</strong> (read-only, proposes changes without applying them) and <strong>Build mode</strong> (applies changes directly). OpenCode starts in Plan mode by default.</p>
