@@ -59,6 +59,9 @@ ollama pull qwen3.6:27b
 
 # Backup model (51 GB, will offload to RAM, slower)
 ollama pull qwen3-coder-next
+
+# Reasoning model (43 GB, will offload to RAM, slower)
+ollama pull deepseek-r1:70b
 ```
 
 Verify the model list:
@@ -121,6 +124,7 @@ ollama rm qwen3-coder-next
 | `qwen3.6-8k` | 17 GB | ~17 GB | Fast | Daily C++/CUDA development (recommended) |
 | `qwen3.6:27b` | 17 GB | ~34 GB (large context) | Medium | Tasks requiring longer context |
 | `qwen3-coder-next` | 51 GB | Offloads to RAM | Slow | Ultra-long context (256K) tasks |
+| `deepseek-r1:70b` | 43 GB | Offloads to RAM | Slow | Complex reasoning tasks |
 
 ## Tips
 
