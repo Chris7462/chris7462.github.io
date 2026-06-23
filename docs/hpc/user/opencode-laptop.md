@@ -1,7 +1,7 @@
 ---
 title: OpenCode on Your Laptop
 sidebar_label: OpenCode on Your Laptop
-sidebar_position: 7
+sidebar_position: 6
 ---
 
 # User Guide: Running OpenCode from Your Own Laptop
@@ -58,7 +58,7 @@ Create `~/.config/opencode/opencode.json` with the following content:
       "models": {
         "qwen3-coder-next:latest": {},
         "qwen3.6:27b": {},
-        "deepseek-r1:70b ": {}
+        "deepseek-r1:70b": {}
       }
     }
   }

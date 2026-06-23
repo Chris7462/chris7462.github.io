@@ -1,7 +1,7 @@
 ---
 title: SLURM Tutorial
 sidebar_label: Tutorial
-sidebar_position: 1
+sidebar_position: 3
 ---
 
 # SLURM User Guide
