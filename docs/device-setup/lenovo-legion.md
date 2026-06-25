@@ -19,7 +19,7 @@ This guide covers installing the NVIDIA proprietary driver on a **Lenovo Legion 
 | Display | 16" 2560×1600 OLED 240Hz |
 
 :::warning
-Do **not** use NVIDIA's apt repository at `developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/` to install the driver on the Lenovo Legion. Those binaries will not work correctly with the Legion's iGPU configuration — **you will get a black screen**. Use the `.run` installer from the NVIDIA Unix Drivers page instead.
+Do **not** use NVIDIA's apt repository at `developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/` to install the driver on the Lenovo Legion. Those binaries will not work correctly on this machine — **you will get a black screen**. Use the `.run` installer from the NVIDIA Unix Drivers page instead.
 :::
 
 ## Step 1: Download the NVIDIA Driver
@@ -48,7 +48,12 @@ sudo update-initramfs -u
 Reboot and press **F2** to enter the BIOS. Navigate to the graphics settings and select **Discrete Graphics** (bottom right of the screen), then save and exit.
 
 :::info
-This disables the Intel iGPU entirely so the display manager only talks to the NVIDIA RTX GPU — avoiding Optimus/hybrid graphics conflicts.
+**Discrete Graphics** mode connects the laptop display directly to the NVIDIA RTX (dGPU). The Intel integrated graphics (iGPU) is inactive and Optimus is disabled. This avoids hybrid graphics conflicts that cause black screens during driver installation on Linux.
+
+The three available modes are:
+- **Dynamic Graphics** — Optimus is active; the system switches between iGPU and dGPU automatically
+- **Discrete Graphics** — dGPU (NVIDIA RTX) only; iGPU inactive, no Optimus. Use this for Linux + NVIDIA driver
+- **UMA Graphics** — iGPU (Intel) only; dGPU disabled
 :::
 
 ## Step 4: Switch to TTY and Stop the Display Manager
@@ -145,27 +150,65 @@ sudo update-initramfs -u
 
 ### Step 4: Restore BIOS Graphics Setting (Optional)
 
-If you switched the BIOS to **Discrete Graphics** during installation and want hybrid graphics back, reboot, press **F2**, and restore the graphics mode to your preferred setting (e.g. **Hybrid**).
+If you switched the BIOS to **Discrete Graphics** during installation and want to go back, reboot, press **F2**, and restore the graphics mode to your preferred setting (e.g. **Dynamic Graphics** for Optimus/hybrid, or **UMA Graphics** for iGPU only).
 
 ### Step 5: Verify NVIDIA Files Are Removed
 
-Before rebooting, confirm that NVIDIA kernel modules, libraries, and binaries have been cleaned up:
+Before rebooting, confirm that NVIDIA driver files have been cleaned up.
+
+#### Libraries
 
 ```bash
-# Check no nvidia kernel modules remain
-lsmod | grep nvidia
-
-# Check no nvidia libraries remain in common lib paths
 find /usr/lib /usr/lib32 /usr/lib64 /usr/local/lib -name "libnvidia*" 2>/dev/null
+```
 
-# Check no nvidia binaries remain
-find /usr/bin /usr/local/bin -name "nvidia*" 2>/dev/null
+Should return no output. If any `libnvidia*` files remain, remove them:
 
-# Check no nvidia kernel module files remain
+```bash
+sudo rm /usr/lib/x86_64-linux-gnu/libnvidia*.so*
+sudo ldconfig
+```
+
+#### Kernel modules
+
+```bash
+lsmod | grep nvidia
+```
+
+Should return no output.
+
+```bash
 find /lib/modules -name "nvidia*.ko*" 2>/dev/null
 ```
 
-All commands should return no output. If any files remain, they can be removed manually with `sudo rm`.
+:::note
+This may return files like `nvidiafb.ko.zst` under `/lib/modules/.../drivers/video/fbdev/nvidia/`. These are the generic **nvidiafb framebuffer driver** that ships with Ubuntu — not from the `.run` installer — and can be safely left in place.
+:::
+
+#### Binaries
+
+```bash
+find /usr/bin /usr/local/bin -name "nvidia*" 2>/dev/null
+```
+
+The following binaries are **safe to keep** — they belong to the NVIDIA Container Toolkit (Docker GPU support) and CUDA MPS, not the driver itself:
+
+| Binary | Belongs to |
+|--------|-----------|
+| `nvidia-container-cli` | NVIDIA Container Toolkit |
+| `nvidia-container-toolkit` | NVIDIA Container Toolkit |
+| `nvidia-container-runtime` | NVIDIA Container Toolkit |
+| `nvidia-container-runtime-hook` | NVIDIA Container Toolkit |
+| `nvidia-cdi-hook` | NVIDIA Container Toolkit |
+| `nvidia-ctk` | NVIDIA Container Toolkit |
+| `nvidia-cuda-mps-control` | CUDA MPS |
+| `nvidia-cuda-mps-server` | CUDA MPS |
+
+The following are driver-specific and should be removed if present:
+
+```bash
+sudo rm -f /usr/bin/nvidia-smi /usr/bin/nvidia-persistenced /usr/bin/nvidia-debugdump
+```
 
 ### Step 6: Reboot
 
