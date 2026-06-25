@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: Docker Container GUI Display
 description: Run GUI applications from a Docker container using X11 forwarding on Ubuntu
 ---
