@@ -93,3 +93,88 @@ nvidia-smi
 ```
 
 You should see your GPU listed with the driver version and CUDA version.
+
+## Uninstall
+
+Use this section to fully remove the NVIDIA proprietary driver and restore the Nouveau driver.
+
+### Step 1: Switch to TTY and Stop the Display Manager
+
+Press **Ctrl + Alt + F1** to switch to a TTY session, then stop the display manager:
+
+```bash
+# Ubuntu GNOME
+sudo systemctl stop gdm3
+
+# Unity
+# sudo systemctl stop lightdm
+
+# KDE
+# sudo systemctl stop sddm
+```
+
+### Step 2: Run the Uninstaller
+
+The `.run` installer ships with a built-in uninstall option:
+
+```bash
+sudo NVIDIA-Linux-x86_64-610.43.02.run --uninstall
+# or whichever version you installed
+# sudo NVIDIA-Linux-x86_64-595.80.run --uninstall
+```
+
+Alternatively, if the original `.run` file is no longer available, use the uninstaller that was placed on your system during installation:
+
+```bash
+sudo nvidia-uninstall
+```
+
+### Step 3: Re-enable the Nouveau Driver
+
+Remove the blacklist file created during installation:
+
+```bash
+sudo rm /etc/modprobe.d/blacklist-nouveau.conf
+```
+
+Then update the initramfs to apply the change:
+
+```bash
+sudo update-initramfs -u
+```
+
+### Step 4: Restore BIOS Graphics Setting (Optional)
+
+If you switched the BIOS to **Discrete Graphics** during installation and want hybrid graphics back, reboot, press **F2**, and restore the graphics mode to your preferred setting (e.g. **Hybrid**).
+
+### Step 5: Verify NVIDIA Files Are Removed
+
+Before rebooting, confirm that NVIDIA kernel modules, libraries, and binaries have been cleaned up:
+
+```bash
+# Check no nvidia kernel modules remain
+lsmod | grep nvidia
+
+# Check no nvidia libraries remain in common lib paths
+find /usr/lib /usr/lib32 /usr/lib64 /usr/local/lib -name "libnvidia*" 2>/dev/null
+
+# Check no nvidia binaries remain
+find /usr/bin /usr/local/bin -name "nvidia*" 2>/dev/null
+
+# Check no nvidia kernel module files remain
+find /lib/modules -name "nvidia*.ko*" 2>/dev/null
+```
+
+All commands should return no output. If any files remain, they can be removed manually with `sudo rm`.
+
+### Step 6: Reboot
+
+```bash
+sudo reboot
+```
+
+After rebooting, the system will fall back to the Nouveau open-source driver. Verify with:
+
+```bash
+lsmod | grep nouveau
+```
