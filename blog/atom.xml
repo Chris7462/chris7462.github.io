@@ -2,11 +2,65 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chris7462.github.io/blog</id>
     <title>Yi-Chen Zhang Blog</title>
-    <updated>2026-06-16T00:00:00.000Z</updated>
+    <updated>2026-07-17T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chris7462.github.io/blog"/>
     <subtitle>Yi-Chen Zhang Blog</subtitle>
     <icon>https://chris7462.github.io/img/yc.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[Deploying RF-DETR: A Transformer-Based Detector in TensorRT]]></title>
+        <id>https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt</id>
+        <link href="https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt"/>
+        <updated>2026-07-17T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[I recently deployed RF-DETR — Roboflow's real-time, transformer-based object detector — into a TensorRT-accelerated ROS2 pipeline. This post covers what RF-DETR is, why I picked it, and how the deployment is structured.]]></summary>
+        <content type="html"><![CDATA[<p>I recently deployed <strong>RF-DETR</strong> — Roboflow's real-time, transformer-based object detector — into a TensorRT-accelerated ROS2 pipeline. This post covers what RF-DETR is, why I picked it, and how the deployment is structured.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/wm-1cjvr5t4" title="RF-DETR Object Detection with TensorRT" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-rf-detr">Why RF-DETR<a href="https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt#why-rf-detr" class="hash-link" aria-label="Direct link to Why RF-DETR" title="Direct link to Why RF-DETR" translate="no">​</a></h2>
+<p>Object detection has long had an awkward tradeoff baked in: YOLO-family models are fast enough for real-time use but tend to give up some accuracy for that speed, while classic DETR-style transformer detectors are more accurate but historically too slow to run in real time. RF-DETR, Roboflow's detector, is an attempt to close that gap — a strong DINOv2 backbone paired with a deliberately lightweight decoder, landing above the YOLO speed/accuracy curve on COCO benchmarks. Since its release it's gotten a lot of attention in the CV community, and Roboflow has kept building on it — a keypoint-detection variant is now available as a preview, alongside the existing instance-segmentation support.</p>
+<p>Most of my prior detection work (FCOS, FCN, SCNN) has been CNN-based, so RF-DETR is a chance to bring a transformer-based detector into the same real-time, production-grade pipeline — same TensorRT deployment discipline, same ROS2 integration pattern, different model family under the hood. My port is detection-only: I stripped out the segmentation head, since instance segmentation isn't what I'm after here.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="two-repo-architecture">Two-Repo Architecture<a href="https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt#two-repo-architecture" class="hash-link" aria-label="Direct link to Two-Repo Architecture" title="Direct link to Two-Repo Architecture" translate="no">​</a></h2>
+<p>Like my other perception components, the deployment splits cleanly into two layers:</p>
+<ul>
+<li class=""><strong><a href="https://github.com/Chris7462/rf_detr_trt_backend" target="_blank" rel="noopener noreferrer" class=""><code>rf_detr_trt_backend</code></a></strong> — a standalone, framework-agnostic TensorRT inference library. No ROS dependency; it just takes an image in and returns detections out.</li>
+<li class=""><strong><a href="https://github.com/Chris7462/rf_detr_detection" target="_blank" rel="noopener noreferrer" class=""><code>rf_detr_detection</code></a></strong> — the ROS2 node that wraps the backend: subscribes to a camera topic, runs inference, and publishes <code>vision_msgs/Detection2DArray</code> plus an optional overlay image for RViz.</li>
+</ul>
+<p>This separation means the backend is reusable outside ROS entirely, and the ROS layer stays a thin adapter.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-export-pipeline">The Export Pipeline<a href="https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt#the-export-pipeline" class="hash-link" aria-label="Direct link to The Export Pipeline" title="Direct link to The Export Pipeline" translate="no">​</a></h2>
+<p>Getting from a PyTorch checkpoint to a deployable engine follows the same three stages as my other TensorRT work, and it's fully automated through CMake so a plain <code>colcon build</code> regenerates everything when the source model changes:</p>
+<ol>
+<li class=""><strong>PyTorch → ONNX</strong> (FP32) via the official <code>roboflow/rf-detr</code> export path</li>
+<li class=""><strong>FP32 → FP16 ONNX</strong> using NVIDIA ModelOpt's AutoCast, keeping I/O tensors in FP32 for compatibility with the C++ preprocessing code</li>
+<li class=""><strong>ONNX → TensorRT engine</strong> via <code>trtexec</code></li>
+</ol>
+<p>The same script also supports fine-tuned checkpoints (e.g. a 3-class KITTI fine-tune), auto-inferring the model variant from the checkpoint itself.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="two-details-worth-calling-out">Two Details Worth Calling Out<a href="https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt#two-details-worth-calling-out" class="hash-link" aria-label="Direct link to Two Details Worth Calling Out" title="Direct link to Two Details Worth Calling Out" translate="no">​</a></h2>
+<p><strong>Square input only.</strong> RF-DETR's DINOv2 backbone uses windowed attention that has no non-square path — every input has to be exactly square (704×704 for the <code>large</code> variant). Since real camera frames (like KITTI's 1242×375) aren't square, the ROS node letterbox-pads each frame before inference and maps the resulting boxes back to the original image afterward, so downstream consumers never see square-space coordinates.</p>
+<p><strong>Sigmoid decoding, not softmax.</strong> RF-DETR's classification head is a sigmoid/focal-style head rather than a softmax. That means decoding can't use a simple per-query argmax — every (query, class) pair is an independent candidate, so the correct decode is a <strong>global top-k across all query × class pairs</strong>. It's a small detail, but it's the kind of thing that silently produces wrong detections if you carry over assumptions from a softmax-based detector.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="gpu-side-preprocessing">GPU-Side Preprocessing<a href="https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt#gpu-side-preprocessing" class="hash-link" aria-label="Direct link to GPU-Side Preprocessing" title="Direct link to GPU-Side Preprocessing" translate="no">​</a></h2>
+<p>Like the rest of my TensorRT backends, preprocessing runs as a custom CUDA kernel that fuses BGR→RGB conversion, HWC→CHW layout, and normalization into a single pass — with the mean/std normalization folded into one multiply-subtract instead of a divide. Unlike some of my other kernels, mean/std are passed as plain kernel arguments rather than baked into <code>__constant__</code> memory, since RF-DETR backends may be instantiated with different per-checkpoint stats and constant memory would let concurrent instances silently clobber each other.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="ros2-integration">ROS2 Integration<a href="https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt#ros2-integration" class="hash-link" aria-label="Direct link to ROS2 Integration" title="Direct link to ROS2 Integration" translate="no">​</a></h2>
+<p>The node follows the same pattern as my other real-time perception nodes: a bounded processing queue decouples the image subscription from the inference rate (dropping the oldest frame under backpressure rather than blocking), and it runs on the <code>EventsCBGExecutor</code>, which uses noticeably less CPU than <code>MultiThreadedExecutor</code> for this kind of callback-heavy node.</p>
+<blockquote>
+<p><strong>Note:</strong> This package targets <strong>ROS2 Lyrical on Ubuntu 26.04</strong>. If you're on Jazzy or Humble, expect build errors — some of the rclcpp APIs and CMakeLists.txt conventions used here have changed across distros.</p>
+</blockquote>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="performance">Performance<a href="https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt#performance" class="hash-link" aria-label="Direct link to Performance" title="Direct link to Performance" translate="no">​</a></h2>
+<p>The included unit test suite covers correctness (rejecting wrong-sized or non-contiguous images) alongside timing benchmarks. On an <strong>RTX 2080</strong>, a 100-iteration benchmark averaged <strong>7.83 ms per inference</strong> (~128 FPS), with steady-state single-call runs (including CPU-side decode) landing around 9 ms. On a <strong>RTX 5090</strong>, the same engine comes in under <strong>3 ms</strong> per inference — comfortably fast enough to share GPU time with the other perception models in the stack.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="whats-next">What's Next<a href="https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt#whats-next" class="hash-link" aria-label="Direct link to What's Next" title="Direct link to What's Next" translate="no">​</a></h2>
+<p>RF-DETR closes out a run of 2D perception work — FCOS, FCN, SCNN, and now this. From here I'm shifting focus to <strong>3D object detection</strong>. Stay tuned.</p>]]></content>
+        <author>
+            <name>Yi-Chen Zhang</name>
+            <uri>https://chris7462.github.io</uri>
+        </author>
+        <category label="TensorRT" term="TensorRT"/>
+        <category label="CUDA" term="CUDA"/>
+        <category label="Object Detection" term="Object Detection"/>
+        <category label="rf-detr" term="rf-detr"/>
+        <category label="ONNX" term="ONNX"/>
+        <category label="ROS 2" term="ROS 2"/>
+        <category label="Computer Vision" term="Computer Vision"/>
+        <category label="Autonomous Driving" term="Autonomous Driving"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Doubling Up: Adding a Second RTX PRO 6000 Blackwell to node01]]></title>
         <id>https://chris7462.github.io/blog/2026/06/16/second-rtx-pro-6000-gpu</id>
