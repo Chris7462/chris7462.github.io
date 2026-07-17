@@ -55,7 +55,7 @@
         <category label="TensorRT" term="TensorRT"/>
         <category label="CUDA" term="CUDA"/>
         <category label="Object Detection" term="Object Detection"/>
-        <category label="rf-detr" term="rf-detr"/>
+        <category label="RF-DETR" term="RF-DETR"/>
         <category label="ONNX" term="ONNX"/>
         <category label="ROS 2" term="ROS 2"/>
         <category label="Computer Vision" term="Computer Vision"/>

@@ -52,7 +52,7 @@
             <category>TensorRT</category>
             <category>CUDA</category>
             <category>Object Detection</category>
-            <category>rf-detr</category>
+            <category>RF-DETR</category>
             <category>ONNX</category>
             <category>ROS 2</category>
             <category>Computer Vision</category>
