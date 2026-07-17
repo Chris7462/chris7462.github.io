@@ -277,3 +277,8 @@ nvme:
   label: NVMe
   permalink: /nvme
   description: NVMe storage and caching
+
+rf-detr:
+  label: RF-DETR
+  permalink: /rf-detr
+  description: RF-DETR real-time transformer object detector
