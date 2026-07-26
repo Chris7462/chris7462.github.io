@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: Install SUMO with JuPedSim
 description: Build SUMO from source with JuPedSim integration on Ubuntu 24.04
 ---
