@@ -4,10 +4,22 @@
         <title>Yi-Chen Zhang Blog</title>
         <link>https://chris7462.github.io/music</link>
         <description>Yi-Chen Zhang Blog</description>
-        <lastBuildDate>Sat, 14 Mar 2026 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 31 Jul 2026 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Greensleeves]]></title>
+            <link>https://chris7462.github.io/music/2026/07/31/greensleeves</link>
+            <guid>https://chris7462.github.io/music/2026/07/31/greensleeves</guid>
+            <pubDate>Fri, 31 Jul 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA["Greensleeves"]]></description>
+            <content:encoded><![CDATA[<p>"Greensleeves"</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://youtu.be/hMXcd_ymwNk" title="Greensleeves" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>]]></content:encoded>
+            <category>music</category>
+            <category>piano</category>
+        </item>
         <item>
             <title><![CDATA[Comptine d'été No. 2]]></title>
             <link>https://chris7462.github.io/music/2026/03/14/comptine-dete-no-2</link>
