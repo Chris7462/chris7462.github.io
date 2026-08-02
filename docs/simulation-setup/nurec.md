@@ -1,0 +1,495 @@
+---
+sidebar_position: 4
+title: CARLA NuRec Setup and Test
+description: Set up and test NVIDIA NuRec with CARLA 0.9.16 on Ubuntu, including fixes for known dataset and GPU compatibility issues
+---
+
+# CARLA + NVIDIA NuRec: Setup and Test
+
+This guide covers setting up and testing [NVIDIA NuRec](https://carla.readthedocs.io/en/0.9.16/nvidia_nurec/)
+with CARLA 0.9.16. It follows the official tutorial, with fixes for two
+known issues:
+
+- [GitHub issue #9667](https://github.com/carla-simulator/carla/issues/9667) — dataset release compatibility (`Unknown calib name='free-pose-calib'`)
+- [GitHub issue #9288](https://github.com/carla-simulator/carla/issues/9288) — GPU compute-capability compatibility (`no kernel image is available for execution on the device`)
+
+## Environment
+
+| | |
+|---|---|
+| **CARLA path** | `<CARLA_ROOT>` (wherever you extracted/cloned CARLA 0.9.16) |
+| **Python** | 3.12 (officially supported); see note below for 3.14 |
+| **GPU** | See [Step 7.5](#step-75-gpu-compute-capability-compatibility) — not all compute capabilities currently work |
+| **Dataset** | `nvidia/PhysicalAI-Autonomous-Vehicles-NuRec`, `sample_set/25.07_release` |
+
+:::note
+If your GPU is compute capability 7.5 or 12.0 (e.g. Tesla T4, RTX 2060/2080
+Super, RTX PRO 6000, RTX 50-series), you will very likely hit a known,
+currently unresolved container bug at the scene-reconstruction step no
+matter how correctly the rest of this guide is followed. See
+[Step 7.5](#step-75-gpu-compute-capability-compatibility) before you invest
+time in the full setup.
+:::
+
+## Step 1. Install Docker
+
+```sh
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg \
+  --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli \
+  containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Test the install:
+```sh
+docker run hello-world
+```
+
+If that fails with a permissions error:
+```sh
+sudo usermod -aG docker $USER
+```
+Then log out and back in (or reboot) for the group change to apply.
+
+## Step 2. Install the NVIDIA Container Toolkit
+
+This lets Docker containers talk directly to your GPU. Follow NVIDIA's
+official guide:
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+
+## Step 3. Create a Python Virtual Environment
+
+```sh
+python3 -m venv vecarla
+source vecarla/bin/activate
+```
+
+:::warning
+Remember to run `source vecarla/bin/activate` again in every new terminal
+you open for this tutorial.
+:::
+
+Since this is a freshly created virtual environment, the CARLA Python API
+isn't installed yet. Confirm the wheel matching your Python version exists
+in `PythonAPI/carla/dist/`:
+```sh
+ls PythonAPI/carla/dist/
+```
+
+| Wheel File | Python |
+|---|---|
+| `carla-0.9.16-cp312-cp312-manylinux_2_31_x86_64.whl` | Python 3.12 |
+
+Then install it directly:
+```sh
+pip3 install PythonAPI/carla/dist/carla-0.9.16-cp312-cp312-manylinux_2_31_x86_64.whl
+```
+
+`install_nurec.sh` will also look for this same wheel and install it again
+in Step 5 if it's missing — but installing it here confirms early that the
+right wheel exists for your Python version before you invest time in the
+rest of the setup. If it's missing for your exact version, either switch
+to a version with an available wheel, or build CARLA's Python bindings
+yourself.
+
+## Step 4. Download the `25.07_release` Dataset
+
+**Do this before running the installer** — it's the key to avoiding a huge,
+unnecessary download.
+
+:::warning
+**Why `25.07_release` specifically?** Newer dataset releases (`26.02`,
+`26.04`) use a calibration format the current NuRec container doesn't
+support, and will fail with `Unknown calib name='free-pose-calib'` — see
+[Step 8](#step-8-why-2507_release-specifically) for the full explanation.
+`25.07_release` is the confirmed-working version.
+:::
+
+:::note
+**Hugging Face account required.** Create one at https://huggingface.co/join,
+accept the dataset terms at
+https://huggingface.co/datasets/nvidia/PhysicalAI-Autonomous-Vehicles-NuRec,
+and create a **Read**-permission token at
+https://huggingface.co/settings/tokens.
+:::
+
+From your CARLA root directory, log in first:
+```sh
+cd <CARLA_ROOT>
+pip install --upgrade huggingface_hub
+hf auth login   # paste your HF token when prompted
+```
+
+Then choose one of the two cases below.
+
+### Case A: Download one batch (recommended for testing)
+
+```sh
+hf download nvidia/PhysicalAI-Autonomous-Vehicles-NuRec \
+  --repo-type dataset \
+  --revision 25.05 \
+  --include "sample_set/25.07_release/Batch0001/**" \
+  --local-dir PhysicalAI-Autonomous-Vehicles-NuRec
+```
+This pulls only `Batch0001` — **98 GB, 78 scenes** — enough to run the
+replay example end to end.
+
+### Case B: Download the full release (all 13 batches)
+
+```sh
+hf download nvidia/PhysicalAI-Autonomous-Vehicles-NuRec \
+  --repo-type dataset \
+  --revision 25.05 \
+  --include "sample_set/25.07_release/**" \
+  --local-dir PhysicalAI-Autonomous-Vehicles-NuRec
+```
+This pulls all 13 batches (`Batch0001`–`Batch0013`) — **~1.4 TB total**.
+
+## Step 5. Run the NuRec Installer
+
+From your CARLA root directory:
+```sh
+cd <CARLA_ROOT>
+./PythonAPI/examples/nvidia/nurec/install_nurec.sh
+```
+
+Since the dataset folder already exists from Step 4, this script will skip
+its dataset download and instead:
+- Set required environment variables for the NuRec container
+- Install Python packages: `pygame`, `numpy`, `scipy`, `grpc`, `carla`, `nvidia-nvimgcodec-cu12`
+
+:::note
+You may need to log out and back in again after this step for NuRec to work
+correctly.
+:::
+
+If you're managing your own Python environment instead, install
+requirements manually:
+```sh
+pip install -r requirements.txt
+```
+
+## Step 6. Set Environment Variables
+
+```sh
+export NUREC_IMAGE="docker.io/carlasimulator/nvidia-nurec-grpc:0.2.0"
+```
+
+Optional — pick which GPU to use (defaults to GPU 0 if unset):
+```sh
+export CUDA_VISIBLE_DEVICES=0
+```
+
+## Step 7. Start the CARLA Server
+
+In one terminal, from your CARLA package directory:
+```sh
+./CarlaUE4.sh
+```
+Leave this running.
+
+:::warning
+**If you're connected remotely (SSH), this will very likely fail.** CARLA
+uses Vulkan for rendering, which needs a real display surface to present
+to. Confirmed failure modes:
+- Over `ssh -X` forwarding: crashes with
+  ```
+  VK_ERROR_INITIALIZATION_FAILED
+  Segmentation fault (core dumped)
+  ```
+- Over a plain remote session (e.g. a remote desktop tool without a proper
+  GPU-backed display): a dialog box reading
+  ```
+  Vulkan device not available
+  Cannot find a compatible Vulkan device that supports surface presentation.
+  ```
+Both are the same underlying cause — no valid Vulkan-presentable display —
+just different symptoms depending on connection type. **Use `-RenderOffScreen`
+instead (see below) any time you're not physically at the machine with a
+real display attached.**
+:::
+
+**Recommended for headless/remote machines — run without a display window:**
+```sh
+./CarlaUE4.sh -RenderOffScreen
+```
+This runs CARLA's renderer server-side without needing an X server/display.
+The Python API and the NuRec replay workflow (confirmed working) both
+function fully in this mode. Optionally pair with `-quality-level=Low` to
+reduce GPU load if you're also running the NuRec container on the same GPU:
+```sh
+./CarlaUE4.sh -RenderOffScreen -quality-level=Low
+```
+
+If you specifically need CARLA's own visible window (not just the NuRec
+replay script's separate Pygame camera-grid display), you'll need a real
+remote-desktop setup — VNC (`tigervnc`), NoMachine, or VirtualGL + TurboVNC
+— run CARLA inside that session instead of over a plain SSH/remote terminal.
+
+### Optional Launch Flags
+
+| Flag | Purpose |
+|---|---|
+| `-RenderOffScreen` | No GUI window (required over SSH/remote) |
+| `-quality-level=Low` | Reduce GPU load |
+| `-world-port=2000` | Change RPC port (default: 2000) |
+
+## Step 7.5. GPU Compute Capability Compatibility
+
+:::warning
+**Check this before running the replay**, or you may spend time debugging
+what looks like a config problem but isn't.
+:::
+
+A separate, currently unresolved bug ([GitHub issue #9288](https://github.com/carla-simulator/carla/issues/9288))
+affects the NuRec container (`nvidia-nurec-grpc:0.2.0`) itself, independent
+of the dataset-release issue in Step 8. The container starts and correctly
+detects the GPU, but fails during actual scene reconstruction with:
+```
+CUDA error: no kernel image is available for execution on the device
+```
+This means the container's CUDA kernels were compiled for a limited set of
+GPU architectures. Confirmed data points so far:
+
+| GPU | Compute Capability | Result |
+|---|---|---|
+| Tesla T4 | 7.5 | ❌ Fails |
+| RTX 2060 Super | 7.5 | ❌ Fails |
+| RTX 2080 Super (Max-Q) | 7.5 | ❌ Fails |
+| RTX PRO 6000 Workstation Edition | 12.0 | ❌ Fails |
+| RTX 5000 Ada Generation | 8.9 | ✅ Works (inferred — see below) |
+
+The RTX 5000 Ada data point comes from GitHub issue #9667 itself: that
+reporter's GPU was an RTX 5000 Ada, and their script got past the CUDA
+backend-creation step entirely, failing later on the unrelated
+`Unknown calib name='free-pose-calib'` dataset issue (Step 8) — which only
+happens after the neural reconstruction backend has already been created
+successfully. So compute capability 8.9 is the one confirmed-working point
+so far.
+
+Check your own GPU's compute capability with:
+```sh
+nvidia-smi --query-gpu=name,compute_cap --format=csv
+```
+
+:::note
+If you're on compute capability 7.5 or 12.0, expect to hit this error
+regardless of anything else being set up correctly — no CUDA environment
+variable workaround (`CUDA_VISIBLE_DEVICES`, `CUDA_LAUNCH_BLOCKING=1`,
+`TORCH_USE_CUDA_DSA=1`, `CUDA_CACHE_DISABLE=1`) has resolved it for anyone
+in the issue thread so far. This is a container-level limitation, not
+something fixable client-side — consider commenting on issue #9288 with
+your own data point if you hit it.
+:::
+
+## Step 8. Why `25.07_release` Specifically
+
+This is the reasoning behind Step 4's release choice ([GitHub issue #9667](https://github.com/carla-simulator/carla/issues/9667)).
+
+If you use a scene from the `26.02_release` (or presumably `26.04_release`)
+dataset folder, the NuRec container will fail to start with:
+```
+ERROR  Failed to create backend for clipgt-...: Unknown calib name='free-pose-calib'.
+```
+This happens because newer dataset releases use a calibration format
+(`free-pose-calib`) that the current NuRec container image (`0.2.0`)
+doesn't support yet. `26.02_release` is confirmed broken this way in issue
+#9667; `26.04_release` hasn't been directly confirmed but is very likely
+broken the same way, since NVIDIA hasn't updated the container since.
+
+`25.07_release` is preserved inside the repo's `25.05` branch — it's no
+longer reachable from `main` — and it's the version this tutorial and
+`install_nurec.sh` were originally written against.
+
+:::warning
+Do **not** use `--test-scenes-are-valid` bypass workarounds — even if the
+container starts, the script will still crash later when fetching cameras
+over gRPC. Use a genuine `25.07_release` scene from the start.
+:::
+
+## Step 9. Run a NuRec Replay
+
+Open a new terminal, activate your venv, and navigate to the `nurec/`
+example folder specifically (not just `PythonAPI/examples/nvidia/` —
+`example_nurec_replay_save_images.py` lives one level deeper):
+```sh
+source vecarla/bin/activate
+cd <CARLA_ROOT>/PythonAPI/examples/nvidia/nurec
+```
+
+Run the multi-camera replay example, pointing `--usdz-filename` at a scene
+from the `25.07_release` set. Use the **absolute path** to the dataset — it
+lives at `<CARLA_ROOT>/PhysicalAI-Autonomous-Vehicles-NuRec/` (see Step 4),
+not inside this `nurec/` folder, so a relative path here won't resolve:
+```sh
+python example_nurec_replay_save_images.py --usdz-filename \
+  <CARLA_ROOT>/PhysicalAI-Autonomous-Vehicles-NuRec/sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz \
+  --move-spectator --saveimages
+```
+
+### Useful Flags
+
+| Flag | What it does |
+|---|---|
+| `--move-spectator` | CARLA spectator camera follows the ego vehicle |
+| `--saveimages` | Saves rendered images to a `data/` folder |
+| `--output-dir <path>` | Custom output directory for saved images |
+
+## Step 10. Verify It's Working
+
+You should see:
+1. Console logs showing the NuRec container starting and the scene loading
+2. `Server is ready!` in the logs
+3. A Pygame window displaying a grid of camera feeds (front, left cross, right cross, plus any CARLA-native cameras)
+4. If `--saveimages` was used, rendered frames appearing under `data/` (or your `--output-dir`)
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `CUDA error: no kernel image is available for execution on the device` | GPU compute capability not supported by the NuRec container binary (confirmed failing at 7.5 and 12.0) | See [Step 7.5](#step-75-gpu-compute-capability-compatibility) — try hardware around compute capability 8.9, or wait for an updated container |
+| `Download complete: 0.00B` / `0it` with nothing downloaded | Either used single `*` instead of `**`, or omitted `--revision 25.05` (25.07_release isn't on `main`) | Use `--revision 25.05 --include "sample_set/25.07_release/**"` together |
+| `Unknown calib name='free-pose-calib'` | Using a `26.02_release` / `26.04_release` (or other unsupported) dataset scene | Use a `25.07_release` scene instead — see [Step 8](#step-8-why-2507_release-specifically) |
+| Only `26.04_release` (or other non-`25.07`) folders appear under `sample_set/` | Downloaded from `main` (or ran `install_nurec.sh`'s unfiltered download) instead of the `25.05` branch | Delete the folder and re-run Step 4's command with `--revision 25.05` |
+| Dataset folder not where you expect | `--local-dir` is relative to wherever you ran `install_nurec.sh` from | Check `<CARLA_ROOT>/PhysicalAI-Autonomous-Vehicles-NuRec/`, not the `nurec/` example folder |
+| `VK_ERROR_INITIALIZATION_FAILED` / segfault, or `Vulkan device not available` dialog, on launch | Connected remotely (SSH or remote session) without a valid Vulkan-presentable display | Use `-RenderOffScreen`, or VNC/NoMachine/VirtualGL for a real GUI window |
+| Docker permission denied | User not in `docker` group | `sudo usermod -aG docker $USER`, then re-login |
+| Container can't see GPU | NVIDIA Container Toolkit not installed/configured | Reinstall per NVIDIA's install guide |
+| Script hangs waiting for server | Wrong `NUREC_IMAGE` / port conflict | Confirm `NUREC_IMAGE` is exported correctly; check port 46435 isn't in use |
+
+## Optional: Custom Camera Configuration
+
+To match specific camera hardware or calibrations, edit
+`carla_example_camera_config.yml` (in the same folder as the example
+scripts), then point the script at it by editing line ~173 of
+`example_nurec_replay_save_images.py`:
+```python
+with open("your_camera_config.yaml", "r") as f:
+    camera_configs = yaml.safe_load(f)
+```
+Supports custom F-Theta configs, precise intrinsics (principal point,
+distortion polynomials), custom transform matrices, and rolling shutter
+simulation.
+
+## Sources
+
+- CARLA NuRec docs: https://carla.readthedocs.io/en/0.9.16/nvidia_nurec/
+- Dataset-release known issue: https://github.com/carla-simulator/carla/issues/9667
+- GPU compute-capability known issue: https://github.com/carla-simulator/carla/issues/9288
+- Dataset repo: https://huggingface.co/datasets/nvidia/PhysicalAI-Autonomous-Vehicles-NuRec
+
+## Appendix: Running on Python 3.14 (Unofficial)
+
+:::warning
+**If building CARLA against Python 3.14 instead** (not officially
+supported — requires a self-built `carla` wheel; not applicable on
+3.12), you're likely to hit two protobuf issues that aren't fixed by
+version pinning alone:
+
+1. `TypeError: Metaclasses with custom tp_new are not supported` — a known,
+   currently unresolved protobuf/CPython 3.14 incompatibility in the
+   compiled `_upb` C extension. Fix — locate and rename the extension so
+   Python falls back to pure-Python protobuf instead:
+   ```sh
+   python -c "import google._upb; print(list(google._upb.__path__))"
+   mv <path_from_above> <path_from_above>_disabled
+   ```
+2. `ImportError: cannot import name 'runtime_version' from 'google.protobuf'`
+   — your `protobuf` version is too old (this module was added around
+   protobuf 4.25+). Fix:
+   ```sh
+   pip install --upgrade protobuf
+   ```
+   This may reinstall a fresh `_upb` extension, re-triggering issue #1 —
+   just repeat the rename if so.
+:::
+
+## Appendix: Background on the Dataset Download Behavior (to revisit)
+
+`install_nurec.sh` only downloads the dataset if the target folder doesn't
+already exist:
+```sh
+check_hf_dataset() {
+    local dataset_path="PhysicalAI-Autonomous-Vehicles-NuRec"
+    if [ -d "$dataset_path" ]; then
+        echo "HuggingFace dataset already exists, skipping download."
+        return 0
+    fi
+    return 1
+}
+```
+Pre-creating that folder yourself with the scenes you actually want makes
+the installer skip its own (unfiltered, whole-repo) download entirely.
+
+:::warning
+**`25.07_release` is no longer on the repo's `main` branch.** NVIDIA has
+moved `main` forward to `26.04_release` only. The repo has separate
+branches per past engine version (`26.04`, `26.02`, `26.01`, `25.05`) — no
+tags — and `25.07_release` is preserved inside the **`25.05` branch**
+specifically. You must pass `--revision 25.05` or the download will either
+grab the wrong release or match nothing.
+:::
+
+`25.07_release` has 13 batches (`Batch0001`–`Batch0013`). Nothing in issue
+#9667 or elsewhere points to any batch being more "correct" than another —
+the calib-format fix is at the release level, not the batch level. A single
+batch is a reasonable minimal working example.
+
+## Appendix: Even Smaller — Single-Scene Download (to revisit)
+
+Nothing about the replay script actually requires a whole batch — it only
+needs one `.usdz` scene.
+
+```sh
+# 1. Find one scene's exact path (metadata only, no download):
+python3 -c "
+from huggingface_hub import HfApi
+api = HfApi()
+files = api.list_repo_files('nvidia/PhysicalAI-Autonomous-Vehicles-NuRec', repo_type='dataset', revision='25.05')
+scenes = [f for f in files if f.startswith('sample_set/25.07_release/Batch0001/') and f.endswith('.usdz')]
+print(scenes[0])
+"
+# e.g. sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz
+
+# 2. Download just that scene's folder (swap in the actual uuid path):
+hf download nvidia/PhysicalAI-Autonomous-Vehicles-NuRec \
+  --repo-type dataset \
+  --revision 25.05 \
+  --include "sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/**" \
+  --local-dir PhysicalAI-Autonomous-Vehicles-NuRec
+```
+Based on measured per-scene folder sizes (~1.1–1.9 GB each), this is a
+couple GB instead of 98 GB.
+
+## Appendix: Verifying Branch Contents Before Downloading (to revisit)
+
+If you want to check yourself (or if NVIDIA reorganizes the repo again):
+```sh
+python3 -c "
+from huggingface_hub import HfApi
+api = HfApi()
+files = api.list_repo_files('nvidia/PhysicalAI-Autonomous-Vehicles-NuRec', repo_type='dataset', revision='25.05')
+releases = sorted(set(f.split('/')[1] for f in files if f.startswith('sample_set/')))
+print(releases)
+"
+```
+
+:::warning
+Note the `**` (double-star), not `*`. The actual files live nested two
+levels deep (`sample_set/25.07_release/BatchXXXX/<uuid>/<uuid>.usdz`), and
+`hf`'s `--include` pattern matching doesn't cross `/` boundaries with a
+single `*`. Using `*` instead of `**` will silently match 0 files and
+report `Download complete: 0.00B` with nothing actually downloaded.
+:::
+
+:::tip
+If you already ran `install_nurec.sh` once and it started the full
+download, kill it (`Ctrl+C`), delete the partial
+`PhysicalAI-Autonomous-Vehicles-NuRec` folder, and start fresh with the
+command above — otherwise the installer will see the (incomplete/wrong)
+folder and skip re-downloading.
+:::
