@@ -2,11 +2,61 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chris7462.github.io/blog</id>
     <title>Yi-Chen Zhang Blog</title>
-    <updated>2026-07-17T00:00:00.000Z</updated>
+    <updated>2026-08-02T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chris7462.github.io/blog"/>
     <subtitle>Yi-Chen Zhang Blog</subtitle>
     <icon>https://chris7462.github.io/img/yc.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[Deep Cleaning an iRobot Roomba i5: Fixing the Jitter-and-Spin Bug]]></title>
+        <id>https://chris7462.github.io/blog/2026/08/02/roomba-i5-deep-clean</id>
+        <link href="https://chris7462.github.io/blog/2026/08/02/roomba-i5-deep-clean"/>
+        <updated>2026-08-02T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[My Roomba i5 recently started jittering in place and spinning in tight circles instead of cleaning normally. A quick teardown and a can of compressed air later, it was back to driving straight.]]></summary>
+        <content type="html"><![CDATA[<p>My Roomba i5 recently started jittering in place and spinning in tight circles instead of cleaning normally. A quick teardown and a can of compressed air later, it was back to driving straight.</p>
+<!-- -->
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-symptom">The Symptom<a href="https://chris7462.github.io/blog/2026/08/02/roomba-i5-deep-clean#the-symptom" class="hash-link" aria-label="Direct link to The Symptom" title="Direct link to The Symptom" translate="no">​</a></h2>
+<p>Instead of navigating the room, the Roomba would twitch back and forth and spin in circles on the spot, almost as if one wheel thought it was stuck while the other wasn't. No error codes, no obvious mechanical jam — just erratic drive behavior.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="the-hypothesis">The Hypothesis<a href="https://chris7462.github.io/blog/2026/08/02/roomba-i5-deep-clean#the-hypothesis" class="hash-link" aria-label="Direct link to The Hypothesis" title="Direct link to The Hypothesis" translate="no">​</a></h2>
+<p>The i5's drive wheels are spring-loaded and ride on a suspension assembly with a small switch that tells the robot whether the wheel is drooped (hanging free, e.g. picked up or over a cliff) or loaded against the floor. If that switch gets clogged with dust and hair, it can misreport the wheel state intermittently — which would explain exactly this kind of stuttering, indecisive motion. My plan was to open the robot up and blow the dust out of the suspension switches and any other contact points along the drive train.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="teardown">Teardown<a href="https://chris7462.github.io/blog/2026/08/02/roomba-i5-deep-clean#teardown" class="hash-link" aria-label="Direct link to Teardown" title="Direct link to Teardown" translate="no">​</a></h2>
+<p>Removing the top cover exposes the wifi board and some wires right away.</p>
+<p><img decoding="async" loading="lazy" alt="Top shell removed, showing the wifi board and wiring" src="https://chris7462.github.io/assets/images/top-shell-wifi-board-01a3c59b5cb2e6e489a4ed14e1aeceb5.jpg" width="4080" height="3072" class="img_ev3q">
+<em>Top cover off — wifi board and wiring visible.</em></p>
+<p>Flipping to the back and remove the front bumper contact and cliff sensors right at the edge of the chassis.</p>
+<p><img decoding="async" loading="lazy" alt="Close-up of the front bumper contact and cliff sensors" src="https://chris7462.github.io/assets/images/front-bumper-cliff-sensors-b430a97f724d2d5ebbc83d0c7d8fd2f8.jpg" width="4080" height="3072" class="img_ev3q">
+*Front bumper contact and cliff sensors."</p>
+<p>With the top and bottom shells fully separated, the whole drive train, main PCB, and vacuum motor assembly are exposed. I set the other parts side by side with the internals for reference while working.</p>
+<p><img decoding="async" loading="lazy" alt="Full teardown with the main chassis and outer shell separated" src="https://chris7462.github.io/assets/images/full-teardown-comparison-1ef0fa9d378b32a3d5ac996a0f6d7c11.jpg" width="4080" height="3072" class="img_ev3q">
+<em>Fully separated: main chassis assembly on the left, outer shell and bin on the right.</em></p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="blowing-out-the-dust">Blowing Out the Dust<a href="https://chris7462.github.io/blog/2026/08/02/roomba-i5-deep-clean#blowing-out-the-dust" class="hash-link" aria-label="Direct link to Blowing Out the Dust" title="Direct link to Blowing Out the Dust" translate="no">​</a></h2>
+<p>With everything opened up, I went over every switch, contact, and crevice with a compressed air blower — starting with the top shell around the wheel wells.</p>
+<p><img decoding="async" loading="lazy" alt="Using a compressed air blower on the top shell near the wheel switch" src="https://chris7462.github.io/assets/images/blower-top-shell-a254cee8df8f99ec548e2d0fa49e03eb.jpg" width="4080" height="3072" class="img_ev3q">
+<em>Blowing out the wheel suspension switch contacts on the top shell.</em></p>
+<p>Then the main board and the motor housings, where dust tends to settle around connectors and moving parts.</p>
+<p><img decoding="async" loading="lazy" alt="Blowing dust off the main board and motor assembly" src="https://chris7462.github.io/assets/images/blower-mainboard-d5d2765a8722fdcbb66622b2135058cf.jpg" width="4080" height="3072" class="img_ev3q">
+<em>Clearing dust from the main board and motor housing.</em></p>
+<p><img decoding="async" loading="lazy" alt="Close-up of the blower nozzle working around the main board connectors" src="https://chris7462.github.io/assets/images/blower-mainboard-closeup-621efe47de07c5ef60695ed899a8996d.jpg" width="4080" height="3072" class="img_ev3q">
+<em>Getting into the connector rows along the main board edge.</em></p>
+<p>The front edge and cliff sensors need the same treatment.</p>
+<p><img decoding="async" loading="lazy" alt="Blowing out the front edge switches on the edge" src="https://chris7462.github.io/assets/images/blower-edge-switches-58d09e7f5435a34a67a27237337cebb9.jpg" width="4080" height="3072" class="img_ev3q">
+<em>Front edge switches, cleared of accumulated dust.</em></p>
+<p>Finally, the bumper edge and its contact switches, which see the most contact with debris during normal cleaning runs.</p>
+<p><img decoding="async" loading="lazy" alt="Blowing dust from the bumper edge switch contacts" src="https://chris7462.github.io/assets/images/blower-bumper-edge-23f314d803ea87d53fade052f426c814.jpg" width="4080" height="3072" class="img_ev3q">
+<em>Bumper edge switches — another common spot for dust buildup.</em></p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="reassembly-and-result">Reassembly and Result<a href="https://chris7462.github.io/blog/2026/08/02/roomba-i5-deep-clean#reassembly-and-result" class="hash-link" aria-label="Direct link to Reassembly and Result" title="Direct link to Reassembly and Result" translate="no">​</a></h2>
+<p>After putting everything back together, I also swapped in a fresh set of filters and a new bag before setting the robot back on its dock to charge and re-map.</p>
+<p><img decoding="async" loading="lazy" alt="Reassembled Roomba i5 charging on its dock with new filters and bag" src="https://chris7462.github.io/assets/images/reassembled-charging-de1e652a6edf80179c590d5b49f6275a.jpg" width="3072" height="4080" class="img_ev3q">
+<em>Back together, filters and bag replaced, charging and ready for a test run.</em></p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/5orAMIcPjEo" title="Roomba i5 Driving Normally After Deep Clean" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>The jittering and spin-in-place behavior is gone — the robot drives and navigates normally again. The suspension switch dust buildup was a reasonable hunch that turned out to be right, though I didn't isolate the exact switch as the sole culprit; a full clean of every contact along the drive train made it hard to tell which one specifically was misbehaving. Either way, the fix is the same: a periodic teardown and compressed-air pass through the wheel switches, cliff sensors, and bumper contacts seems like cheap, worthwhile preventive maintenance for these robots.</p>]]></content>
+        <author>
+            <name>Yi-Chen Zhang</name>
+            <uri>https://chris7462.github.io</uri>
+        </author>
+        <category label="Repair" term="Repair"/>
+        <category label="Hardware" term="Hardware"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Deploying RF-DETR: A Transformer-Based Detector in TensorRT]]></title>
         <id>https://chris7462.github.io/blog/2026/07/17/rf-detr-tensorrt</id>
