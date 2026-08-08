@@ -119,7 +119,7 @@ sudo systemctl restart docker
 Pick an NVIDIA image from [Docker Hub](https://hub.docker.com/r/nvidia/cuda/tags) and verify GPU access:
 
 ```bash
-docker run --gpus all nvidia/cuda:13.2.0-base-ubuntu26.04 nvidia-smi
+docker run --gpus all nvidia/cuda:13.2.0-cudnn-runtime-ubuntu24.04 nvidia-smi
 ```
 
 :::tip
