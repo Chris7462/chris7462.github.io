@@ -43,15 +43,15 @@ If that's not found, install it via your distro's package manager:
 sudo apt install python3.10 python3.10-venv
 ```
 
-## Step 3. Install CARLA 0.9.15
+## Step 3. Install CARLA 0.9.16
 
-Follow the [official quick-start guide](https://carla.readthedocs.io/en/0.9.15/start_quickstart/)
-to download and extract CARLA 0.9.15.
+Follow the [official quick-start guide](https://carla.readthedocs.io/en/0.9.16/start_quickstart/)
+to download and extract CARLA 0.9.16.
 
 Then open `3_generate_simulation_data/utils/config.py` and set:
 
 ```python
-CARLA_INSTALLATION_PATH = "/absolute/path/to/CARLA_0.9.15"
+CARLA_INSTALLATION_PATH = "/absolute/path/to/CARLA_0.9.16"
 ```
 
 ## Step 4. Install Nerfstudio (venv)
@@ -97,7 +97,7 @@ Now add the extra packages Step 5's GS scripts need (`5C_trajectory_replay.py`,
 `5D_dave2.py` — talk to CARLA, run a pygame UI, project CARLA↔UTM coordinates):
 
 ```bash
-pip install carla==0.9.15 pygame==2.6.1 pyproj==3.5.0 pyrender==0.1.45
+pip install carla==0.9.16 pygame==2.6.1 pyproj==3.5.0 pyrender==0.1.45
 ```
 
 Verify:
