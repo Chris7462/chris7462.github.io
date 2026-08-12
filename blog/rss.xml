@@ -4,10 +4,58 @@
         <title>Yi-Chen Zhang Blog</title>
         <link>https://chris7462.github.io/blog</link>
         <description>Yi-Chen Zhang Blog</description>
-        <lastBuildDate>Mon, 03 Aug 2026 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 11 Aug 2026 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Turning Real Driving Logs into Closed-Loop CARLA Scenarios with Cam2Sim]]></title>
+            <link>https://chris7462.github.io/blog/2026/08/11/cam2sim</link>
+            <guid>https://chris7462.github.io/blog/2026/08/11/cam2sim</guid>
+            <pubDate>Tue, 11 Aug 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[Simulators are great for autonomous driving testing because they're safe, reproducible, and fully controllable — but their rendered worlds usually look nothing like the real world. A perception or end-to-end driving model that performs well in simulation can behave very differently once it sees real camera data. This is the classic sim-to-real gap, and it's the problem a recent paper called Cam2Sim: Neural Scenario Reconstruction for Closed-Loop Autonomous Driving Simulation sets out to close.]]></description>
+            <content:encoded><![CDATA[<p>Simulators are great for autonomous driving testing because they're safe, reproducible, and fully controllable — but their rendered worlds usually look nothing like the real world. A perception or end-to-end driving model that performs well in simulation can behave very differently once it sees real camera data. This is the classic sim-to-real gap, and it's the problem a recent paper called <strong>Cam2Sim: Neural Scenario Reconstruction for Closed-Loop Autonomous Driving Simulation</strong> sets out to close.</p>
+<!-- -->
+<p>Rather than treating real-world recordings and simulation as two separate worlds, Cam2Sim converts a real driving recording directly into a <strong>playable, closed-loop CARLA scenario</strong>, using Gaussian Splatting so the simulator's camera output visually matches the original recording instead of CARLA's native rendering. I went through the full replication process myself — here's what the pipeline does, what I found reproducing it, and my replication run:</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/lD_FQvPS82M" title="Cam2Sim Replication" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-closed-loop-matters">Why Closed-Loop Matters<a href="https://chris7462.github.io/blog/2026/08/11/cam2sim#why-closed-loop-matters" class="hash-link" aria-label="Direct link to Why Closed-Loop Matters" title="Direct link to Why Closed-Loop Matters" translate="no">​</a></h2>
+<p>A lot of prior neural-rendering work — DriveRecon, for example — focuses on reconstructing realistic scenes or generating novel viewpoints. That's useful, but those reconstructions aren't necessarily executable environments where an autonomous driving system (ADS) can actually drive and interact with the world.</p>
+<p>Cam2Sim bridges that gap. The ADS under test receives Gaussian-Splatting-rendered camera frames in real time, and its steering commands feed back into the vehicle's trajectory inside CARLA. That closes the loop between perception, control, vehicle motion, and rendered sensor feedback — instead of just replaying a fixed video, the model's own decisions actually change what it sees next.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="how-the-reconstruction-pipeline-works">How the Reconstruction Pipeline Works<a href="https://chris7462.github.io/blog/2026/08/11/cam2sim#how-the-reconstruction-pipeline-works" class="hash-link" aria-label="Direct link to How the Reconstruction Pipeline Works" title="Direct link to How the Reconstruction Pipeline Works" translate="no">​</a></h2>
+<p>The pipeline takes front-facing camera images and vehicle poses as inputs, optionally pulling LiDAR, odometry, steering, and model-prediction data from ROS bags. It breaks down into five stages:</p>
+<ol>
+<li class="">
+<p><strong>Data extraction</strong> — synchronized camera frames, ego-vehicle poses, and optional LiDAR/steering/prediction streams are pulled from the ROS recordings, with timestamp interpolation to align the different sensor streams.</p>
+</li>
+<li class="">
+<p><strong>Dataset processing</strong> — parked vehicles are detected with FCOS3D (monocular) or PointPillars (when LiDAR is available), then clustered and averaged into final poses. Road geometry comes from OpenStreetMap via the Overpass API. This stage also preps the Gaussian Splatting inputs: selecting frames, removing the ego-vehicle hood, generating sky masks with SegFormer, and chunking the route into smaller segments.</p>
+</li>
+<li class="">
+<p><strong>Simulation asset generation</strong> — the processed data becomes CARLA-compatible assets: an OpenDRIVE map, replay trajectories, and spawn poses for the ego vehicle and parked vehicles. Both center-position and rear-axle trajectory representations are generated, along with the WGS84-to-OpenDRIVE coordinate transform.</p>
+</li>
+<li class="">
+<p><strong>Gaussian Splatting preparation</strong> — COLMAP handles camera-pose and point-cloud estimation, and local Gaussian Splatting models are trained per route segment using Nerfstudio (<code>splatfacto</code> / <code>splatfacto-big</code>). The GS coordinate system is then aligned to CARLA's through pose matching.</p>
+</li>
+<li class="">
+<p><strong>Driving simulation</strong> — the scenario runs in CARLA in either trajectory-replay mode (frame-by-frame playback for inspection) or closed-loop mode, where a DAVE-2-style end-to-end model drives using either native CARLA rendering (the simulation-only baseline) or the Gaussian-Splatting-rendered images.</p>
+</li>
+</ol>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-the-paper-found">What the Paper Found<a href="https://chris7462.github.io/blog/2026/08/11/cam2sim#what-the-paper-found" class="hash-link" aria-label="Direct link to What the Paper Found" title="Direct link to What the Paper Found" translate="no">​</a></h2>
+<p>The authors evaluated Cam2Sim on a 450-meter urban street in Munich. The reconstructed environment reached a mean semantic IoU of <strong>0.774</strong> against the real scene — 0.847 for road, 0.889 for background, and a noticeably weaker 0.577 for vehicles, mostly due to localization error, occlusion, and the difficulty of estimating vehicle poses from recorded sensor data alone.</p>
+<p>The closed-loop numbers are the headline result, though: with the Gaussian-Splatting-enhanced rendering, the driving model completed all three evaluation runs and reproduced behavior close to the real-world runs. Using CARLA's native rendering on the exact same scenario, the same model failed all three runs — driving outside the road boundary and hitting simulated collisions. Same geometry, same scenario, different rendering, completely different outcome. That's a fairly strong signal that the visual rendering gap alone can meaningfully change how an end-to-end driving model behaves.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="reproducing-it">Reproducing It<a href="https://chris7462.github.io/blog/2026/08/11/cam2sim#reproducing-it" class="hash-link" aria-label="Direct link to Reproducing It" title="Direct link to Reproducing It" translate="no">​</a></h2>
+<p>The Cam2Sim repo ships both a Quick Start and a full Replication guide. The Quick Start was straightforward. Reproducing the full pipeline was not.</p>
+<p>The biggest source of friction was environment drift: the authors built and tested on Ubuntu 20.04 with CUDA 11.8, while my machine runs Ubuntu 26.04 with CUDA 13.3. That gap cascaded into dependency conflicts across nearly every stage of the pipeline. The fix that actually worked was containerizing — I put together a Docker Compose setup that isolated each stage with its own required dependency versions rather than fighting to get everything to coexist in one environment.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="is-this-production-ready">Is This Production-Ready?<a href="https://chris7462.github.io/blog/2026/08/11/cam2sim#is-this-production-ready" class="hash-link" aria-label="Direct link to Is This Production-Ready?" title="Direct link to Is This Production-Ready?" translate="no">​</a></h2>
+<p>Going through the full replication made me think about how mature this kind of pipeline actually is outside a research setting. As a research framework, Cam2Sim is genuinely compelling — it offers a real path from raw driving logs to visually realistic, closed-loop simulation scenarios. But the effort involved in reproducing it, the number of research-grade tools it stitches together, and its sensitivity to exact software and CUDA versions all raise a real question about production readiness.</p>
+<p>Would autonomous driving companies actually adopt a Cam2Sim-like pipeline as part of their validation and testing infrastructure? More specifically: could this become practical for large-scale regression testing and scenario replay, or is it still best thought of as a promising research tool that needs meaningfully more engineering work before it fits into a production AD validation workflow?</p>]]></content:encoded>
+            <category>CARLA</category>
+            <category>Simulation</category>
+            <category>gaussian-splatting</category>
+            <category>neural-rendering</category>
+            <category>Autonomous Driving</category>
+            <category>closed-loop-testing</category>
+        </item>
         <item>
             <title><![CDATA[Rendering Photorealistic Scenes in CARLA with NVIDIA NuRec]]></title>
             <link>https://chris7462.github.io/blog/2026/08/03/carla-nurec</link>
