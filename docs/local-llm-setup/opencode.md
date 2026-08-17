@@ -63,8 +63,13 @@ Create `~/.config/opencode/opencode.json`:
         "baseURL": "http://localhost:11434/v1"
       },
       "models": {
-        "qwen3.6:27b": {},
-        "qwen3.6-8k:latest": {},
+        "qwen3.8:27b": {
+          "attachment": true,
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          }
+        },
         "qwen3-coder-next:latest": {}
       }
     }
