@@ -1,0 +1,151 @@
+---
+title: "Debugging CARLA's Digital Twin Tool: Getting the OSM-to-Map Pipeline Running"
+date: 2026-08-20
+authors: yc
+tags: [carla, simulation, digital-twin, osm, unreal-engine, autonomous-driving]
+---
+
+CARLA ships an experimental **Digital Twin Tool** that turns a region of [OpenStreetMap](https://www.openstreetmap.org) data into a procedurally generated 3D driving environment — road network, buildings, and all — directly inside the Unreal Engine editor. I wanted to try it on a small Plymouth region. What I actually got was a multi-day debugging session across a C++ renderer, a Blueprint-facing plugin, and the Unreal Editor itself before the pipeline would even run end-to-end. This post is about that debugging process, not a victory lap — the generated map still has real problems, which I'll get into at the end.
+
+{/* truncate */}
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/syiEnHuHhrM"
+    title="Debugging CARLA's Digital Twin Tool"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+## What the Digital Twin Tool Does
+
+The tool works in three stages: pull a road network from OSM for a chosen region, procedurally fill the space between the roads with buildings whose footprints and heights are derived from the OSM data, and decorate the road surface with markings and textures. The result is exported as an OpenDRIVE file plus a set of Unreal static meshes, assembled into a `.umap` that behaves like any other CARLA map.
+
+The part that tripped me up initially is that there are actually **two independent pipelines** hanging off the same `.osm` input, and only one of them touches the renderer I spent most of this post debugging:
+
+```
+                          ┌───────────────────── PREVIEW (widget image)
+   .osm file ─bake─►  osmscout DB  ─socket─►  osm-world-renderer  ─►  UImage
+                          │
+                          └───────────────────── REAL MAP (what CARLA runs)
+                                                    (osm-world-renderer is NOT used here)
+   .osm file ─osm2odr─►  .xodr (OpenDrive)  ─►  OpenDriveParser (C++ in CARLA plugin)
+                                                    │
+                                                    ▼
+                                       UE4 actors (roads, buildings, lane marks, terrain)
+                                       in sub-levels (Plymouth_Tile_0_0, _1_0)
+                                                    │
+                                                    ▼
+                                       CARLA server  ─►  your Python client
+```
+
+- **Preview image in the widget** — baked into an osmscout DB, rendered by `osm-world-renderer`, and streamed to the editor's `UImage` over a TCP socket on port 5000. This is a "what does OSM see?" confirmation pane, nothing more.
+- **Actual playable map** — a completely separate path: `osm2odr` converts the same `.osm` file into an OpenDRIVE `.xodr`, and CARLA's own `OpenDriveParser` (C++, inside the plugin) turns that into UE4 actors — roads, buildings, lane marks, terrain — split across sub-level tiles.
+
+The two pipelines don't touch each other. Pressing Generate doesn't go through the renderer at all, and the renderer has no bearing on what the final map looks like. That distinction matters for this post, because everything in the next two sections — the crash fix, the coordinate bug, the texture binding — is entirely about the *preview* path. None of it changes what actually gets generated; it only changes whether you can see a correct preview before you generate it.
+
+## How Faithful Is the "Digital Twin," Really?
+
+It's worth being precise about what "digital twin" means here, because it's easy to assume the output is a photorealistic replica of the real location. It isn't — and that's by design, not a bug.
+
+**What CARLA reproduces faithfully from OSM:**
+
+| Feature | Fidelity |
+|---------|----------|
+| Road network geometry (curves, junctions, lane structure) | Exact match to OSM |
+| Lane width, direction, connection (turn restrictions) | Exact |
+| Building footprints (position + size) | Exact location from OSM building polygon |
+| Land-use zones (park, commercial, residential) | Color-coded, correct area |
+| Traffic signals / stop positions (if tagged) | Placed correctly |
+| Spawn points / drivable area | Derived from OSM |
+
+**What CARLA does *not* do from OSM (falls back to generic assets):**
+
+| Feature | What you actually get |
+|---------|------------------------|
+| Building 3D shape/height | Generic `SM_industrial`, `SM_residential` meshes placed at the footprint — not the real building's architecture |
+| Building height | OSM rarely has it; CARLA uses a default height |
+| Building materials/texture | Generic textures, not the real building |
+| Trees | Placeholder StreetMap tree assets at approximate positions near roads |
+| Road surface detail | Generic asphalt texture, no potholes/cracks |
+| Street furniture (signs, benches, barriers) | Only if explicitly present in OSM as nodes |
+| Interiors, parking lot detail | Not present |
+
+So the honest framing is: CARLA gives you a drivable road-network twin with correct geometry and approximate urban context — not an exact architectural replica. If a specific building needs to look like the real thing (correct height, roof shape, windows, signage), that requires layering in your own 3D asset, either placed directly in the map or swapped in through the Houdini building importer (`UW_HoudiniBuildingImporter`) in place of the generic mesh. For simulation purposes — driving, sensor placement, AD testing — the OSM-derived map is sufficient as-is. For visual fidelity to one specific real-world location, it isn't, without that extra layer of work.
+
+## Building the OSM Renderer From Source
+
+The renderer isn't distributed pre-built, so it has to be compiled from `Build/libosmscout-source/` alongside `osm-world-renderer/OsmRenderer/`. Getting it to build meant:
+
+- Building **libosmscout** (`Core`, `Map`, and `MapSVG` modules) with C++20
+- Patching against **pango v3.5**, since the upstream code targets an older pango API
+- Linking against **Boost.Asio**
+- Updating calls into the `MapPainterSVG` API to match libosmscout's current signatures
+
+Once that built cleanly, I baked the local `plymouth.osm` extract into an osmscout database:
+
+```bash
+./build.sh /path/to/plymouth.osm
+```
+
+This produced a ~764 MB `maps/plymouth/` database, and from there the `osm-world-renderer` executable itself (listening on port 5000) compiled without further changes.
+
+## Hardening the Renderer
+
+With the renderer running, the first real bug showed up immediately: any client disconnecting from the socket — including a normal editor-side reconnect — killed the entire renderer process and took the Unreal Editor down with it. `OsmRenderer::StartLoop()` had no recovery path around the accept/read loop.
+
+The fix was straightforward: wrap the accept/read logic in an outer `while (true)` loop with an inner `try/catch`, so a dropped connection just ends that session instead of crashing the server.
+
+The harder problem was diagnosing *why* the map wasn't rendering even when the connection stayed alive. I added explicit success/failure logging through the config and tile-loading path in `MapDrawer.cpp`:
+
+- `Config complete. Ready to render.` / `CONFIG FAILED: ...` at startup
+- `LookupTiles returned N tile(s).` with per-tile way/area/node counts
+- `Loaded map data: N tile(s), M ways, K area(s)` or a `WARNING: no tiles found...` when the lookup came back empty
+
+That logging is what actually made the rest of the debugging possible — without it, a blank preview image gave no signal as to whether the failure was in the socket layer, the coordinate lookup, or the texture upload.
+
+## Fixing the CarlaTools Plugin
+
+With the renderer stable, the next set of bugs lived in `MapPreviewUserWidget.h/.cpp`, the widget that talks to the renderer from inside the editor.
+
+**Coordinate order.** The Blueprint side passes `(lon, lat)` into parameters named `(Latitude, Longitude)`, but the renderer's wire protocol expects `-R <lat> <lon>`. The values were silently swapped on the way out, so every render request was querying the wrong point on the map. The fix swaps them explicitly at the point where the request is serialized, rather than touching the Blueprint-side naming.
+
+**Texture binding.** Even after the renderer returned a correct tile, the preview image stayed blank. `AttachTextureToImage()` now looks up the `MapPreviewImage` `UImage` via `GetWidgetFromName` and calls `SetBrushResourceObject(MapTexture)` directly, followed by `FlushRenderingCommands()` to force the GPU texture write to commit before the widget reads it — without the flush, the image brush would sometimes read stale (empty) texture data.
+
+**Socket hardening.** Both `ConnectToSocket` and the read path inside `RenderMap` got the same treatment as the renderer side: a `try/catch` around the socket calls, logging a clean error instead of crashing the editor when the renderer isn't running or drops mid-session.
+
+## Configuring and Generating a First Map
+
+With the plugin stable, the widget config for the Plymouth region was:
+
+- **DB path**: `/home/yi-chen/thirdparty/carla_UE4.26/Build/libosmscout-source/maps/plymouth/` (absolute path — relative paths didn't resolve correctly from inside the editor)
+- **Stylesheet**: `.../stylesheets/standard.oss`
+- **Image size**: 512
+- **Render center**: `42.387000, -83.502000`, inside the OSM extract's bounds (`42.3824–42.3879 N`, `-83.5079 to -83.4961 W`)
+
+Running the Generate flow confirms the separation described above: it never touches `osm-world-renderer`. Instead it runs `osm2odr` on the same `.osm` file to produce OpenDRIVE, then hands that to the C++ `OpenDriveParser` directly, and produced:
+
+- `Plymouth.xodr` — 86 roads, 390 KB
+- 19 building meshes under `Static/Buildings`
+- Mesh sets for `DrivingLane`, `LaneMark`, `Roofs`, and `Terrain`
+- A 29 KB `Plymouth.umap` shell plus two generated tile maps (`Plymouth_Tile_0_0`, `Plymouth_Tile_1_0`) totaling around 1.5 MB of actors
+
+No code changes were needed for this stage — it was purely a matter of getting the upstream renderer and plugin stable enough that the config values would actually take effect.
+
+## Loading It in CARLA
+
+The generated map loads and runs like any other CARLA map. I launched the server with `--ros2` support and Vulkan, loaded `CustomMaps/Plymouth/Plymouth`, and connected a Python client: `get_spawn_points()` returned 125 valid points, and a `tesla.model3` spawned without errors. That confirms the pipeline is mechanically sound end to end — OSM extract in, loadable CARLA map out — but I want to be clear that "loads and spawns a vehicle" is a much lower bar than "drivable." I haven't attempted an actual driving run on this map yet.
+
+## Known Issues
+
+Some of what shows up in the generated map is expected, per the fidelity discussion above — generic building meshes and generic road textures aren't bugs, they're how the tool is designed to work. But beyond that baseline, the current output has real problems that go past "generic":
+
+- **Broken road connectivity/geometry** — some road segments don't connect cleanly, which will matter for anything that relies on OpenDRIVE topology (routing, lane changes, traffic).
+- **Missing or misplaced buildings** — footprint placement doesn't always track the OSM polygons correctly, leaving gaps or overlapping structures — not just "generic," but wrong.
+- **Missing or incorrect textures/materials** — some meshes come through completely untextured, or with the wrong material assigned outright, rather than just the expected generic asphalt/facade look.
+
+## Takeaway
+
+Most of this work was making the *preview* pipeline survivable — fixing crashes, coordinate bugs, and a stale texture binding that made it impossible to tell whether the OSM region I'd selected was even correct before committing to a full generation run. That's a separate concern from the *generation* pipeline, which goes through `osm2odr` and `OpenDriveParser` independently of anything I touched. Now that the preview is stable and logging clearly, the tool runs end to end and produces a loadable map. But the map itself — road geometry, building placement, textures — still needs meaningful cleanup before it's something I'd trust for actual driving experiments. That's the next phase of this project.
