@@ -4,10 +4,95 @@
         <title>Yi-Chen Zhang Blog</title>
         <link>https://chris7462.github.io/blog</link>
         <description>Yi-Chen Zhang Blog</description>
-        <lastBuildDate>Tue, 11 Aug 2026 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 20 Aug 2026 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Debugging CARLA's Digital Twin Tool: Getting the OSM-to-Map Pipeline Running]]></title>
+            <link>https://chris7462.github.io/blog/2026/08/20/carla-digital-twin</link>
+            <guid>https://chris7462.github.io/blog/2026/08/20/carla-digital-twin</guid>
+            <pubDate>Thu, 20 Aug 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[CARLA ships an experimental Digital Twin Tool that turns a region of OpenStreetMap data into a procedurally generated 3D driving environment — road network, buildings, and all — directly inside the Unreal Engine editor. I wanted to try it on a small Plymouth region. What I actually got was a multi-day debugging session across a C++ renderer, a Blueprint-facing plugin, and the Unreal Editor itself before the pipeline would even run end-to-end. This post is about that debugging process, not a victory lap — the generated map still has real problems, which I'll get into at the end.]]></description>
+            <content:encoded><![CDATA[<p>CARLA ships an experimental <strong>Digital Twin Tool</strong> that turns a region of <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer" class="">OpenStreetMap</a> data into a procedurally generated 3D driving environment — road network, buildings, and all — directly inside the Unreal Engine editor. I wanted to try it on a small Plymouth region. What I actually got was a multi-day debugging session across a C++ renderer, a Blueprint-facing plugin, and the Unreal Editor itself before the pipeline would even run end-to-end. This post is about that debugging process, not a victory lap — the generated map still has real problems, which I'll get into at the end.</p>
+<!-- -->
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem"><iframe src="https://www.youtube.com/embed/syiEnHuHhrM" title="Debugging CARLA's Digital Twin Tool" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-the-digital-twin-tool-does">What the Digital Twin Tool Does<a href="https://chris7462.github.io/blog/2026/08/20/carla-digital-twin#what-the-digital-twin-tool-does" class="hash-link" aria-label="Direct link to What the Digital Twin Tool Does" title="Direct link to What the Digital Twin Tool Does" translate="no">​</a></h2>
+<p>The tool works in three stages: pull a road network from OSM for a chosen region, procedurally fill the space between the roads with buildings whose footprints and heights are derived from the OSM data, and decorate the road surface with markings and textures. The result is exported as an OpenDRIVE file plus a set of Unreal static meshes, assembled into a <code>.umap</code> that behaves like any other CARLA map.</p>
+<p>The part that tripped me up initially is that there are actually <strong>two independent pipelines</strong> hanging off the same <code>.osm</code> input, and only one of them touches the renderer I spent most of this post debugging:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">                          ┌───────────────────── PREVIEW (widget image)</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">   .osm file ─bake─►  osmscout DB  ─socket─►  osm-world-renderer  ─►  UImage</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                          │</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                          └───────────────────── REAL MAP (what CARLA runs)</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                                                    (osm-world-renderer is NOT used here)</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">   .osm file ─osm2odr─►  .xodr (OpenDrive)  ─►  OpenDriveParser (C++ in CARLA plugin)</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                                                    │</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                                                    ▼</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                                       UE4 actors (roads, buildings, lane marks, terrain)</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                                       in sub-levels (Plymouth_Tile_0_0, _1_0)</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                                                    │</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                                                    ▼</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">                                       CARLA server  ─►  your Python client</span><br></div></code></pre></div></div>
+<ul>
+<li class=""><strong>Preview image in the widget</strong> — baked into an osmscout DB, rendered by <code>osm-world-renderer</code>, and streamed to the editor's <code>UImage</code> over a TCP socket on port 5000. This is a "what does OSM see?" confirmation pane, nothing more.</li>
+<li class=""><strong>Actual playable map</strong> — a completely separate path: <code>osm2odr</code> converts the same <code>.osm</code> file into an OpenDRIVE <code>.xodr</code>, and CARLA's own <code>OpenDriveParser</code> (C++, inside the plugin) turns that into UE4 actors — roads, buildings, lane marks, terrain — split across sub-level tiles.</li>
+</ul>
+<p>The two pipelines don't touch each other. Pressing Generate doesn't go through the renderer at all, and the renderer has no bearing on what the final map looks like. That distinction matters for this post, because everything in the next two sections — the crash fix, the coordinate bug, the texture binding — is entirely about the <em>preview</em> path. None of it changes what actually gets generated; it only changes whether you can see a correct preview before you generate it.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="how-faithful-is-the-digital-twin-really">How Faithful Is the "Digital Twin," Really?<a href="https://chris7462.github.io/blog/2026/08/20/carla-digital-twin#how-faithful-is-the-digital-twin-really" class="hash-link" aria-label="Direct link to How Faithful Is the &quot;Digital Twin,&quot; Really?" title="Direct link to How Faithful Is the &quot;Digital Twin,&quot; Really?" translate="no">​</a></h2>
+<p>It's worth being precise about what "digital twin" means here, because it's easy to assume the output is a photorealistic replica of the real location. It isn't — and that's by design, not a bug.</p>
+<p><strong>What CARLA reproduces faithfully from OSM:</strong></p>
+<table><thead><tr><th>Feature</th><th>Fidelity</th></tr></thead><tbody><tr><td>Road network geometry (curves, junctions, lane structure)</td><td>Exact match to OSM</td></tr><tr><td>Lane width, direction, connection (turn restrictions)</td><td>Exact</td></tr><tr><td>Building footprints (position + size)</td><td>Exact location from OSM building polygon</td></tr><tr><td>Land-use zones (park, commercial, residential)</td><td>Color-coded, correct area</td></tr><tr><td>Traffic signals / stop positions (if tagged)</td><td>Placed correctly</td></tr><tr><td>Spawn points / drivable area</td><td>Derived from OSM</td></tr></tbody></table>
+<p><strong>What CARLA does <em>not</em> do from OSM (falls back to generic assets):</strong></p>
+<table><thead><tr><th>Feature</th><th>What you actually get</th></tr></thead><tbody><tr><td>Building 3D shape/height</td><td>Generic <code>SM_industrial</code>, <code>SM_residential</code> meshes placed at the footprint — not the real building's architecture</td></tr><tr><td>Building height</td><td>OSM rarely has it; CARLA uses a default height</td></tr><tr><td>Building materials/texture</td><td>Generic textures, not the real building</td></tr><tr><td>Trees</td><td>Placeholder StreetMap tree assets at approximate positions near roads</td></tr><tr><td>Road surface detail</td><td>Generic asphalt texture, no potholes/cracks</td></tr><tr><td>Street furniture (signs, benches, barriers)</td><td>Only if explicitly present in OSM as nodes</td></tr><tr><td>Interiors, parking lot detail</td><td>Not present</td></tr></tbody></table>
+<p>So the honest framing is: CARLA gives you a drivable road-network twin with correct geometry and approximate urban context — not an exact architectural replica. If a specific building needs to look like the real thing (correct height, roof shape, windows, signage), that requires layering in your own 3D asset, either placed directly in the map or swapped in through the Houdini building importer (<code>UW_HoudiniBuildingImporter</code>) in place of the generic mesh. For simulation purposes — driving, sensor placement, AD testing — the OSM-derived map is sufficient as-is. For visual fidelity to one specific real-world location, it isn't, without that extra layer of work.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="building-the-osm-renderer-from-source">Building the OSM Renderer From Source<a href="https://chris7462.github.io/blog/2026/08/20/carla-digital-twin#building-the-osm-renderer-from-source" class="hash-link" aria-label="Direct link to Building the OSM Renderer From Source" title="Direct link to Building the OSM Renderer From Source" translate="no">​</a></h2>
+<p>The renderer isn't distributed pre-built, so it has to be compiled from <code>Build/libosmscout-source/</code> alongside <code>osm-world-renderer/OsmRenderer/</code>. Getting it to build meant:</p>
+<ul>
+<li class="">Building <strong>libosmscout</strong> (<code>Core</code>, <code>Map</code>, and <code>MapSVG</code> modules) with C++20</li>
+<li class="">Patching against <strong>pango v3.5</strong>, since the upstream code targets an older pango API</li>
+<li class="">Linking against <strong>Boost.Asio</strong></li>
+<li class="">Updating calls into the <code>MapPainterSVG</code> API to match libosmscout's current signatures</li>
+</ul>
+<p>Once that built cleanly, I baked the local <code>plymouth.osm</code> extract into an osmscout database:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">./build.sh /path/to/plymouth.osm</span><br></div></code></pre></div></div>
+<p>This produced a ~764 MB <code>maps/plymouth/</code> database, and from there the <code>osm-world-renderer</code> executable itself (listening on port 5000) compiled without further changes.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="hardening-the-renderer">Hardening the Renderer<a href="https://chris7462.github.io/blog/2026/08/20/carla-digital-twin#hardening-the-renderer" class="hash-link" aria-label="Direct link to Hardening the Renderer" title="Direct link to Hardening the Renderer" translate="no">​</a></h2>
+<p>With the renderer running, the first real bug showed up immediately: any client disconnecting from the socket — including a normal editor-side reconnect — killed the entire renderer process and took the Unreal Editor down with it. <code>OsmRenderer::StartLoop()</code> had no recovery path around the accept/read loop.</p>
+<p>The fix was straightforward: wrap the accept/read logic in an outer <code>while (true)</code> loop with an inner <code>try/catch</code>, so a dropped connection just ends that session instead of crashing the server.</p>
+<p>The harder problem was diagnosing <em>why</em> the map wasn't rendering even when the connection stayed alive. I added explicit success/failure logging through the config and tile-loading path in <code>MapDrawer.cpp</code>:</p>
+<ul>
+<li class=""><code>Config complete. Ready to render.</code> / <code>CONFIG FAILED: ...</code> at startup</li>
+<li class=""><code>LookupTiles returned N tile(s).</code> with per-tile way/area/node counts</li>
+<li class=""><code>Loaded map data: N tile(s), M ways, K area(s)</code> or a <code>WARNING: no tiles found...</code> when the lookup came back empty</li>
+</ul>
+<p>That logging is what actually made the rest of the debugging possible — without it, a blank preview image gave no signal as to whether the failure was in the socket layer, the coordinate lookup, or the texture upload.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="fixing-the-carlatools-plugin">Fixing the CarlaTools Plugin<a href="https://chris7462.github.io/blog/2026/08/20/carla-digital-twin#fixing-the-carlatools-plugin" class="hash-link" aria-label="Direct link to Fixing the CarlaTools Plugin" title="Direct link to Fixing the CarlaTools Plugin" translate="no">​</a></h2>
+<p>With the renderer stable, the next set of bugs lived in <code>MapPreviewUserWidget.h/.cpp</code>, the widget that talks to the renderer from inside the editor.</p>
+<p><strong>Coordinate order.</strong> The Blueprint side passes <code>(lon, lat)</code> into parameters named <code>(Latitude, Longitude)</code>, but the renderer's wire protocol expects <code>-R &lt;lat&gt; &lt;lon&gt;</code>. The values were silently swapped on the way out, so every render request was querying the wrong point on the map. The fix swaps them explicitly at the point where the request is serialized, rather than touching the Blueprint-side naming.</p>
+<p><strong>Texture binding.</strong> Even after the renderer returned a correct tile, the preview image stayed blank. <code>AttachTextureToImage()</code> now looks up the <code>MapPreviewImage</code> <code>UImage</code> via <code>GetWidgetFromName</code> and calls <code>SetBrushResourceObject(MapTexture)</code> directly, followed by <code>FlushRenderingCommands()</code> to force the GPU texture write to commit before the widget reads it — without the flush, the image brush would sometimes read stale (empty) texture data.</p>
+<p><strong>Socket hardening.</strong> Both <code>ConnectToSocket</code> and the read path inside <code>RenderMap</code> got the same treatment as the renderer side: a <code>try/catch</code> around the socket calls, logging a clean error instead of crashing the editor when the renderer isn't running or drops mid-session.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="configuring-and-generating-a-first-map">Configuring and Generating a First Map<a href="https://chris7462.github.io/blog/2026/08/20/carla-digital-twin#configuring-and-generating-a-first-map" class="hash-link" aria-label="Direct link to Configuring and Generating a First Map" title="Direct link to Configuring and Generating a First Map" translate="no">​</a></h2>
+<p>With the plugin stable, the widget config for the Plymouth region was:</p>
+<ul>
+<li class=""><strong>DB path</strong>: <code>/home/yi-chen/thirdparty/carla_UE4.26/Build/libosmscout-source/maps/plymouth/</code> (absolute path — relative paths didn't resolve correctly from inside the editor)</li>
+<li class=""><strong>Stylesheet</strong>: <code>.../stylesheets/standard.oss</code></li>
+<li class=""><strong>Image size</strong>: 512</li>
+<li class=""><strong>Render center</strong>: <code>42.387000, -83.502000</code>, inside the OSM extract's bounds (<code>42.3824–42.3879 N</code>, <code>-83.5079 to -83.4961 W</code>)</li>
+</ul>
+<p>Running the Generate flow confirms the separation described above: it never touches <code>osm-world-renderer</code>. Instead it runs <code>osm2odr</code> on the same <code>.osm</code> file to produce OpenDRIVE, then hands that to the C++ <code>OpenDriveParser</code> directly, and produced:</p>
+<ul>
+<li class=""><code>Plymouth.xodr</code> — 86 roads, 390 KB</li>
+<li class="">19 building meshes under <code>Static/Buildings</code></li>
+<li class="">Mesh sets for <code>DrivingLane</code>, <code>LaneMark</code>, <code>Roofs</code>, and <code>Terrain</code></li>
+<li class="">A 29 KB <code>Plymouth.umap</code> shell plus two generated tile maps (<code>Plymouth_Tile_0_0</code>, <code>Plymouth_Tile_1_0</code>) totaling around 1.5 MB of actors</li>
+</ul>
+<p>No code changes were needed for this stage — it was purely a matter of getting the upstream renderer and plugin stable enough that the config values would actually take effect.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="loading-it-in-carla">Loading It in CARLA<a href="https://chris7462.github.io/blog/2026/08/20/carla-digital-twin#loading-it-in-carla" class="hash-link" aria-label="Direct link to Loading It in CARLA" title="Direct link to Loading It in CARLA" translate="no">​</a></h2>
+<p>The generated map loads and runs like any other CARLA map. I launched the server with <code>--ros2</code> support and Vulkan, loaded <code>CustomMaps/Plymouth/Plymouth</code>, and connected a Python client: <code>get_spawn_points()</code> returned 125 valid points, and a <code>tesla.model3</code> spawned without errors. That confirms the pipeline is mechanically sound end to end — OSM extract in, loadable CARLA map out — but I want to be clear that "loads and spawns a vehicle" is a much lower bar than "drivable." I haven't attempted an actual driving run on this map yet.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="known-issues">Known Issues<a href="https://chris7462.github.io/blog/2026/08/20/carla-digital-twin#known-issues" class="hash-link" aria-label="Direct link to Known Issues" title="Direct link to Known Issues" translate="no">​</a></h2>
+<p>Some of what shows up in the generated map is expected, per the fidelity discussion above — generic building meshes and generic road textures aren't bugs, they're how the tool is designed to work. But beyond that baseline, the current output has real problems that go past "generic":</p>
+<ul>
+<li class=""><strong>Broken road connectivity/geometry</strong> — some road segments don't connect cleanly, which will matter for anything that relies on OpenDRIVE topology (routing, lane changes, traffic).</li>
+<li class=""><strong>Missing or misplaced buildings</strong> — footprint placement doesn't always track the OSM polygons correctly, leaving gaps or overlapping structures — not just "generic," but wrong.</li>
+<li class=""><strong>Missing or incorrect textures/materials</strong> — some meshes come through completely untextured, or with the wrong material assigned outright, rather than just the expected generic asphalt/facade look.</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="takeaway">Takeaway<a href="https://chris7462.github.io/blog/2026/08/20/carla-digital-twin#takeaway" class="hash-link" aria-label="Direct link to Takeaway" title="Direct link to Takeaway" translate="no">​</a></h2>
+<p>Most of this work was making the <em>preview</em> pipeline survivable — fixing crashes, coordinate bugs, and a stale texture binding that made it impossible to tell whether the OSM region I'd selected was even correct before committing to a full generation run. That's a separate concern from the <em>generation</em> pipeline, which goes through <code>osm2odr</code> and <code>OpenDriveParser</code> independently of anything I touched. Now that the preview is stable and logging clearly, the tool runs end to end and produces a loadable map. But the map itself — road geometry, building placement, textures — still needs meaningful cleanup before it's something I'd trust for actual driving experiments. That's the next phase of this project.</p>]]></content:encoded>
+            <category>CARLA</category>
+            <category>Simulation</category>
+            <category>digital-twin</category>
+            <category>osm</category>
+            <category>unreal-engine</category>
+            <category>Autonomous Driving</category>
+        </item>
         <item>
             <title><![CDATA[Turning Real Driving Logs into Closed-Loop CARLA Scenarios with Cam2Sim]]></title>
             <link>https://chris7462.github.io/blog/2026/08/11/cam2sim</link>
@@ -862,36 +947,6 @@ Even without loop closure, object filtering, or semantic understanding, the syst
             <category>YOLO</category>
             <category>Computer Vision</category>
             <category>Autonomous Driving</category>
-        </item>
-        <item>
-            <title><![CDATA[Paper Published: Road Geometry Estimation Using Vehicle Trails]]></title>
-            <link>https://chris7462.github.io/blog/2021/09/19/road-geometry-paper</link>
-            <guid>https://chris7462.github.io/blog/2021/09/19/road-geometry-paper</guid>
-            <pubDate>Sun, 19 Sep 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[I am pleased to share that my paper titled "Road Geometry Estimation Using Vehicle Trails Technology, Planning, and Operations.]]></description>
-            <content:encoded><![CDATA[<p>I am pleased to share that my paper titled <strong>"Road Geometry Estimation Using Vehicle Trails: A Linear Mixed Model Approach"</strong> has been published in the <em>Journal of Intelligent Transportation Systems: Technology, Planning, and Operations</em>.</p>
-<!-- -->
-<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="overview">Overview<a href="https://chris7462.github.io/blog/2021/09/19/road-geometry-paper#overview" class="hash-link" aria-label="Direct link to Overview" title="Direct link to Overview" translate="no">​</a></h2>
-<p>The paper addresses a fundamental problem in autonomous highway driving: accurately estimating the shape of the road ahead using motion trajectories of leading vehicles.</p>
-<p>A <strong>vehicle trail</strong> is essentially the historical path of a vehicle, where position samples are collected longitudinally from the same vehicle over time. Such measurements are naturally available from sensor fusion systems — whether from a single sensor or multi-sensor tracking setups. The key idea is to exploit these trails from leading vehicles to infer the geometry of the road in highway scenarios.</p>
-<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="method">Method<a href="https://chris7462.github.io/blog/2021/09/19/road-geometry-paper#method" class="hash-link" aria-label="Direct link to Method" title="Direct link to Method" translate="no">​</a></h2>
-<p>The proposed method is built around a <strong>polynomial-based road model</strong> estimated via a <strong>Linear Mixed Model (LMM)</strong> — one of the most widely used frameworks in statistical modeling. The approach addresses two practical engineering challenges:</p>
-<ul>
-<li class=""><strong>Memory efficiency</strong>: Before feeding trail data into the LMM framework, the data undergoes a newly developed <strong>compression and chopping mechanism</strong> to prevent memory overload from accumulating trail samples.</li>
-<li class=""><strong>Computational efficiency</strong>: The <strong>profile likelihood function</strong> is used to reduce the number of iterations in the Newton-Raphson optimization, significantly alleviating the computational burden.</li>
-</ul>
-<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="results">Results<a href="https://chris7462.github.io/blog/2021/09/19/road-geometry-paper#results" class="hash-link" aria-label="Direct link to Results" title="Direct link to Results" translate="no">​</a></h2>
-<p>The method was evaluated on two publicly available <strong>NGSIM (Next Generation Simulation)</strong> datasets. Large-scale simulation results show that the road shape estimated by the proposed method achieves an <strong>RMSE of less than 0.5 meters on average</strong> across all evaluation ranges when compared with the ground truth road shape — demonstrating both accuracy and robustness in capturing road geometry.</p>
-<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="links">Links<a href="https://chris7462.github.io/blog/2021/09/19/road-geometry-paper#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links" translate="no">​</a></h2>
-<ul>
-<li class="">📄 <strong>Published paper</strong>: <a href="https://www.tandfonline.com/doi/full/10.1080/15472450.2021.1974858" target="_blank" rel="noopener noreferrer" class="">Taylor &amp; Francis Online</a></li>
-<li class="">🎞️ <strong>Research talk slides</strong>: <a href="https://chris7462.github.io/assets/files/RoadShapeEstimation-5d2e9b442c99439f7decb5ba0f7654db.pdf" target="_blank" class="">Road Shape Estimation</a></li>
-</ul>]]></content:encoded>
-            <category>Publication</category>
-            <category>Road Geometry</category>
-            <category>Linear Mixed Model</category>
-            <category>Autonomous Driving</category>
-            <category>Statistics</category>
         </item>
     </channel>
 </rss>
