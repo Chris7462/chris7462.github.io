@@ -24,7 +24,7 @@
   "timezone": "",
   "title": "HPC Overview",
   "uid": "hpc-overview",
-  "version": 1,
+  "version": 3,
   "panels": [
     {
       "collapsed": false,
@@ -1324,744 +1324,6 @@
       },
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 20,
-            "spanNulls": false,
-            "showPoints": "never"
-          },
-          "unit": "percent",
-          "min": 0
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 28
-      },
-      "id": 127,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "GPU Utilization Over Time",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"exxact:9835\",uuid=\"23b4975b-2171-ea56-f5f7-f78bf0cd300a\"} * 100",
-          "legendFormat": "GPU 0"
-        },
-        {
-          "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"exxact:9835\",uuid=\"d0b27d44-e215-eeda-b053-6a2342e854c5\"} * 100",
-          "legendFormat": "GPU 1"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 20,
-            "spanNulls": false,
-            "showPoints": "never"
-          },
-          "unit": "bytes"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 28
-      },
-      "id": 128,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "GPU Memory Over Time",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "nvidia_smi_memory_used_bytes{instance=\"exxact:9835\",uuid=\"23b4975b-2171-ea56-f5f7-f78bf0cd300a\"}",
-          "legendFormat": "GPU 0 Used"
-        },
-        {
-          "expr": "nvidia_smi_memory_total_bytes{instance=\"exxact:9835\",uuid=\"23b4975b-2171-ea56-f5f7-f78bf0cd300a\"}",
-          "legendFormat": "GPU 0 Total"
-        },
-        {
-          "expr": "nvidia_smi_memory_used_bytes{instance=\"exxact:9835\",uuid=\"d0b27d44-e215-eeda-b053-6a2342e854c5\"}",
-          "legendFormat": "GPU 1 Used"
-        },
-        {
-          "expr": "nvidia_smi_memory_total_bytes{instance=\"exxact:9835\",uuid=\"d0b27d44-e215-eeda-b053-6a2342e854c5\"}",
-          "legendFormat": "GPU 1 Total"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 36
-      },
-      "id": 300,
-      "title": "Node: exxact2  \u00b7  System Overview",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 60
-              },
-              {
-                "color": "red",
-                "value": 85
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 4,
-        "x": 0,
-        "y": 37
-      },
-      "id": 301,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "title": "Disk Usage (/)",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "(1 - node_filesystem_avail_bytes{mountpoint=\"/\",instance=\"exxact2:9100\"} / node_filesystem_size_bytes{mountpoint=\"/\",instance=\"exxact2:9100\"}) * 100",
-          "legendFormat": "Disk"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 4,
-        "y": 37
-      },
-      "id": 302,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "Disk Used (/)",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "node_filesystem_size_bytes{mountpoint=\"/\",instance=\"exxact2:9100\"} - node_filesystem_avail_bytes{mountpoint=\"/\",instance=\"exxact2:9100\"}",
-          "legendFormat": "Used"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 4,
-        "y": 40
-      },
-      "id": 303,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "Disk Total (/)",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "node_filesystem_size_bytes{mountpoint=\"/\",instance=\"exxact2:9100\"}",
-          "legendFormat": "Total"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 60
-              },
-              {
-                "color": "red",
-                "value": 85
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 4,
-        "x": 7,
-        "y": 37
-      },
-      "id": 304,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "title": "Disk Usage (/scratch)",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "(1 - node_filesystem_avail_bytes{mountpoint=\"/scratch\",instance=\"exxact2:9100\"} / node_filesystem_size_bytes{mountpoint=\"/scratch\",instance=\"exxact2:9100\"}) * 100",
-          "legendFormat": "Disk /scratch"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 11,
-        "y": 37
-      },
-      "id": 305,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "Disk Used (/scratch)",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "node_filesystem_size_bytes{mountpoint=\"/scratch\",instance=\"exxact2:9100\"} - node_filesystem_avail_bytes{mountpoint=\"/scratch\",instance=\"exxact2:9100\"}",
-          "legendFormat": "Used"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 11,
-        "y": 40
-      },
-      "id": 306,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "Disk Total (/scratch)",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "node_filesystem_size_bytes{mountpoint=\"/scratch\",instance=\"exxact2:9100\"}",
-          "legendFormat": "Total"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 60
-              },
-              {
-                "color": "red",
-                "value": 85
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 3,
-        "x": 17,
-        "y": 37
-      },
-      "id": 307,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "title": "RAM Usage",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "(1 - node_memory_MemAvailable_bytes{instance=\"exxact2:9100\"} / node_memory_MemTotal_bytes{instance=\"exxact2:9100\"}) * 100",
-          "legendFormat": "RAM"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 60
-              },
-              {
-                "color": "red",
-                "value": 85
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 3,
-        "x": 14,
-        "y": 37
-      },
-      "id": 308,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "title": "CPU Usage",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\",instance=\"exxact2:9100\"}[5m])) * 100)",
-          "legendFormat": "CPU"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "blue"
-          }
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 20,
-        "y": 40
-      },
-      "id": 309,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "Total RAM",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "node_memory_MemTotal_bytes{instance=\"exxact2:9100\"}",
-          "legendFormat": "Total"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "blue"
-          }
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 20,
-        "y": 37
-      },
-      "id": 310,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "Total CPU Cores",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "count(node_cpu_seconds_total{mode=\"idle\",instance=\"exxact2:9100\"})",
-          "legendFormat": "Cores"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 20,
-            "spanNulls": false,
-            "showPoints": "never"
-          },
-          "unit": "percent",
-          "min": 0
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 43
-      },
-      "id": 311,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "CPU & RAM Usage Over Time",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\",instance=\"exxact2:9100\"}[5m])) * 100)",
-          "legendFormat": "CPU %"
-        },
-        {
-          "expr": "(1 - node_memory_MemAvailable_bytes{instance=\"exxact2:9100\"} / node_memory_MemTotal_bytes{instance=\"exxact2:9100\"}) * 100",
-          "legendFormat": "RAM %"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "lineWidth": 1,
-            "fillOpacity": 20,
-            "spanNulls": false,
-            "showPoints": "never"
-          },
-          "unit": "Bps"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 43
-      },
-      "id": 312,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Network Traffic",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "rate(node_network_receive_bytes_total{device!~\"lo|docker.*|br.*|veth.*\",instance=\"exxact2:9100\"}[5m])",
-          "legendFormat": "{{ device }} RX"
-        },
-        {
-          "expr": "-rate(node_network_transmit_bytes_total{device!~\"lo|docker.*|br.*|veth.*\",instance=\"exxact2:9100\"}[5m])",
-          "legendFormat": "{{ device }} TX"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 51
-      },
-      "id": 320,
-      "title": "Node: exxact2  \u00b7  GPU",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -2088,9 +1350,9 @@
         "h": 6,
         "w": 6,
         "x": 0,
-        "y": 52
+        "y": 28
       },
-      "id": 321,
+      "id": 1221,
       "options": {
         "orientation": "auto",
         "reduceOptions": {
@@ -2103,12 +1365,12 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "title": "GPU Utilization",
+      "title": "GPU 2 Utilization",
       "type": "gauge",
       "targets": [
         {
-          "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"exxact2:9835\"} * 100",
-          "legendFormat": "GPU {{ uuid }}"
+          "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"} * 100",
+          "legendFormat": "GPU 2"
         }
       ]
     },
@@ -2145,9 +1407,9 @@
         "h": 6,
         "w": 6,
         "x": 6,
-        "y": 52
+        "y": 28
       },
-      "id": 322,
+      "id": 1222,
       "options": {
         "orientation": "auto",
         "reduceOptions": {
@@ -2160,12 +1422,60 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "title": "GPU Memory Usage",
+      "title": "GPU 2 Memory Usage",
       "type": "gauge",
       "targets": [
         {
-          "expr": "(nvidia_smi_memory_used_bytes{instance=\"exxact2:9835\"} / nvidia_smi_memory_total_bytes{instance=\"exxact2:9835\"}) * 100",
-          "legendFormat": "VRAM {{ uuid }}"
+          "expr": "(nvidia_smi_memory_used_bytes{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"} / nvidia_smi_memory_total_bytes{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"}) * 100",
+          "legendFormat": "GPU 2"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "afn5lu3umf75sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 12,
+        "y": 28
+      },
+      "id": 1223,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "title": "GPU 2 Memory Used",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "nvidia_smi_memory_used_bytes{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"}",
+          "legendFormat": "Used"
         }
       ]
     },
@@ -2200,9 +1510,9 @@
         "h": 3,
         "w": 6,
         "x": 18,
-        "y": 52
+        "y": 28
       },
-      "id": 323,
+      "id": 1224,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -2216,12 +1526,64 @@
           "values": false
         }
       },
-      "title": "GPU Temperature",
+      "title": "GPU 2 Temperature",
       "type": "stat",
       "targets": [
         {
-          "expr": "nvidia_smi_temperature_gpu{instance=\"exxact2:9835\"}",
-          "legendFormat": "GPU {{ uuid }}"
+          "expr": "nvidia_smi_temperature_gpu{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"}",
+          "legendFormat": "GPU 2"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "afn5lu3umf75sf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        }
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 12,
+        "y": 31
+      },
+      "id": 1225,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "title": "GPU 2 Memory Total",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "nvidia_smi_memory_total_bytes{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"}",
+          "legendFormat": "Total"
         }
       ]
     },
@@ -2246,7 +1608,7 @@
               },
               {
                 "color": "red",
-                "value": 350
+                "value": 290
               }
             ]
           }
@@ -2256,9 +1618,9 @@
         "h": 3,
         "w": 6,
         "x": 18,
-        "y": 55
+        "y": 31
       },
-      "id": 324,
+      "id": 1226,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -2272,108 +1634,12 @@
           "values": false
         }
       },
-      "title": "GPU Power Draw",
+      "title": "GPU 2 Power Draw",
       "type": "stat",
       "targets": [
         {
-          "expr": "nvidia_smi_power_draw_watts{instance=\"exxact2:9835\"}",
-          "legendFormat": "GPU {{ uuid }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 6,
-        "x": 12,
-        "y": 52
-      },
-      "id": 325,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "GPU Memory Used",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "nvidia_smi_memory_used_bytes{instance=\"exxact2:9835\"}",
-          "legendFormat": "{{ uuid }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 6,
-        "x": 12,
-        "y": 55
-      },
-      "id": 326,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "GPU Memory Total",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "nvidia_smi_memory_total_bytes{instance=\"exxact2:9835\"}",
-          "legendFormat": "{{ uuid }}"
+          "expr": "nvidia_smi_power_draw_watts{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"}",
+          "legendFormat": "GPU 2"
         }
       ]
     },
@@ -2398,9 +1664,9 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 58
+        "y": 34
       },
-      "id": 327,
+      "id": 127,
       "options": {
         "legend": {
           "displayMode": "list",
@@ -2414,8 +1680,16 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"exxact2:9835\"} * 100",
-          "legendFormat": "GPU {{ uuid }}"
+          "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"exxact:9835\",uuid=\"23b4975b-2171-ea56-f5f7-f78bf0cd300a\"} * 100",
+          "legendFormat": "GPU 0"
+        },
+        {
+          "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"exxact:9835\",uuid=\"d0b27d44-e215-eeda-b053-6a2342e854c5\"} * 100",
+          "legendFormat": "GPU 1"
+        },
+        {
+          "expr": "nvidia_smi_utilization_gpu_ratio{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"} * 100",
+          "legendFormat": "GPU 2"
         }
       ]
     },
@@ -2439,9 +1713,9 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 58
+        "y": 34
       },
-      "id": 328,
+      "id": 128,
       "options": {
         "legend": {
           "displayMode": "list",
@@ -2455,12 +1729,28 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "nvidia_smi_memory_used_bytes{instance=\"exxact2:9835\"}",
-          "legendFormat": "Used {{ uuid }}"
+          "expr": "nvidia_smi_memory_used_bytes{instance=\"exxact:9835\",uuid=\"23b4975b-2171-ea56-f5f7-f78bf0cd300a\"}",
+          "legendFormat": "GPU 0 Used"
         },
         {
-          "expr": "nvidia_smi_memory_total_bytes{instance=\"exxact2:9835\"}",
-          "legendFormat": "Total {{ uuid }}"
+          "expr": "nvidia_smi_memory_total_bytes{instance=\"exxact:9835\",uuid=\"23b4975b-2171-ea56-f5f7-f78bf0cd300a\"}",
+          "legendFormat": "GPU 0 Total"
+        },
+        {
+          "expr": "nvidia_smi_memory_used_bytes{instance=\"exxact:9835\",uuid=\"d0b27d44-e215-eeda-b053-6a2342e854c5\"}",
+          "legendFormat": "GPU 1 Used"
+        },
+        {
+          "expr": "nvidia_smi_memory_total_bytes{instance=\"exxact:9835\",uuid=\"d0b27d44-e215-eeda-b053-6a2342e854c5\"}",
+          "legendFormat": "GPU 1 Total"
+        },
+        {
+          "expr": "nvidia_smi_memory_used_bytes{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"}",
+          "legendFormat": "GPU 2 Used"
+        },
+        {
+          "expr": "nvidia_smi_memory_total_bytes{instance=\"exxact:9835\",uuid=\"48b774a9-09f4-eb7e-2295-a59ccdd3e585\"}",
+          "legendFormat": "GPU 2 Total"
         }
       ]
     },
@@ -2473,7 +1763,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 66
+        "y": 42
       },
       "id": 400,
       "options": {
@@ -2516,7 +1806,7 @@
         "h": 6,
         "w": 6,
         "x": 0,
-        "y": 67
+        "y": 43
       },
       "id": 401,
       "options": {
@@ -2563,7 +1853,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 67
+        "y": 43
       },
       "id": 402,
       "options": {
@@ -2611,7 +1901,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 70
+        "y": 46
       },
       "id": 403,
       "options": {
@@ -2654,7 +1944,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 67
+        "y": 43
       },
       "id": 404,
       "options": {
@@ -2685,7 +1975,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 74
+        "y": 50
       },
       "id": 500,
       "title": "SLURM Jobs",
@@ -2722,7 +2012,7 @@
         "h": 6,
         "w": 4,
         "x": 0,
-        "y": 75
+        "y": 51
       },
       "id": 501,
       "options": {
@@ -2778,7 +2068,7 @@
         "h": 6,
         "w": 4,
         "x": 4,
-        "y": 75
+        "y": 51
       },
       "id": 502,
       "options": {
@@ -2826,7 +2116,7 @@
         "h": 6,
         "w": 4,
         "x": 8,
-        "y": 75
+        "y": 51
       },
       "id": 503,
       "options": {
@@ -2874,7 +2164,7 @@
         "h": 6,
         "w": 4,
         "x": 12,
-        "y": 75
+        "y": 51
       },
       "id": 504,
       "options": {
@@ -2922,7 +2212,7 @@
         "h": 6,
         "w": 4,
         "x": 16,
-        "y": 75
+        "y": 51
       },
       "id": 505,
       "options": {
@@ -2970,7 +2260,7 @@
         "h": 6,
         "w": 4,
         "x": 20,
-        "y": 75
+        "y": 51
       },
       "id": 506,
       "options": {
@@ -3016,7 +2306,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 81
+        "y": 57
       },
       "id": 507,
       "options": {
@@ -3062,7 +2352,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 81
+        "y": 57
       },
       "id": 508,
       "options": {
