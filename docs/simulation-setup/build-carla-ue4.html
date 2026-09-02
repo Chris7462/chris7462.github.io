@@ -12,7 +12,7 @@
 <link rel="alternate" type="application/rss+xml" href="/music/rss.xml" title="Yi-Chen Zhang RSS Feed">
 <link rel="alternate" type="application/atom+xml" href="/music/atom.xml" title="Yi-Chen Zhang Atom Feed">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css" integrity="sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM" crossorigin="anonymous"><link rel="stylesheet" href="/assets/css/styles.9763260c.css">
-<script src="/assets/js/runtime~main.e6dce462.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.3674f743.js" defer="defer"></script>
 <script src="/assets/js/main.f96a451f.js" defer="defer"></script>
 </head>
 <body>
@@ -99,7 +99,7 @@
 <p>The <code>carla</code> wheel doesn&#x27;t pull in any other dependencies, so installing it system-wide like this is low-risk. If you&#x27;d rather keep it scoped, drop <code>sudo</code> to install it for just your user, or install it inside a virtual environment instead.</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="compile-the-server">Compile the Server<a href="#compile-the-server" class="hash-link" aria-label="Direct link to Compile the Server" title="Direct link to Compile the Server" translate="no">​</a></h4>
 <p>This command builds the server and, once done, launches the Unreal Engine editor directly. You&#x27;ll run it every time you want to bring up the server or open the editor going forward:</p>
-<div class="language-sh codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-sh codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">make launch ARGS=&quot;--ros2&quot;</span><br></div></code></pre></div></div>
+<div class="language-sh codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-sh codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">make launch ARGS=&quot;--ros2 --chrono&quot;</span><br></div></code></pre></div></div>
 <p>On the first launch, expect to see warnings about shaders and mesh distance fields — these are still loading in the background, and the map won&#x27;t render correctly until they finish. Later launches skip most of this and come up noticeably faster.</p>
 <h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="create-the-package">Create the Package<a href="#create-the-package" class="hash-link" aria-label="Direct link to Create the Package" title="Direct link to Create the Package" translate="no">​</a></h4>
 <p>To produce the final binary, run <code>Package.sh</code> directly rather than <code>make package</code>. The <code>make package</code> target resets several build options back to their defaults as part of packaging, which has the side effect of turning ROS2 support back off — undoing the <code>--ros2 --chrono</code> build you just did.</p>
