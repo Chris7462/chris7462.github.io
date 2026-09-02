@@ -184,10 +184,10 @@ The build relies on `ninja-build`. If your system doesn't already have it, insta
 sudo apt install ninja-build
 ```
 
-#### Build with ROS2
+#### Build with ROS2 and Project Chrono
 
 ```sh
-make setup ARGS="--ros2"
+make setup ARGS="--ros2 --chrono"
 ```
 
 On success, the output ends with:
@@ -199,7 +199,7 @@ Setup.sh: Success!
 #### Build the CARLA Editor
 
 ```sh
-make CarlaUE4Editor ARGS="--ros2"
+make CarlaUE4Editor ARGS="--ros2 --chrono"
 ```
 
 :::warning Troubleshooting: `error: use of undeclared identifier 'uintptr_t'` / `'uint32_t'`
@@ -270,14 +270,14 @@ The `carla` wheel doesn't pull in any other dependencies, so installing it syste
 This command builds the server and, once done, launches the Unreal Engine editor directly. You'll run it every time you want to bring up the server or open the editor going forward:
 
 ```sh
-make launch ARGS="--ros2"
+make launch ARGS="--ros2 --chrono"
 ```
 
 On the first launch, expect to see warnings about shaders and mesh distance fields — these are still loading in the background, and the map won't render correctly until they finish. Later launches skip most of this and come up noticeably faster.
 
 #### Create the Package
 
-To produce the final binary, run `Package.sh` directly rather than `make package`. The `make package` target resets several build options back to their defaults as part of packaging, which has the side effect of turning ROS2 support back off — undoing the `--ros2` build you just did.
+To produce the final binary, run `Package.sh` directly rather than `make package`. The `make package` target resets several build options back to their defaults as part of packaging, which has the side effect of turning ROS2 support back off — undoing the `--ros2 --chrono` build you just did.
 
 ```sh
 Util/BuildTools/Package.sh
@@ -346,6 +346,16 @@ If `/carla/map` shows up alongside the usual topics, ROS2 is working correctly:
 /parameter_events
 /rosout
 ```
+
+### Verify Chrono Integration
+
+There's a chrono example available in `PythonAPI/examples/manual_control_chrono.py`:
+
+```sh
+python3 PythonAPI/examples/manual_control_chrono.py
+```
+
+If no erros show up in the terminal, Project Chrono is integrated correctly.
 
 ### Restore GCC 16
 
