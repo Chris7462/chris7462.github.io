@@ -24,7 +24,7 @@
   "timezone": "",
   "title": "HPC Overview",
   "uid": "hpc-overview",
-  "version": 3,
+  "version": 12,
   "panels": [
     {
       "collapsed": false,
@@ -2098,80 +2098,88 @@
         "type": "prometheus",
         "uid": "afn5lu3umf75sf"
       },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        }
-      },
+      "id": 512,
+      "type": "bargauge",
+      "title": "SLURM Resource Allocation",
       "gridPos": {
         "h": 6,
-        "w": 4,
-        "x": 8,
-        "y": 51
-      },
-      "id": 503,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "CPUs Allocated",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "sum(slurm_cpus_alloc)",
-          "legendFormat": "Allocated"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 4,
+        "w": 12,
         "x": 12,
         "y": 51
       },
-      "id": 504,
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU (128 cores)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "max",
+                "value": 128
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Memory (244 GiB)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "mbytes"
+              },
+              {
+                "id": "max",
+                "value": 250000
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
       "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color",
+        "namePlacement": "top",
+        "showUnfilled": true,
+        "sizing": "auto",
+        "minVizHeight": 16,
+        "maxVizHeight": 300,
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -2180,12 +2188,16 @@
           "values": false
         }
       },
-      "title": "CPUs Idle",
-      "type": "stat",
       "targets": [
         {
-          "expr": "sum(slurm_cpus_idle)",
-          "legendFormat": "Idle"
+          "refId": "A",
+          "expr": "sum(slurm_cpus_alloc)",
+          "legendFormat": "CPU (128 cores)"
+        },
+        {
+          "refId": "B",
+          "expr": "sum(slurm_node_mem_alloc)",
+          "legendFormat": "Memory (244 GiB)"
         }
       ]
     },
@@ -2211,55 +2223,7 @@
       "gridPos": {
         "h": 6,
         "w": 4,
-        "x": 16,
-        "y": 51
-      },
-      "id": 505,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "title": "CPUs Total",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "sum(slurm_cpus_total)",
-          "legendFormat": "Total"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "afn5lu3umf75sf"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 4,
-        "x": 20,
+        "x": 8,
         "y": 51
       },
       "id": 506,
@@ -2276,12 +2240,12 @@
           "values": false
         }
       },
-      "title": "Nodes Idle",
+      "title": "Nodes Allocated/Mixed",
       "type": "stat",
       "targets": [
         {
-          "expr": "sum(slurm_nodes_idle)",
-          "legendFormat": "Idle"
+          "expr": "(sum(slurm_nodes_alloc) or vector(0)) + (sum(slurm_nodes_mix) or vector(0))",
+          "legendFormat": "Allocated/Mixed"
         }
       ]
     },
