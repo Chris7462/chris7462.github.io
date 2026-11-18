@@ -1,0 +1,214 @@
+---
+title: "Driving CARLA 1.0 from a Fully Local AI Agent"
+date: 2026-11-18
+authors: yc
+tags: [carla, simulation, ai-agent, opencode, ollama, llm]
+---
+
+[CARLA 1.0](https://carla.org/2026/11/17/release-1.0/) just shipped a few days ago, and it adds a lot of new features. The one that caught my attention the most is the AI coding agent that can run and drive the simulator for you. The [official docs](https://carla-ue5.readthedocs.io/en/latest/agent_skills/#set-up-agentic-carla) show how to set it up with agents like Claude Code and Codex, but the skill library is plain files and the MCP server is a plain Node program, so any MCP-capable agent can use it, including a local one. In this post I'll share how I run an agent against CARLA 1.0 with a local LLM, specifically qwen3-coder-next served by Ollama and driven through opencode, with no API tokens spent and nothing leaving my own hardware.
+
+One note on scope: this first post lets the local model write and run Python directly against CARLA. I haven't connected CARLA's official MCP server and skill library yet. That's the follow-up.
+
+{/* truncate */}
+
+<div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', marginBottom: '1.5rem'}}>
+  <iframe
+    src="https://www.youtube.com/embed/sHwhRgUpaAA"
+    title="CARLA with Agent"
+    style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
+
+## What CARLA 1.0 Ships for Agents
+
+The 1.0 release post describes a skill library of 64 vetted procedures, and the [Agentic CARLA docs](https://carla-ue5.readthedocs.io/en/latest/agent_skills/#set-up-agentic-carla) group them by area: setup, driving a running server through the Python API, building and packaging, scenarios, ROS 2, and more. Each procedure encodes the failure modes that make the obvious approach fail, so the agent doesn't have to rediscover them. A separate MCP server, which lives under `Util/AgenticTools/` in the CARLA tree, serves the library over the Model Context Protocol, with tools to list the skills, read one, and check its prerequisites against your machine. The docs show copy-paste setups for Claude Code and Codex, but nothing in the server is specific to either of them.
+
+That's a strong foundation, and it's the direction I eventually want to take this. But I wanted to start one step earlier and ask a simpler question first: how far does a local model get with nothing but a shell, a Python interpreter, and a CARLA server to talk to?
+
+## Why Run It Locally
+
+There are a few reasons, in roughly the order I care about them. First, **cost**: a hosted agent burns API tokens on every loop, and simulation work is loopy by nature, with write, run, read the error, and fix repeating many times. A local model costs GPU time I already own. Second, **control**: I choose the model, I can pin its exact version for reproducibility, and I decide which tools it gets. Third, **data**: nothing about my simulation setup leaves the machine.
+
+It comes with trade-offs, and it would be dishonest to skip them. A local model is less capable than the best hosted ones, and it knows less about a simulator that was released days ago. The word "offline" also needs a footnote: installing CARLA and opencode needed a network connection once. After that, everything at runtime stays on the local machine.
+
+## The Setup: Everything on the Server, Only the Picture on the Laptop
+
+My GPUs are in a workstation with three NVIDIA RTX PRO 6000 Blackwell Max-Q cards, 96 GB each. My laptop has an RTX 2080 with 8 GB of VRAM. That rules out running everything locally on the laptop: the model I use is about 51 GB as reported by `ollama list`, several times the laptop's entire VRAM, and CARLA needs the GPU for rendering its sensors on top of that. So the split is simple. The workstation runs the CARLA server, the model, and the agent. The laptop only displays the picture.
+
+The requirements ended up being short. The agent and the CARLA server both run on the workstation. I SSH in and talk to the agent from a terminal. And CARLA's picture has to show up on the laptop, where a single camera view is enough. I don't need the full Unreal window.
+
+```
+GPU server
+├── CARLA server (headless, -RenderOffScreen)
+├── Ollama (local LLM, OpenAI-compatible API)
+└── opencode (used from an SSH terminal)
+        └── writes and runs Python against 127.0.0.1:2000
+
+Laptop
+├── SSH tunnel: forwards the server's ports 2000 / 2001 / 2002
+└── carla_viewer.py: its own camera sensor, drawn in a local window
+```
+
+The two halves are deliberately separate: the agent changes the simulator, and the viewer only watches. Because the laptop never renders anything itself, its modest GPU doesn't matter. All it does is decode frames and draw them.
+
+### Why a Coding Agent Instead of Custom Tools
+
+I wanted the agent to have a lot of freedom, to write whatever script a task needs. Operating CARLA is really just calling a Python API, so the ability to write code, run it, read the error, and fix it matters more than a prebuilt set of spawn and set-weather tools. A fixed toolset would be safer, but every capability has to be implemented by hand, and it caps what the agent can do. So I went with an off-the-shelf coding agent, opencode, and put the safety boundaries at the environment level instead. CARLA's official skills and MCP server fit on top of this later without changing the foundation.
+
+## Step One: A Remote Viewer on the Laptop
+
+Start by confirming CARLA is healthy on the server:
+
+```bash
+pgrep -af -i carla
+ss -ltn | grep -E ':200[0-2]'
+```
+
+My CARLA runs headless with `-RenderOffScreen`, and ports 2000 through 2002 were all listening. Then open an SSH tunnel from the laptop and leave it running. It prints nothing, so a terminal that looks hung is normal:
+
+```bash
+ssh -N -L 2000:127.0.0.1:2000 -L 2001:127.0.0.1:2001 -L 2002:127.0.0.1:2002 user@gpu-server
+```
+
+In a second terminal, verify the Python API:
+
+```python
+import carla
+c = carla.Client('127.0.0.1', 2000)
+c.set_timeout(10.0)
+print('client:', c.get_client_version())
+print('server:', c.get_server_version())
+print('map:', c.get_world().get_map().name)
+```
+
+The Python API on the laptop has to match the server's version. In my case both reported 1.0.
+
+### How the Viewer Works
+
+The viewer is a small pygame app. It spawns its own RGB camera sensor in CARLA, draws the incoming frames, and lets you fly that camera around with the keyboard and mouse. Three design decisions matter:
+
+**It only moves its own camera.** It never touches the world's spectator, so it can't fight with whatever the agent is doing.
+
+**It never changes world settings and never ticks.** In synchronous mode, a camera produces no new frames unless something ticks the world. If the viewer quietly flipped the world out of synchronous mode to get a picture, it could break something the agent is in the middle of. Instead it just prints a warning when it suspects that situation.
+
+**It always cleans up.** On exit it calls `camera.stop()` and `camera.destroy()`, so the sensor doesn't linger in the scene.
+
+The core of the frame handling is only a few lines:
+
+```python
+def on_image(image):
+    arr = np.frombuffer(image.raw_data, dtype=np.uint8).reshape((image.height, image.width, 4))
+    rgb = np.ascontiguousarray(arr[:, :, 2::-1])  # BGRA -> RGB
+    with lock:
+        latest["frame"] = rgb
+
+camera.listen(on_image)
+```
+
+### Controls
+
+| Key | Action |
+|---|---|
+| W / S / A / D | Move forward, back, left, right |
+| E / Q | Up / down |
+| Shift | Move faster |
+| Right mouse drag | Look around |
+| Esc | Quit |
+
+### Follow Mode
+
+Once the agent spawns a car, I don't want to hunt for it by comparing coordinates. Pressing F locks the camera onto a vehicle, preferring one whose `role_name` is `hero` or `ego`, and otherwise the most recently spawned vehicle (the one with the highest actor id). The camera sits behind and above the car, right-drag orbits around it, and the mouse wheel changes the distance. Pressing N switches to the next vehicle. Pressing any movement key drops out of follow mode and continues free flight from wherever the camera currently is.
+
+The camera position is computed by starting at an aim point slightly above the vehicle and stepping backward along the viewing direction:
+
+```python
+cy = math.radians(tf.rotation.yaw + orbit_yaw)
+cp = math.radians(orbit_pitch)
+d = (math.cos(cp) * math.cos(cy), math.cos(cp) * math.sin(cy), math.sin(cp))
+aim = (tf.location.x, tf.location.y, tf.location.z + 1.5)
+pos = [aim[i] - d[i] * follow_dist for i in range(3)]
+```
+
+The full `carla_viewer.py` is here: [https://github.com/Chris7462/carla_utils/blob/master/carla_viewer.py](https://github.com/Chris7462/carla_utils/blob/master/carla_viewer.py)
+
+## Step Two: opencode on the GPU Server
+
+### Model and Config
+
+The model is served by Ollama on the same server. Since opencode now runs on that machine too, the base URL is just localhost:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama-local/qwen3-coder-next:latest",
+  "provider": {
+    "ollama-local": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": { "baseURL": "http://127.0.0.1:11434/v1" },
+      "models": { "qwen3-coder-next:latest": {} }
+    }
+  }
+}
+```
+
+The provider name is arbitrary. It only has to match what the `model` field refers to.
+
+### Permissions: Start Conservative
+
+High autonomy doesn't mean starting with everything open. I require approval for edits and for most bash commands, allow read-only commands like `ls` and `cat`, and flat-out deny `rm`, `sudo`, `kill`, and `pkill` so the agent can't accidentally take down the CARLA server:
+
+```jsonc
+"permission": {
+  "edit": "ask",
+  "bash": {
+    "*": "ask",
+    "ls *": "allow",
+    "cat *": "allow",
+    "pwd": "allow",
+    "rm *": "deny",
+    "sudo *": "deny",
+    "kill *": "deny",
+    "pkill *": "deny"
+  }
+}
+```
+
+One caveat is worth stating plainly: **these bash rules match command text, they are not a sandbox.** If the model writes a Python script and runs it with `python3 x.py`, nothing inside that script is intercepted. The real safeguard is a human reading the script before it runs, which is why I'm keeping `ask` in place for now instead of opening everything up.
+
+### AGENTS.md: Telling the Agent About Its Environment
+
+In the agent's working directory I put an `AGENTS.md` that spells out the ground rules. The key points:
+
+- **Don't touch the server.** No starting, restarting, or killing any process. I manage the server myself.
+- **Don't change shared state.** No changes to `synchronous_mode` or `fixed_delta_seconds`, no `world.tick()`, no reloading the map, and no destroying actors it didn't spawn.
+- **Don't write the API from memory.** The 1.0 changelog, for example, notes that the pitch and roll rotation order was corrected in the geometry types, so examples written for older versions can silently be wrong. Read the documentation and examples installed with CARLA first.
+- **Check before using.** Verify versions, confirm a blueprint exists with `blueprint_library.filter(...)`, and use `try_spawn_actor` while handling failure.
+- **Clean up what you spawn.** Destroy actors in a `try/finally`, unless asked to leave them in the scene.
+- **Stop after three failures.** Report what was tried instead of guessing further.
+
+I expect to extend this file based on the mistakes the agent actually makes. There's no need to write a long one up front.
+
+## Experiment Run
+
+With the tunnel open and the viewer running on the laptop, I gave the agent a first task from the SSH terminal: spawn a Tesla Model 3. Then I pressed F in the viewer to follow it. Next, I asked the agent to change the weather to a rainy day.
+
+It worked end to end. The Tesla appeared, the weather was set to `HardRainNoon` (a rainy day), and the follow camera locked on.
+
+Then things started to get interesting. I asked the agent to put the Tesla in autopilot mode. It reported success, but the `set_autopilot(True)` call didn't take effect and the Tesla didn't move. So I asked it to double-check that the Tesla was actually "running". Instead of investigating why autopilot had no effect, the agent switched to applying `throttle=1.0` directly. With no steering and no braking, the Tesla drove straight into a crash. It was hilarious to watch in the video above.
+
+I approved roughly a dozen requests by hand during the experiment, mostly for running Python scripts, plus one to let qwen read the examples in `/opt/carla/PythonAPI/examples`, as `AGENTS.md` tells it to. That is the limit of "a human reads the script before it runs": the scripts were valid Python and did what the agent thought I wanted. Reviewing the syntax isn't enough; what needs checking is whether the script matches what I actually meant.
+
+## Conclusion
+
+So the foundation works: a local model on my own hardware drives CARLA 1.0, and I can watch it from a laptop that couldn't run any of it by itself. It isn't reliable yet, though. The autopilot episode showed that "the agent says it's done" and "the car is actually moving" are two different things. Not a single API token was spent. What I haven't done is use anything CARLA ships specifically for agents.
+
+## What's Next
+
+The next step is to connect the official MCP server and skill library to the local agent, then run the same tasks again and compare. I want to see where the plain "write Python and run it" approach struggles, and whether the vetted procedures close that gap for a smaller local model. Along the way I also plan to:
+
+- Fold the agent's real mistakes into `AGENTS.md`.
+- Check whether Ollama's context length is large enough for agent use. As far as I know the OpenAI-compatible endpoint doesn't honor a per-request context setting, so it has to be configured on the Ollama side, but I haven't verified that.
+- Compare a few models on a fixed set of tasks, judged by success rate and correct tool use rather than by feel.
